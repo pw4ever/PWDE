@@ -147,7 +147,6 @@ $prefix=$(Split-Path "$initscript" -Parent)
 "$prefix\.lein\bin"
 "$prefix\emacs\bin"
 "$prefix\vim"
-"$prefix\MinGW\bin"
 "$prefix\Git"
 "$prefix\Git\cmd"
 "$prefix\Git\bin"
@@ -160,6 +159,10 @@ $prefix=$(Split-Path "$initscript" -Parent)
 "$prefix\firefox"
 "$prefix\apache-maven\bin"
 "$prefix\gradle\bin"
+"$prefix\MinGW\bin"
+"$prefix\MinGW\mingw32\bin"
+"$prefix\MinGW\msys\1.0\bin"
+"$prefix\MinGW\msys\1.0\sbin"
 ) | % {
 `$p=`$_
 if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {    
@@ -209,7 +212,6 @@ setx PATH $([String]::Join(";", `
 "$prefix\.lein\bin"
 "$prefix\emacs\bin"
 "$prefix\vim"
-"$prefix\MinGW\bin"
 "$prefix\Git"
 "$prefix\Git\cmd"
 "$prefix\Git\bin"
@@ -222,6 +224,10 @@ setx PATH $([String]::Join(";", `
 "$prefix\firefox"
 "$prefix\apache-maven\bin"
 "$prefix\gradle\bin"
+"$prefix\MinGW\bin"
+"$prefix\MinGW\mingw32\bin"
+"$prefix\MinGW\msys\1.0\bin"
+"$prefix\MinGW\msys\1.0\sbin"
 "$env:PATH"
 )))
 }
