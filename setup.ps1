@@ -46,7 +46,14 @@ param(
     )
     ]
     [switch]
-    $CreateShortcuts
+    $CreateShortcuts,
+
+    [Parameter(
+    HelpMessage="Create context menu entries."
+    )
+    ]
+    [switch]
+    $CreateContextMenuEntries
 )
 
 function main
@@ -75,6 +82,9 @@ function main
         create-shortcuts $Destination
     }
 
+    if ($CreateContextMenuEntries) {
+        create-contextmenuentries $Destination
+    }
 }
 
 function ensure-dir ($dir) {
@@ -126,6 +136,7 @@ $prefix=$(Split-Path "$initscript" -Parent)
 `$env:M2_HOME="$prefix\apache-maven"
 `$env:GRADLE_HOME="$prefix\gradle"
 
+`$env:EDITOR="$prefix\vim\gvim.exe"
 
 % {
 `$path=`$env:PATH
@@ -144,7 +155,7 @@ $prefix=$(Split-Path "$initscript" -Parent)
 "$prefix\putty"
 "$prefix\SysinternalsSuite"
 "$prefix\ConEmuPack"
-"$prefix\VirtualWin"
+"$prefix\VirtuaWin"
 "$prefix\firefox"
 "$prefix\apache-maven\bin"
 "$prefix\gradle\bin"
@@ -187,6 +198,8 @@ setx LEIN_JAVA_CMD "$prefix\jdk\bin\java.exe"
 setx M2_HOME "$prefix\apache-maven"
 setx GRADLE_HOME "$prefix\gradle"
 
+setx EDITOR "$prefix\vim\gvim.exe"
+    
 setx PATH $([String]::Join(";", `
 @(
 "$prefix"
@@ -203,7 +216,7 @@ setx PATH $([String]::Join(";", `
 "$prefix\putty"
 "$prefix\SysinternalsSuite"
 "$prefix\ConEmuPack"
-"$prefix\VirtualWin"
+"$prefix\VirtuaWin"
 "$prefix\firefox"
 "$prefix\apache-maven\bin"
 "$prefix\gradle\bin"
@@ -231,8 +244,8 @@ function create-shortcuts ($prefix) {
         @("$prefix\ConEmuPack\ConEmu64.exe", "$env:USERPROFILE\Desktop\ConEmu64.lnk", "CTRL+ALT+q"),
         @("$prefix\ConEmuPack\ConEmu64.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ConEmu64.lnk"),
 
-        @("$prefix\VirtualWin\VirtualWin.exe", "$env:USERPROFILE\Desktop\VirtualWin.lnk"),
-        @("$prefix\VirtualWin\VirtualWin.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\VirtualWin.lnk"),
+        @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:USERPROFILE\Desktop\VirtuaWin.lnk"),
+        @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\VirtuaWin.lnk"),
 
         @("$prefix\emacs\bin\runemacs - admin.exe", "$env:USERPROFILE\Desktop\emacs-admin.lnk"),
         @("$prefix\emacs\bin\runemacs - user.exe", "$env:USERPROFILE\Desktop\emacs-user.lnk"),
@@ -241,14 +254,60 @@ function create-shortcuts ($prefix) {
 
         @("$prefix\firefox\firefox.exe", "$env:USERPROFILE\Desktop\FireFox.lnk"),
 
-        @("$prefix\Git\Git Bash.vbs", "$env:USERPROFILE\Desktop\Git Bash.lnk"),
         $NULL
-    ) | % {
-        $src, $shortcut, $hotkey = $_
+    ) | % {        
         if ($_) {
+            $src, $shortcut, $hotkey = $_
+	    Write-Host "Shortcut: $src => $shortcut"
             cs "$src" "$shortcut" $(if ($hotkey) {$hotkey} else {$NULL})
         }
     }
+}
+
+function create-contextmenuentries ($prefix) {
+    # https://gallery.technet.microsoft.com/scriptcenter/Script-to-add-an-item-to-f523f1f3
+    # http://www.howtogeek.com/107965/how-to-add-any-application-shortcut-to-windows-explorers-context-menu/
+
+    New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT | Out-Null
+
+    # Directory Context Menu
+    @(
+        @("Open in ConEmu", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell}"),
+        @("Open in ConEmu (Admin)", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell (Admin)}"),
+        @("Open in Emacs", "`"$prefix\emacs\bin\runemacs - user.exe`""),
+        @("Open in Emacs (Admin)", "`"$prefix\emacs\bin\runemacs - admin.exe`""),
+        $NULL
+    ) | % {        
+        if ($_) {
+            $name, $value = $_
+	    Write-Host "Directory Context Menu: $name => $value"
+            $regpath = "HKCR:\Directory\Background\shell\$name"
+            New-Item -Path "$regpath\Command" -Force | Out-Null
+            Set-ItemProperty -Path "$regpath" -Name "(Default)" -Value "$name"
+            Set-ItemProperty -Path "$regpath\Command" -Name "(Default)" -Value "$value"
+        }        
+    }
+
+    # All File Type Context Menu
+    pushd -LiteralPath "HKCR:\*\shell"
+    @(
+        @("Edit with Emacs", "`"$prefix\emacs\bin\runemacs - user.exe`" %1"),
+        @("Edit with Emacs (Admin)", "`"$prefix\emacs\bin\runemacs - admin.exe`" %1"),
+        @("Edit with Vim", "`"$prefix\vim\gvim.exe`" %1"),
+        $NULL
+    ) | % {        
+        if ($_) {
+            $name, $value = $_
+	    Write-Host "All File Type Context Menu: $name => $value"	    
+            $regpath = "$name"
+            New-Item -Path "$regpath\Command" -Force | Out-Null
+            Set-ItemProperty -Path "$regpath" -Name "(Default)" -Value "$name"
+            Set-ItemProperty -Path "$regpath\Command" -Name "(Default)" -Value "$value"
+        }        
+    }
+    popd
+
+    Remove-PSDrive -Name HKCR
 }
 
 main
