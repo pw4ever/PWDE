@@ -142,6 +142,7 @@ $prefix=$(Split-Path "$initscript" -Parent)
 `$path=`$env:PATH
 @(
 "$prefix"
+"$prefix\GnuPG\"
 "$prefix\bin"
 "$prefix\jdk\bin"
 "$prefix\.lein\bin"
@@ -157,6 +158,7 @@ $prefix=$(Split-Path "$initscript" -Parent)
 "$prefix\ConEmuPack"
 "$prefix\VirtuaWin"
 "$prefix\firefox"
+"$prefix\evince\bin"
 "$prefix\apache-maven\bin"
 "$prefix\gradle\bin"
 "$prefix\MinGW\bin"
@@ -207,6 +209,7 @@ setx EDITOR "$prefix\vim\gvim.exe"
 setx PATH $([String]::Join(";", `
 @(
 "$prefix"
+"$prefix\GnuPG\"
 "$prefix\bin"
 "$prefix\jdk\bin"
 "$prefix\.lein\bin"
@@ -222,6 +225,7 @@ setx PATH $([String]::Join(";", `
 "$prefix\ConEmuPack"
 "$prefix\VirtuaWin"
 "$prefix\firefox"
+"$prefix\evince\bin"
 "$prefix\apache-maven\bin"
 "$prefix\gradle\bin"
 "$prefix\MinGW\bin"
