@@ -39,7 +39,14 @@ param(
     )
     ]
     [switch]
-    $UpdateUserEnvironment
+    $UpdateUserEnvironment,
+
+    [Parameter(
+    HelpMessage="Create shortcuts."
+    )
+    ]
+    [switch]
+    $CreateShortcuts
 )
 
 function main
@@ -59,8 +66,13 @@ function main
     if ($UpdatePSProfile) {
         update-psprofile $initscript
     }
+
     if ($UpdateUserEnvironment) {        
         update-userenv $Destination
+    }
+
+    if ($CreateShortcuts) {
+        create-shortcuts $Destination
     }
 
 }
@@ -103,15 +115,24 @@ $prefix=$(Split-Path "$initscript" -Parent)
 @"
 # For app that looks for HOME, e.g., Emacs, Vim
 `$env:HOME="$prefix"
+`$env:PWDE_HOME="$prefix"
+
 `$env:JAVA_HOME="$prefix\jdk"
 `$env:_JAVA_OPTIONS+=" -Duser.home=$prefix"
+
+`$env:LEIN_HOME="$prefix\.lein"
 `$env:LEIN_JAVA_CMD="$prefix\jdk\bin\java.exe"
+
+`$env:M2_HOME="$prefix\apache-maven"
+`$env:GRADLE_HOME="$prefix\gradle"
+
 
 % {
 `$path=`$env:PATH
 @(
 "$prefix"
 "$prefix\bin"
+"$prefix\jdk\bin"
 "$prefix\.lein\bin"
 "$prefix\emacs\bin"
 "$prefix\vim"
@@ -125,6 +146,8 @@ $prefix=$(Split-Path "$initscript" -Parent)
 "$prefix\ConEmuPack"
 "$prefix\VirtualWin"
 "$prefix\firefox"
+"$prefix\apache-maven\bin"
+"$prefix\gradle\bin"
 ) | % {
 `$p=`$_
 if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {    
@@ -153,13 +176,22 @@ Write-Host "$Profile will source $initscript."
 
 function update-userenv ($prefix) {
 setx HOME "$prefix"
+setx PWDE_HOME "$prefix"
+
 setx JAVA_HOME "$prefix\jdk"
 setx _JAVA_OPTIONS $([String]::Join(" ", @($env:_JAVA_OPTIONS, "-Duser.home=$prefix")))
+
+setx LEIN_HOME "$prefix\.lein"
 setx LEIN_JAVA_CMD "$prefix\jdk\bin\java.exe"
+
+setx M2_HOME "$prefix\apache-maven"
+setx GRADLE_HOME "$prefix\gradle"
+
 setx PATH $([String]::Join(";", `
 @(
 "$prefix"
 "$prefix\bin"
+"$prefix\jdk\bin"
 "$prefix\.lein\bin"
 "$prefix\emacs\bin"
 "$prefix\vim"
@@ -173,8 +205,50 @@ setx PATH $([String]::Join(";", `
 "$prefix\ConEmuPack"
 "$prefix\VirtualWin"
 "$prefix\firefox"
-"$prefix:PATH"
+"$prefix\apache-maven\bin"
+"$prefix\gradle\bin"
+"$env:PATH"
 )))
+}
+
+function create-shortcuts ($prefix) {
+    function cs ([String]$src, [String]$shortcut, [String]$hotkey) {
+        # http://stackoverflow.com/a/9701907
+        $sh = New-Object -ComObject WScript.Shell
+        $s = $sh.CreateShortcut($shortcut)
+        $s.TargetPath = "$src"
+        if ($hotkey) {
+            $s.HotKey = "$hotkey"
+        }
+        # Relative working directory
+        $s.WorkingDirectory = ""
+        $s.Save()
+    }
+
+    @(
+        @("$prefix", "$env:USERPROFILE\Desktop\PWDE.lnk"),
+
+        @("$prefix\ConEmuPack\ConEmu64.exe", "$env:USERPROFILE\Desktop\ConEmu64.lnk", "CTRL+ALT+q"),
+        @("$prefix\ConEmuPack\ConEmu64.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ConEmu64.lnk"),
+
+        @("$prefix\VirtualWin\VirtualWin.exe", "$env:USERPROFILE\Desktop\VirtualWin.lnk"),
+        @("$prefix\VirtualWin\VirtualWin.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\VirtualWin.lnk"),
+
+        @("$prefix\emacs\bin\runemacs - admin.exe", "$env:USERPROFILE\Desktop\emacs-admin.lnk"),
+        @("$prefix\emacs\bin\runemacs - user.exe", "$env:USERPROFILE\Desktop\emacs-user.lnk"),
+
+        @("$prefix\vim\gvim.exe", "$env:USERPROFILE\Desktop\GVim.lnk"),
+
+        @("$prefix\firefox\firefox.exe", "$env:USERPROFILE\Desktop\FireFox.lnk"),
+
+        @("$prefix\Git\Git Bash.vbs", "$env:USERPROFILE\Desktop\Git Bash.lnk"),
+        $NULL
+    ) | % {
+        $src, $shortcut, $hotkey = $_
+        if ($_) {
+            cs "$src" "$shortcut" $(if ($hotkey) {$hotkey} else {$NULL})
+        }
+    }
 }
 
 main
