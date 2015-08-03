@@ -126,11 +126,11 @@ $initscript=$(Resolve-Path "$initscript")
 $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
 @"
 # For app that looks for HOME, e.g., Emacs, Vim
-`$env:HOME="$prefix"
+`$env:HOME=$("$prefix".Replace("\", "/"))
 `$env:PWDE_HOME="$prefix"
 
-`$env:EDITOR="$prefix\vim\gvim.exe"
-`$env:PAGER="$prefix\MinGW\msys\1.0\bin\less.exe"
+`$env:EDITOR=$("$prefix\vim\gvim.exe".Replace("\", "/"))
+`$env:PAGER=$("$prefix\MinGW\msys\1.0\bin\less.exe".Replace("\", "/"))
 `$env:TERM="xterm"
 
 `$env:JAVA_HOME="$prefix\jdk"
@@ -171,7 +171,8 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\MinGW\msys\1.0\sbin",
         "$prefix\Git",
         "$prefix\Git\cmd",
-        "$prefix\Git\bin"
+        "$prefix\Git\bin",
+        "$prefix\vlc"
     ) | % {
         `$p=`$_
         if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {    
@@ -202,11 +203,11 @@ function update-userenv ($prefix) {
     $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
 
     @(        
-        @("HOME", $prefix),
+        @("HOME", $("$prefix".Replace("\", "/"))),
         @("PWDE_HOME", $prefix),
 
-        @("EDITOR", "$prefix\vim\gvim.exe"),
-        @("PAGER", "$prefix\MinGW\msys\1.0\bin\less.exe"),
+        @("EDITOR", $("$prefix\vim\gvim.exe".Replace("\", "/"))),
+        @("PAGER", $("$prefix\MinGW\msys\1.0\bin\less.exe".Replace("\", "/"))),
         @("TERM", "xterm"),
 
         @("JAVA_HOME", "$prefix\jdk"),
@@ -244,7 +245,8 @@ function update-userenv ($prefix) {
             "$prefix\MinGW\msys\1.0\sbin",
             "$prefix\Git",
             "$prefix\Git\cmd",
-            "$prefix\Git\bin"
+            "$prefix\Git\bin",
+            "$prefix\vlc"
             ))))
     ) | % {
         if ($_) {
