@@ -2,15 +2,17 @@
 # Setup the portable development environment (PDevEnv) on the target machine.
 # 
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20150730
+# Latest update: 20150803
 #
 
 [CmdletBinding(
-SupportsShouldProcess=$True
+SupportsShouldProcess=$True,
+# named argument required to prevent accidental unzipping
+PositionalBinding=$False
 )]
 param(
     [Parameter(
-    HelpMessage="Destination path.",
+    HelpMessage="Destination path.",    
     Mandatory
     )]
     $Destination,
@@ -121,11 +123,15 @@ function unzip-files ($src, $dest) {
 function init ($initscript) {
 New-Item -Path "$initscript" -Force -ItemType File > $NULL
 $initscript=$(Resolve-Path "$initscript")
-$prefix=$(Split-Path "$initscript" -Parent)
+$prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
 @"
 # For app that looks for HOME, e.g., Emacs, Vim
 `$env:HOME="$prefix"
 `$env:PWDE_HOME="$prefix"
+
+`$env:EDITOR="$prefix\vim\gvim.exe"
+`$env:PAGER="$prefix\MinGW\msys\1.0\bin\less.exe"
+`$env:TERM="xterm"
 
 `$env:JAVA_HOME="$prefix\jdk"
 `$env:_JAVA_OPTIONS+=" -Duser.home=$prefix"
@@ -136,41 +142,42 @@ $prefix=$(Split-Path "$initscript" -Parent)
 `$env:M2_HOME="$prefix\apache-maven"
 `$env:GRADLE_HOME="$prefix\gradle"
 
-`$env:EDITOR="$prefix\vim\gvim.exe"
-
-% {
-`$path=`$env:PATH
-@(
-"$prefix"
-"$prefix\GnuPG\"
-"$prefix\bin"
-"$prefix\jdk\bin"
-"$prefix\.lein\bin"
-"$prefix\emacs\bin"
-"$prefix\vim"
-"$prefix\Git"
-"$prefix\Git\cmd"
-"$prefix\Git\bin"
-"$prefix\global\bin"
-"$prefix\ctags"
-"$prefix\putty"
-"$prefix\SysinternalsSuite"
-"$prefix\ConEmuPack"
-"$prefix\VirtuaWin"
-"$prefix\firefox"
-"$prefix\evince\bin"
-"$prefix\apache-maven\bin"
-"$prefix\gradle\bin"
-"$prefix\MinGW\bin"
-"$prefix\MinGW\mingw32\bin"
-"$prefix\MinGW\msys\1.0\bin"
-"$prefix\MinGW\msys\1.0\sbin"
-) | % {
-`$p=`$_
-if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {    
-    `$env:PATH="`$p;`$env:PATH"
-}
-}
+& {
+    `$path=`$env:PATH
+    @(      
+        "$prefix",
+        "$prefix\GnuPG\",
+        "$prefix\bin",
+        "$prefix\jdk\bin",
+        "$prefix\perl\perl\bin",
+        "$prefix\perl\perl\site\bin",
+        "$prefix\perl\c\bin",
+        "$prefix\.lein\bin",
+        "$prefix\emacs\bin",
+        "$prefix\vim",
+        "$prefix\global\bin",
+        "$prefix\ctags",
+        "$prefix\putty",
+        "$prefix\SysinternalsSuite",
+        "$prefix\ConEmuPack",
+        "$prefix\VirtuaWin",
+        "$prefix\firefox",
+        "$prefix\evince\bin",
+        "$prefix\apache-maven\bin",
+        "$prefix\gradle\bin",
+        "$prefix\MinGW\bin",
+        "$prefix\MinGW\mingw32\bin",
+        "$prefix\MinGW\msys\1.0\bin",
+        "$prefix\MinGW\msys\1.0\sbin",
+        "$prefix\Git",
+        "$prefix\Git\cmd",
+        "$prefix\Git\bin"
+    ) | % {
+        `$p=`$_
+        if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {    
+            `$env:PATH="`$p;`$env:PATH"
+        }
+    }
 }
 "@ | Set-Content -Path "$initscript" -Force
 
@@ -192,51 +199,65 @@ Write-Host "$Profile will source $initscript."
 }
 
 function update-userenv ($prefix) {
-setx HOME "$prefix"
-setx PWDE_HOME "$prefix"
+    $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
 
-setx JAVA_HOME "$prefix\jdk"
-setx _JAVA_OPTIONS $([String]::Join(" ", @($env:_JAVA_OPTIONS, "-Duser.home=$prefix")))
+    @(        
+        @("HOME", $prefix),
+        @("PWDE_HOME", $prefix),
 
-setx LEIN_HOME "$prefix\.lein"
-setx LEIN_JAVA_CMD "$prefix\jdk\bin\java.exe"
+        @("EDITOR", "$prefix\vim\gvim.exe"),
+        @("PAGER", "$prefix\MinGW\msys\1.0\bin\less.exe"),
+        @("TERM", "xterm"),
 
-setx M2_HOME "$prefix\apache-maven"
-setx GRADLE_HOME "$prefix\gradle"
-
-setx EDITOR "$prefix\vim\gvim.exe"
-    
-setx PATH $([String]::Join(";", `
-@(
-"$prefix"
-"$prefix\GnuPG\"
-"$prefix\bin"
-"$prefix\jdk\bin"
-"$prefix\.lein\bin"
-"$prefix\emacs\bin"
-"$prefix\vim"
-"$prefix\Git"
-"$prefix\Git\cmd"
-"$prefix\Git\bin"
-"$prefix\global\bin"
-"$prefix\ctags"
-"$prefix\putty"
-"$prefix\SysinternalsSuite"
-"$prefix\ConEmuPack"
-"$prefix\VirtuaWin"
-"$prefix\firefox"
-"$prefix\evince\bin"
-"$prefix\apache-maven\bin"
-"$prefix\gradle\bin"
-"$prefix\MinGW\bin"
-"$prefix\MinGW\mingw32\bin"
-"$prefix\MinGW\msys\1.0\bin"
-"$prefix\MinGW\msys\1.0\sbin"
-"$env:PATH"
-)))
+        @("JAVA_HOME", "$prefix\jdk"),
+        @("_JAVA_OPTIONS", "-Duser.home=`"$prefix`" $env:_JAVA_OPTIONS"),
+        @("LEIN_HOME", "$prefix\.lein"),
+        @("LEIN_JAVA_CMD", "$prefix\jdk\bin\java.exe"),
+        @("M2_HOME", "$prefix\apache-maven"),
+        @("GRADLE_HOME", "$prefix\gradle"),
+        @("PATH_BAK", $env:PATH),
+        @("PATH", $([String]::Join([IO.Path]::PathSeparator, `
+            @(            
+            "$prefix",
+            "$prefix\GnuPG\",
+            "$prefix\bin",
+            "$prefix\jdk\bin",
+            "$prefix\perl\perl\bin",
+            "$prefix\perl\perl\site\bin",
+            "$prefix\perl\c\bin",
+            "$prefix\.lein\bin",
+            "$prefix\emacs\bin",
+            "$prefix\vim",
+            "$prefix\global\bin",
+            "$prefix\ctags",
+            "$prefix\putty",
+            "$prefix\SysinternalsSuite",
+            "$prefix\ConEmuPack",
+            "$prefix\VirtuaWin",
+            "$prefix\firefox",
+            "$prefix\evince\bin",
+            "$prefix\apache-maven\bin",
+            "$prefix\gradle\bin",
+            "$prefix\MinGW\bin",
+            "$prefix\MinGW\mingw32\bin",
+            "$prefix\MinGW\msys\1.0\bin",
+            "$prefix\MinGW\msys\1.0\sbin",
+            "$prefix\Git",
+            "$prefix\Git\cmd",
+            "$prefix\Git\bin"
+            ))))
+    ) | % {
+        if ($_) {
+            $var, $val, $tar = $_
+            Write-Host "Setting environment variable: |$var|=|$val|"
+            [Environment]::SetEnvironmentVariable($var, $val, $(if ($tar) {$tar} else {[EnvironmentVariableTarget]::User}))
+        }
+    }
 }
 
 function create-shortcuts ($prefix) {
+    $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
+
     function cs ([String]$src, [String]$shortcut, [String]$hotkey) {
         # http://stackoverflow.com/a/9701907
         $sh = New-Object -ComObject WScript.Shell
@@ -250,7 +271,7 @@ function create-shortcuts ($prefix) {
         $s.Save()
     }
 
-    @(
+    @(        
         @("$prefix", "$env:USERPROFILE\Desktop\PWDE.lnk"),
 
         @("$prefix\ConEmuPack\ConEmu64.exe", "$env:USERPROFILE\Desktop\ConEmu64.lnk", "CTRL+ALT+q"),
@@ -264,31 +285,30 @@ function create-shortcuts ($prefix) {
 
         @("$prefix\vim\gvim.exe", "$env:USERPROFILE\Desktop\GVim.lnk"),
 
-        @("$prefix\firefox\firefox.exe", "$env:USERPROFILE\Desktop\FireFox.lnk"),
-
-        $NULL
+        @("$prefix\firefox\firefox.exe", "$env:USERPROFILE\Desktop\FireFox.lnk")        
     ) | % {        
         if ($_) {
             $src, $shortcut, $hotkey = $_
-	    Write-Host "Shortcut: $src => $shortcut"
+	        Write-Host "Shortcut: $src => $shortcut"
             cs "$src" "$shortcut" $(if ($hotkey) {$hotkey} else {$NULL})
         }
     }
 }
 
 function create-contextmenuentries ($prefix) {
+    $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
+
     # https://gallery.technet.microsoft.com/scriptcenter/Script-to-add-an-item-to-f523f1f3
     # http://www.howtogeek.com/107965/how-to-add-any-application-shortcut-to-windows-explorers-context-menu/
 
     New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT | Out-Null
 
     # Directory Context Menu
-    @(
+    @(        
         @("Open in ConEmu", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell}"),
         @("Open in ConEmu (Admin)", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell (Admin)}"),
         @("Open in Emacs", "`"$prefix\emacs\bin\runemacs - user.exe`""),
-        @("Open in Emacs (Admin)", "`"$prefix\emacs\bin\runemacs - admin.exe`""),
-        $NULL
+        @("Open in Emacs (Admin)", "`"$prefix\emacs\bin\runemacs - admin.exe`"")
     ) | % {        
         if ($_) {
             $name, $value = $_
@@ -302,11 +322,10 @@ function create-contextmenuentries ($prefix) {
 
     # All File Type Context Menu
     pushd -LiteralPath "HKCR:\*\shell"
-    @(
+    @(        
         @("Edit with Emacs", "`"$prefix\emacs\bin\runemacs - user.exe`" %1"),
         @("Edit with Emacs (Admin)", "`"$prefix\emacs\bin\runemacs - admin.exe`" %1"),
-        @("Edit with Vim", "`"$prefix\vim\gvim.exe`" %1"),
-        $NULL
+        @("Edit with Vim", "`"$prefix\vim\gvim.exe`" %1")
     ) | % {        
         if ($_) {
             $name, $value = $_
