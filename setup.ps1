@@ -108,7 +108,7 @@ function unzip-files ($src, $dest) {
                     function unzip ($zipfile, $dest, $src) {
                         #ensure-dir $dest
                         #[IO.Compression.ZipFile]::ExtractToDirectory($zipfle, $dest)
-                        Invoke-Expression "$src\7za.exe -o$dest -y x $zipfile" > $NULL
+                        Invoke-Expression "$src\7za.exe x -o`"$dest`" -y -- `"$zipfile`"" # > $NULL
                     }
 
                     unzip "$name" "$dest" "$src"
