@@ -126,11 +126,11 @@ $initscript=$(Resolve-Path "$initscript")
 $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
 @"
 # For app that looks for HOME, e.g., Emacs, Vim
-`$env:HOME=$("$prefix".Replace("\", "/"))
+`$env:HOME="$("$prefix".Replace("\", "/"))"
 `$env:PWDE_HOME="$prefix"
 
-`$env:EDITOR=$("$prefix\vim\gvim.exe".Replace("\", "/"))
-`$env:PAGER=$("$prefix\MinGW\msys\1.0\bin\less.exe".Replace("\", "/"))
+`$env:EDITOR="$("$prefix\vim\gvim.exe".Replace("\", "/"))"
+`$env:PAGER="$("$prefix\MinGW\msys\1.0\bin\less.exe".Replace("\", "/"))"
 `$env:TERM="xterm"
 
 `$env:JAVA_HOME="$prefix\jdk"
