@@ -134,7 +134,7 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
 `$env:TERM="xterm"
 
 `$env:JAVA_HOME="$prefix\jdk"
-`$env:_JAVA_OPTIONS+=" -Duser.home=$prefix"
+`$env:_JAVA_OPTIONS="-Duser.home=`"$prefix`" "+`$env:_JAVA_OPTIONS
 
 `$env:LEIN_HOME="$prefix\.lein"
 `$env:LEIN_JAVA_CMD="$prefix\jdk\bin\java.exe"
@@ -146,7 +146,7 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
     `$path=`$env:PATH
     @(      
         "$prefix",
-        "$prefix\GnuPG\",
+        "$prefix\GnuPG",
         "$prefix\bin",
         "$prefix\jdk\bin",
         "$prefix\perl\perl\bin",
@@ -178,6 +178,10 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {    
             `$env:PATH="`$p;`$env:PATH"
         }
+    }
+
+    if (`$env:PWDE_PERSISTENT_PATH) {
+        `$env:PATH+=";`$env:PWDE_PERSISTENT_PATH"
     }
 }
 "@ | Set-Content -Path "$initscript" -Force
@@ -220,7 +224,7 @@ function update-userenv ($prefix) {
         @("PATH", $([String]::Join([IO.Path]::PathSeparator, `
             @(            
             "$prefix",
-            "$prefix\GnuPG\",
+            "$prefix\GnuPG",
             "$prefix\bin",
             "$prefix\jdk\bin",
             "$prefix\perl\perl\bin",
@@ -246,7 +250,8 @@ function update-userenv ($prefix) {
             "$prefix\Git",
             "$prefix\Git\cmd",
             "$prefix\Git\bin",
-            "$prefix\vlc"
+            "$prefix\vlc",
+            "$env:PWDE_PERSISTENT_PATH"
             ))))
     ) | % {
         if ($_) {
