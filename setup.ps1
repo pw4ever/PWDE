@@ -287,8 +287,8 @@ function create-shortcuts ($prefix) {
         @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:USERPROFILE\Desktop\VirtuaWin.lnk"),
         @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\VirtuaWin.lnk"),
 
-        @("$prefix\emacs\bin\runemacs - admin.exe", "$env:USERPROFILE\Desktop\emacs-admin.lnk"),
-        @("$prefix\emacs\bin\runemacs - user.exe", "$env:USERPROFILE\Desktop\emacs-user.lnk"),
+        @("$prefix\emacs\bin\runemacs-admin.exe", "$env:USERPROFILE\Desktop\emacs-admin.lnk"),
+        @("$prefix\emacs\bin\runemacs-user.exe", "$env:USERPROFILE\Desktop\emacs-user.lnk"),
 
         @("$prefix\vim\gvim.exe", "$env:USERPROFILE\Desktop\GVim.lnk"),
 
@@ -314,8 +314,8 @@ function create-contextmenuentries ($prefix) {
     @(        
         @("Open in ConEmu", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell}"),
         @("Open in ConEmu (Admin)", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell (Admin)}"),
-        @("Open in Emacs", "`"$prefix\emacs\bin\runemacs - user.exe`""),
-        @("Open in Emacs (Admin)", "`"$prefix\emacs\bin\runemacs - admin.exe`"")
+        @("Open in Emacs", "`"$prefix\emacs\bin\runemacs-user.exe`""),
+        @("Open in Emacs (Admin)", "`"$prefix\emacs\bin\runemacs-admin.exe`"")
     ) | % {        
         if ($_) {
             $name, $value = $_
@@ -330,8 +330,8 @@ function create-contextmenuentries ($prefix) {
     # All File Type Context Menu
     pushd -LiteralPath "HKCR:\*\shell"
     @(        
-        @("Edit with Emacs", "`"$prefix\emacs\bin\runemacs - user.exe`" %1"),
-        @("Edit with Emacs (Admin)", "`"$prefix\emacs\bin\runemacs - admin.exe`" %1"),
+        @("Edit with Emacs", "`"$prefix\emacs\bin\runemacs-user.exe`" %1"),
+        @("Edit with Emacs (Admin)", "`"$prefix\emacs\bin\runemacs-admin.exe`" %1"),
         @("Edit with Vim", "`"$prefix\vim\gvim.exe`" %1")
     ) | % {        
         if ($_) {
