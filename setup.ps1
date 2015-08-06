@@ -142,6 +142,9 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
 `$env:M2_HOME="$prefix\apache-maven"
 `$env:GRADLE_HOME="$prefix\gradle"
 
+`$env:R_HOME="$("$prefix\R".Replace("\", "/"))"
+
+
 & {
     `$path=`$env:PATH
     @(      
@@ -172,7 +175,8 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\Git",
         "$prefix\Git\cmd",
         "$prefix\Git\bin",
-        "$prefix\vlc"
+        "$prefix\vlc",
+        "$prefix\R\bin\x64"
     ) | % {
         `$p=`$_
         if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {    
@@ -220,6 +224,7 @@ function update-userenv ($prefix) {
         @("LEIN_JAVA_CMD", "$prefix\jdk\bin\java.exe"),
         @("M2_HOME", "$prefix\apache-maven"),
         @("GRADLE_HOME", "$prefix\gradle"),
+        @("R_HOME", $("$prefix\R".Replace("\", "/"))),
         @("PATH_BAK", $env:PATH),
         @("PATH", $([String]::Join([IO.Path]::PathSeparator, `
             @(            
@@ -251,6 +256,7 @@ function update-userenv ($prefix) {
             "$prefix\Git\cmd",
             "$prefix\Git\bin",
             "$prefix\vlc",
+            "$prefix\R\bin\x64",
             "$env:PWDE_PERSISTENT_PATH"
             ))))
     ) | % {
@@ -291,6 +297,8 @@ function create-shortcuts ($prefix) {
         @("$prefix\emacs\bin\runemacs-user.exe", "$env:USERPROFILE\Desktop\emacs-user.lnk"),
 
         @("$prefix\vim\gvim.exe", "$env:USERPROFILE\Desktop\GVim.lnk"),
+
+        @("$prefix\R\bin\x64\Rgui.exe", "$env:USERPROFILE\Desktop\RGui x64.lnk"),
 
         @("$prefix\firefox\firefox.exe", "$env:USERPROFILE\Desktop\FireFox.lnk")        
     ) | % {        
