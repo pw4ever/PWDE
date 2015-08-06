@@ -176,7 +176,8 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\Git\cmd",
         "$prefix\Git\bin",
         "$prefix\vlc",
-        "$prefix\R\bin\x64"
+        "$prefix\R\bin\x64",
+        "$prefix\GIMP\bin"
     ) | % {
         `$p=`$_
         if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {    
@@ -257,6 +258,7 @@ function update-userenv ($prefix) {
             "$prefix\Git\bin",
             "$prefix\vlc",
             "$prefix\R\bin\x64",
+            "$prefix\GIMP\bin",
             "$env:PWDE_PERSISTENT_PATH"
             ))))
     ) | % {
@@ -299,6 +301,8 @@ function create-shortcuts ($prefix) {
         @("$prefix\vim\gvim.exe", "$env:USERPROFILE\Desktop\GVim.lnk"),
 
         @("$prefix\R\bin\x64\Rgui.exe", "$env:USERPROFILE\Desktop\RGui x64.lnk"),
+
+        @("$prefix\GIMP\bin\gimp-2.8.exe", "$env:USERPROFILE\Desktop\GIMP-2.8.lnk"),
 
         @("$prefix\firefox\firefox.exe", "$env:USERPROFILE\Desktop\FireFox.lnk")        
     ) | % {        
