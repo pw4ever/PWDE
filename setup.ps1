@@ -177,7 +177,8 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\Git\bin",
         "$prefix\vlc",
         "$prefix\R\bin\x64",
-        "$prefix\GIMP\bin"
+        "$prefix\GIMP\bin",
+        "$prefix\Aspell\bin"
     ) | % {
         `$p=`$_
         if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {    
@@ -259,6 +260,7 @@ function update-userenv ($prefix) {
             "$prefix\vlc",
             "$prefix\R\bin\x64",
             "$prefix\GIMP\bin",
+            "$prefix\Aspell\bin",
             "$env:PWDE_PERSISTENT_PATH"
             ))))
     ) | % {
