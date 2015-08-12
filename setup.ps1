@@ -144,6 +144,7 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
 
 `$env:R_HOME="$("$prefix\R".Replace("\", "/"))"
 
+`$env:NODE_PATH="$(".\node_modules;$prefix\nodejs\node_modules".Replace("\", "/"))"
 
 & {
     `$path=`$env:PATH
@@ -151,6 +152,7 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix",
         "$prefix\GnuPG",
         "$prefix\bin",
+        "$prefix\nodejs",
         "$prefix\jdk\bin",
         "$prefix\perl\perl\bin",
         "$prefix\perl\perl\site\bin",
@@ -227,12 +229,14 @@ function update-userenv ($prefix) {
         @("M2_HOME", "$prefix\apache-maven"),
         @("GRADLE_HOME", "$prefix\gradle"),
         @("R_HOME", $("$prefix\R".Replace("\", "/"))),
+        @("NODE_PATH", $(".\node_modules;$prefix\nodejs\node_modules".Replace("\", "/"))),
         @("PATH_BAK", $env:PATH),
         @("PATH", $([String]::Join([IO.Path]::PathSeparator, `
             @(            
             "$prefix",
             "$prefix\GnuPG",
             "$prefix\bin",
+            "$prefix\nodejs",
             "$prefix\jdk\bin",
             "$prefix\perl\perl\bin",
             "$prefix\perl\perl\site\bin",
