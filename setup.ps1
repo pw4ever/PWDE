@@ -183,9 +183,9 @@ function download-upstream ($srcprefix, $destprefix, $pkgs) {
 
     $list = @("7za.exe") + @($pkgs | % {"$_.zip"})
 
-    foreach ($pkg in $pkgs) {
-        $src="$srcprefix/$pkg.zip"
-        $dest="$destprefix/$pkg.zip"
+    foreach ($item in $list) {
+        $src="$srcprefix/$item"
+        $dest="$destprefix/$item"
 
         $wc.DownloadFile($src, $dest)
         Write-Host "$src downloaded to $dest."        
