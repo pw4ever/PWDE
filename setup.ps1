@@ -1,9 +1,34 @@
-#
-# Setup the portable development environment (PDevEnv) on the target machine.
 # 
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20150803
+# Latest update: 20150813
 #
+
+<#
+.SYNOPSIS
+  Setup the Portable Windows Development Environment (PWDE) on the target machine.
+.PARAMETER DownloadFromUpstream
+  Download setup from the upstream repository. Useful when no local download exists.
+.PARAMETER UpstreamURLPrefix
+  Upstream URL Prefix (default: https://github.com/pw4ever/PWDE/releases/download/latest).
+.PARAMETER PkgList
+  List of ZIP packages to download/extract. No need to specify unless to select a subset.
+.PARAMETER DownloadOnly
+  Stop after downloading.
+.PARAMETER Destination
+  Destination path.
+.PARAMETER ZipSource
+  Zip source path (default to `$PSScriptRoot).
+.PARAMETER SkipUnzipping
+  Skip the time-consuming unzipping.
+.PARAMETER UpdatePSProfile
+  Make settings persistent by sourcing "init.ps1" in PoSH profile.
+.PARAMETER UpdateUserEnvironment
+  Make settings persistent in user environment.
+.PARAMETER CreateShortcuts
+  Create Desktop shortcuts.
+.PARAMETER CreateContextMenuEntries
+  Create context menu entries (requires Admin privilege).
+#>
 
 [CmdletBinding(
 SupportsShouldProcess=$True,
@@ -12,8 +37,60 @@ PositionalBinding=$False
 )]
 param(
     [Parameter(
-    HelpMessage="Destination path.",    
-    Mandatory
+    HelpMessage="Download setup from upstream repository to ZipSource. Useful when no local download exists."    
+    )]
+    [switch]
+    $DownloadFromUpstream,
+
+    [Parameter(
+    HelpMessage="Upstream URL Prefix (default: https://github.com/pw4ever/PWDE/releases/download/latest)."    
+    )]
+    [String]
+    $UpstreamURLPrefix="https://github.com/pw4ever/PWDE/releases/download/latest",
+
+    # ls *.zip | % { write-host "`"$(basename $_ .zip)`","}
+    [Parameter(
+    HelpMessage="List of ZIP packages to download/extract. No need to specify unless to select a subset."    
+    )]
+    [String[]]
+    $PkgList=`
+@(
+"apache-maven",
+"Aspell",
+"bin",
+"ConEmuPack",
+"ctags",
+"Documents",
+"emacs",
+"evince",
+"firefox",
+"GIMP",
+"Git",
+"global",
+"GnuPG",
+"gradle",
+"jdk",
+"leiningen",
+"m2",
+"MinGW",
+"nodejs",
+"perl",
+"putty",
+"R",
+"SysinternalsSuite",
+"vim",
+"VirtuaWin",
+"vlc"
+),
+
+    [Parameter(
+    HelpMessage="Stop after downloading."    
+    )]
+    [switch]
+    $DownloadOnly,
+
+    [Parameter(
+    HelpMessage="Destination path."    
     )]
     $Destination,
 
@@ -44,14 +121,14 @@ param(
     $UpdateUserEnvironment,
 
     [Parameter(
-    HelpMessage="Create shortcuts."
+    HelpMessage="Create Desktop shortcuts to common utilities."
     )
     ]
     [switch]
     $CreateShortcuts,
 
     [Parameter(
-    HelpMessage="Create context menu entries."
+    HelpMessage="Create context menu entries (requires Admin privilege)."
     )
     ]
     [switch]
@@ -60,8 +137,19 @@ param(
 
 function main
 {
-    ensure-dir $Destination
-    
+    if ($DownloadFromUpstream) {
+        ensure-dir $ZipSource
+        download-upstream $UpstreamURLPrefix $ZipSource $PkgList
+    }
+
+    if ($DownloadOnly) {
+        return
+    } elsif (! $Destination) {
+        Write-Error "Need Destination if not DownloadOnly"
+        return
+    }
+
+    ensure-dir $Destination    
     $Destination=$(Resolve-Path $Destination)
 
     if (!$SkipUnzipping) {
@@ -86,6 +174,21 @@ function main
 
     if ($CreateContextMenuEntries) {
         create-contextmenuentries $Destination
+    }
+}
+
+function download-upstream ($srcprefix, $destprefix, $pkgs) {
+    # http://stackoverflow.com/a/28704050
+    $wc = New-Object Net.WebClient
+
+    $list = @("7za.exe") + @($pkgs | % {"$_.zip"})
+
+    foreach ($pkg in $pkgs) {
+        $src="$srcprefix/$pkg.zip"
+        $dest="$destprefix/$pkg.zip"
+
+        $wc.DownloadFile($src, $dest)
+        Write-Host "$src downloaded to $dest."        
     }
 }
 
