@@ -144,7 +144,8 @@ function main
 
     if ($DownloadOnly) {
         return
-    } elsif (! $Destination) {
+    }
+    elseif (! $Destination) {
         Write-Error "Need Destination if not DownloadOnly"
         return
     }
