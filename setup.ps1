@@ -1,6 +1,6 @@
 # 
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20150813
+# Latest update: 20150824
 #
 
 <#
@@ -76,6 +76,7 @@ param(
 "nodejs",
 "perl",
 "putty",
+"Python34",
 "R",
 "SysinternalsSuite",
 "vim",
@@ -243,6 +244,9 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
 `$env:LEIN_HOME="$prefix\.lein"
 `$env:LEIN_JAVA_CMD="$prefix\jdk\bin\java.exe"
 
+`$env:PYTHONHOME="$prefix\Python34;$prefix\Python34"
+`$env:PYTHONPATH="$prefix\Python34\Lib\site-packages;$prefix\Python34\Lib"
+
 `$env:M2_HOME="$prefix\apache-maven"
 `$env:GRADLE_HOME="$prefix\gradle"
 
@@ -261,6 +265,8 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\perl\perl\bin",
         "$prefix\perl\perl\site\bin",
         "$prefix\perl\c\bin",
+        "$prefix\Python34",
+        "$prefix\Python34\Scripts",
         "$prefix\.lein\bin",
         "$prefix\emacs\bin",
         "$prefix\vim",
@@ -330,6 +336,8 @@ function update-userenv ($prefix) {
         @("_JAVA_OPTIONS", "-Duser.home=`"$prefix`" $env:_JAVA_OPTIONS"),
         @("LEIN_HOME", "$prefix\.lein"),
         @("LEIN_JAVA_CMD", "$prefix\jdk\bin\java.exe"),
+        @("PYTHONHOME", "$prefix\Python34;$prefix\Python34"),
+        @("PYTHONPATH", "$prefix\Python34\Lib\site-packages;$prefix\Python34\Lib"),
         @("M2_HOME", "$prefix\apache-maven"),
         @("GRADLE_HOME", "$prefix\gradle"),
         @("R_HOME", $("$prefix\R".Replace("\", "/"))),
@@ -345,6 +353,8 @@ function update-userenv ($prefix) {
             "$prefix\perl\perl\bin",
             "$prefix\perl\perl\site\bin",
             "$prefix\perl\c\bin",
+            "$prefix\Python34",
+            "$prefix\Python34\Scripts",
             "$prefix\.lein\bin",
             "$prefix\emacs\bin",
             "$prefix\vim",
