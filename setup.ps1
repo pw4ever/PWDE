@@ -76,7 +76,7 @@ param(
 "nodejs",
 "perl",
 "putty",
-"Python34",
+"Python27",
 "R",
 "SysinternalsSuite",
 "vim",
@@ -157,6 +157,12 @@ function main
     if (!$SkipUnzipping) {
         $ZipSource=$(Resolve-Path $ZipSource)
         unzip-files "$ZipSource" "$Destination"
+    }
+    
+    # extra setup beyond unzipping
+    & {
+        .\scripts\global.ps1 -Destination $Destination -PkgList $PkgList
+        .\scripts\python27.ps1 -Destination $Destination -PkgList $PkgList
     }    
 
     $initscript = [IO.Path]::Combine($Destination, "init.ps1")
@@ -244,8 +250,8 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
 `$env:LEIN_HOME="$prefix\.lein"
 `$env:LEIN_JAVA_CMD="$prefix\jdk\bin\java.exe"
 
-`$env:PYTHONHOME="$prefix\Python34;$prefix\Python34"
-`$env:PYTHONPATH="$prefix\Python34\Lib\site-packages;$prefix\Python34\Lib"
+`$env:PYTHONHOME="$prefix\Python27"
+`$env:PYTHONPATH="$prefix\Python27\Lib\site-packages;$prefix\Python27\Lib"
 
 `$env:M2_HOME="$prefix\apache-maven"
 `$env:GRADLE_HOME="$prefix\gradle"
@@ -259,19 +265,19 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
     @(      
         "$prefix",
         "$prefix\GnuPG",
+        "$prefix\ctags",
         "$prefix\bin",
         "$prefix\nodejs",
         "$prefix\jdk\bin",
         "$prefix\perl\perl\bin",
         "$prefix\perl\perl\site\bin",
         "$prefix\perl\c\bin",
-        "$prefix\Python34",
-        "$prefix\Python34\Scripts",
+        "$prefix\Python27",
+        "$prefix\Python27\Scripts",
         "$prefix\.lein\bin",
         "$prefix\emacs\bin",
         "$prefix\vim",
         "$prefix\global\bin",
-        "$prefix\ctags",
         "$prefix\putty",
         "$prefix\SysinternalsSuite",
         "$prefix\ConEmuPack",
@@ -336,8 +342,8 @@ function update-userenv ($prefix) {
         @("_JAVA_OPTIONS", "-Duser.home=`"$prefix`" $env:_JAVA_OPTIONS"),
         @("LEIN_HOME", "$prefix\.lein"),
         @("LEIN_JAVA_CMD", "$prefix\jdk\bin\java.exe"),
-        @("PYTHONHOME", "$prefix\Python34;$prefix\Python34"),
-        @("PYTHONPATH", "$prefix\Python34\Lib\site-packages;$prefix\Python34\Lib"),
+        @("PYTHONHOME", "$prefix\Python27"),
+        @("PYTHONPATH", "$prefix\Python27\Lib\site-packages;$prefix\Python27\Lib"),
         @("M2_HOME", "$prefix\apache-maven"),
         @("GRADLE_HOME", "$prefix\gradle"),
         @("R_HOME", $("$prefix\R".Replace("\", "/"))),
@@ -347,19 +353,19 @@ function update-userenv ($prefix) {
             @(            
             "$prefix",
             "$prefix\GnuPG",
+            "$prefix\ctags",
             "$prefix\bin",
             "$prefix\nodejs",
             "$prefix\jdk\bin",
             "$prefix\perl\perl\bin",
             "$prefix\perl\perl\site\bin",
             "$prefix\perl\c\bin",
-            "$prefix\Python34",
-            "$prefix\Python34\Scripts",
+            "$prefix\Python27",
+            "$prefix\Python27\Scripts",
             "$prefix\.lein\bin",
             "$prefix\emacs\bin",
             "$prefix\vim",
             "$prefix\global\bin",
-            "$prefix\ctags",
             "$prefix\putty",
             "$prefix\SysinternalsSuite",
             "$prefix\ConEmuPack",
