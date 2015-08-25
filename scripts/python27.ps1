@@ -51,15 +51,15 @@ $prefix=$(Resolve-Path "$prefix")
 
 $dir=[System.IO.Path]::Combine($prefix, "Python27")
 $python=[System.IO.Path]::Combine($dir, "python")
-$cache=[System.IO.Path]::Combine($dir, "cache")
+$download=[System.IO.Path]::Combine($dir, "00download")
 
 @(
-    "$python -m pip install --upgrade --force-reinstall --cache-dir $cache setuptools==16.0"
-    "$python -m pip install --upgrade --force-reinstall --cache-dir $cache pip==7.1.2"
-    "$python -m pip install --upgrade --force-reinstall --cache-dir $cache pygments==1.6"
-) | % {
-    Write-Host $_
-    Invoke-Expression $_
+"setuptools-16.0-py2.py3-none-any.whl",
+"pip-7.1.2-py2.py3-none-any.whl",
+"Pygments-1.6.tar.gz"
+) | % {    
+    Write-Host "$python -m pip install -I `"$download\$_`""
+    Invoke-Expression "$python -m pip install -I `"$download\$_`""
 }
 
 }
