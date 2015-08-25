@@ -223,7 +223,7 @@ pygments-parser|Pygments plug-in parser:\
 	:langmap=C\:.c.h:\
 	:langmap=Ceylon\:.ceylon:\
 	:langmap=Cfm\:.cfm.cfml.cfc:\
-	:langmap=Clojure\:.clj.cljs.cljx:\
+	:langmap=Clojure\:.clj.cljs.cljc:\
 	:langmap=CoffeeScript\:.coffee:\
 	:langmap=Common-Lisp\:.cl.lisp.el:\
 	:langmap=Coq\:.v:\
