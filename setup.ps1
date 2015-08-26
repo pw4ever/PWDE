@@ -64,6 +64,7 @@ param(
 "evince",
 "firefox",
 "GIMP",
+"global",
 "gradle",
 "jdk",
 "leiningen",
@@ -251,10 +252,8 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
     @(      
         "$prefix",
         "$prefix\bin",
-        "$prefix\jdk\bin",
-        "$prefix\msys64\usr\bin",
-        "$prefix\msys64\mingw64\bin",
-        "$prefix\msys64\opt\bin",
+        "$prefix\global\bin",
+        "$prefix\jdk\bin",        
         "$prefix\gradle\bin",
         "$prefix\.lein\bin",
         "$prefix\vim",
@@ -266,7 +265,10 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\apache-maven\bin",
         "$prefix\vlc",
         "$prefix\R\bin\x64",
-        "$prefix\GIMP\bin"
+        "$prefix\GIMP\bin",
+        "$prefix\msys64\usr\bin",
+        "$prefix\msys64\mingw64\bin",
+        "$prefix\msys64\opt\bin"
     ) | % {
         `$p=`$_
         if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {    
@@ -317,13 +319,11 @@ function update-userenv ($prefix) {
         @("R_HOME", $("$prefix\R".Replace("\", "/"))),        
         @("PATH_BAK", $env:PATH),
         @("PATH", $([String]::Join([IO.Path]::PathSeparator, `
-            @(            
+            @(
             "$prefix",
             "$prefix\bin",
-            "$prefix\jdk\bin",
-            "$prefix\msys64\usr\bin",
-            "$prefix\msys64\mingw64\bin",
-            "$prefix\msys64\opt\bin",
+            "$prefix\global\bin",
+            "$prefix\jdk\bin",        
             "$prefix\gradle\bin",
             "$prefix\.lein\bin",
             "$prefix\vim",
@@ -336,6 +336,9 @@ function update-userenv ($prefix) {
             "$prefix\vlc",
             "$prefix\R\bin\x64",
             "$prefix\GIMP\bin",
+            "$prefix\msys64\usr\bin",
+            "$prefix\msys64\mingw64\bin",
+            "$prefix\msys64\opt\bin",
             "$env:PWDE_PERSISTENT_PATH"
             ))))
     ) | % {
