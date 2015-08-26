@@ -64,6 +64,7 @@ param(
 "evince",
 "firefox",
 "GIMP",
+"gradle",
 "jdk",
 "leiningen",
 "m2",
