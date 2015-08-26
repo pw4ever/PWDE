@@ -50,7 +50,7 @@ function work ($prefix) {
 $prefix=$(Resolve-Path "$prefix")
 
 $name=[System.IO.Path]::Combine($prefix, ".globalrc")
-$globallib=[System.IO.Path]::Combine($prefix, "global", "lib", "gtags").Replace("\", "\\").Replace(":", "\:")
+$globallib=[System.IO.Path]::Combine($prefix, "msys64", "usr", "lib", "gtags").Replace("\", "\\").Replace(":", "\:")
 New-Item -Path "$name" -Force -ItemType File > $NULL
 
 @"

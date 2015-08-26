@@ -1,6 +1,6 @@
 # 
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20150824
+# Latest update: 20150825
 #
 
 <#
@@ -56,27 +56,18 @@ param(
     $PkgList=`
 @(
 "apache-maven",
-"Aspell",
 "bin",
 "ConEmuPack",
-"ctags",
+"config",
 "Documents",
 "emacs",
 "evince",
 "firefox",
 "GIMP",
-"Git",
-"global",
-"GnuPG",
-"gradle",
 "jdk",
 "leiningen",
 "m2",
-"MinGW",
-"nodejs",
-"perl",
-"putty",
-"Python27",
+"msys64",
 "R",
 "SysinternalsSuite",
 "vim",
@@ -162,7 +153,6 @@ function main
     # extra setup beyond unzipping
     & {
         .\scripts\global.ps1 -Destination $Destination -PkgList $PkgList
-        .\scripts\python27.ps1 -Destination $Destination -PkgList $PkgList
     }    
 
     $initscript = [IO.Path]::Combine($Destination, "init.ps1")
@@ -241,62 +231,41 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
 `$env:PWDE_HOME="$prefix"
 
 `$env:EDITOR="$("$prefix\vim\gvim.exe".Replace("\", "/"))"
-`$env:PAGER="$("$prefix\MinGW\msys\1.0\bin\less.exe".Replace("\", "/"))"
+`$env:PAGER="$("$prefix\msys64\usr\bin\less.exe".Replace("\", "/"))"
 `$env:TERM="xterm"
 
-`$env:JAVA_HOME="$prefix\jdk"
+`$env:JAVA_HOME="$("$prefix\jdk".Replace("\", "/"))"
 `$env:_JAVA_OPTIONS="-Duser.home=`"$prefix`" "+`$env:_JAVA_OPTIONS
 
-`$env:LEIN_HOME="$prefix\.lein"
-`$env:LEIN_JAVA_CMD="$prefix\jdk\bin\java.exe"
+`$env:LEIN_HOME="$("$prefix\.lein".Replace("\", "/"))"
+`$env:LEIN_JAVA_CMD="$("$prefix\jdk\bin\java.exe".Replace("\", "/"))"
 
-`$env:PYTHONHOME="$prefix\Python27"
-`$env:PYTHONPATH="$prefix\Python27\Lib\site-packages;$prefix\Python27\Lib"
-
-`$env:M2_HOME="$prefix\apache-maven"
-`$env:GRADLE_HOME="$prefix\gradle"
+`$env:M2_HOME="$("$prefix\apache-maven".Replace("\", "/"))"
+`$env:GRADLE_HOME="$("$prefix\gradle".Replace("\", "/"))"
 
 `$env:R_HOME="$("$prefix\R".Replace("\", "/"))"
-
-`$env:NODE_PATH="$(".\node_modules;$prefix\nodejs\node_modules".Replace("\", "/"))"
 
 & {
     `$path=`$env:PATH
     @(      
         "$prefix",
-        "$prefix\GnuPG",
-        "$prefix\ctags",
         "$prefix\bin",
-        "$prefix\nodejs",
         "$prefix\jdk\bin",
-        "$prefix\perl\perl\bin",
-        "$prefix\perl\perl\site\bin",
-        "$prefix\perl\c\bin",
-        "$prefix\Python27",
-        "$prefix\Python27\Scripts",
+        "$prefix\msys64\usr\bin",
+        "$prefix\msys64\mingw64\bin",
+        "$prefix\msys64\opt\bin",
+        "$prefix\gradle\bin",
         "$prefix\.lein\bin",
-        "$prefix\emacs\bin",
         "$prefix\vim",
-        "$prefix\global\bin",
-        "$prefix\putty",
         "$prefix\SysinternalsSuite",
         "$prefix\ConEmuPack",
         "$prefix\VirtuaWin",
         "$prefix\firefox",
         "$prefix\evince\bin",
         "$prefix\apache-maven\bin",
-        "$prefix\gradle\bin",
-        "$prefix\MinGW\bin",
-        "$prefix\MinGW\mingw32\bin",
-        "$prefix\MinGW\msys\1.0\bin",
-        "$prefix\MinGW\msys\1.0\sbin",
-        "$prefix\Git",
-        "$prefix\Git\cmd",
-        "$prefix\Git\bin",
         "$prefix\vlc",
         "$prefix\R\bin\x64",
-        "$prefix\GIMP\bin",
-        "$prefix\Aspell\bin"
+        "$prefix\GIMP\bin"
     ) | % {
         `$p=`$_
         if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {    
@@ -335,56 +304,37 @@ function update-userenv ($prefix) {
         @("PWDE_HOME", $prefix),
 
         @("EDITOR", $("$prefix\vim\gvim.exe".Replace("\", "/"))),
-        @("PAGER", $("$prefix\MinGW\msys\1.0\bin\less.exe".Replace("\", "/"))),
+        @("PAGER", $("$prefix\msys64\usr\bin\less.exe".Replace("\", "/"))),
         @("TERM", "xterm"),
 
-        @("JAVA_HOME", "$prefix\jdk"),
-        @("_JAVA_OPTIONS", "-Duser.home=`"$prefix`" $env:_JAVA_OPTIONS"),
-        @("LEIN_HOME", "$prefix\.lein"),
-        @("LEIN_JAVA_CMD", "$prefix\jdk\bin\java.exe"),
-        @("PYTHONHOME", "$prefix\Python27"),
-        @("PYTHONPATH", "$prefix\Python27\Lib\site-packages;$prefix\Python27\Lib"),
-        @("M2_HOME", "$prefix\apache-maven"),
-        @("GRADLE_HOME", "$prefix\gradle"),
-        @("R_HOME", $("$prefix\R".Replace("\", "/"))),
-        @("NODE_PATH", $(".\node_modules;$prefix\nodejs\node_modules".Replace("\", "/"))),
+        @("JAVA_HOME", $("$prefix\jdk".Replace("\", "/"))),
+        @("_JAVA_OPTIONS", "-Duser.home=`"$prefix`" $env:PWDE_JAVA_OPTIONS"),
+        @("LEIN_HOME", $("$prefix\.lein".Replace("\", "/"))),
+        @("LEIN_JAVA_CMD", $("$prefix\jdk\bin\java.exe".Replace("\", "/"))),
+        @("M2_HOME", $("$prefix\apache-maven".Replace("\", "/"))),
+        @("GRADLE_HOME", $("$prefix\gradle".Replace("\", "/"))),
+        @("R_HOME", $("$prefix\R".Replace("\", "/"))),        
         @("PATH_BAK", $env:PATH),
         @("PATH", $([String]::Join([IO.Path]::PathSeparator, `
             @(            
             "$prefix",
-            "$prefix\GnuPG",
-            "$prefix\ctags",
             "$prefix\bin",
-            "$prefix\nodejs",
             "$prefix\jdk\bin",
-            "$prefix\perl\perl\bin",
-            "$prefix\perl\perl\site\bin",
-            "$prefix\perl\c\bin",
-            "$prefix\Python27",
-            "$prefix\Python27\Scripts",
+            "$prefix\msys64\usr\bin",
+            "$prefix\msys64\mingw64\bin",
+            "$prefix\msys64\opt\bin",
+            "$prefix\gradle\bin",
             "$prefix\.lein\bin",
-            "$prefix\emacs\bin",
             "$prefix\vim",
-            "$prefix\global\bin",
-            "$prefix\putty",
             "$prefix\SysinternalsSuite",
             "$prefix\ConEmuPack",
             "$prefix\VirtuaWin",
             "$prefix\firefox",
             "$prefix\evince\bin",
             "$prefix\apache-maven\bin",
-            "$prefix\gradle\bin",
-            "$prefix\MinGW\bin",
-            "$prefix\MinGW\mingw32\bin",
-            "$prefix\MinGW\msys\1.0\bin",
-            "$prefix\MinGW\msys\1.0\sbin",
-            "$prefix\Git",
-            "$prefix\Git\cmd",
-            "$prefix\Git\bin",
             "$prefix\vlc",
             "$prefix\R\bin\x64",
             "$prefix\GIMP\bin",
-            "$prefix\Aspell\bin",
             "$env:PWDE_PERSISTENT_PATH"
             ))))
     ) | % {
@@ -421,8 +371,7 @@ function create-shortcuts ($prefix) {
         @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:USERPROFILE\Desktop\VirtuaWin.lnk"),
         @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\VirtuaWin.lnk"),
 
-        @("$prefix\emacs\bin\runemacs-admin.exe", "$env:USERPROFILE\Desktop\emacs-admin.lnk"),
-        @("$prefix\emacs\bin\runemacs-user.exe", "$env:USERPROFILE\Desktop\emacs-user.lnk"),
+        @("$prefix\msys64\mingw64\bin\runemacs.exe", "$env:USERPROFILE\Desktop\Emacs.lnk"),        
 
         @("$prefix\vim\gvim.exe", "$env:USERPROFILE\Desktop\GVim.lnk"),
 
@@ -452,8 +401,7 @@ function create-contextmenuentries ($prefix) {
     @(        
         @("Open in ConEmu", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell}"),
         @("Open in ConEmu (Admin)", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell (Admin)}"),
-        @("Open in Emacs", "`"$prefix\emacs\bin\runemacs-user.exe`""),
-        @("Open in Emacs (Admin)", "`"$prefix\emacs\bin\runemacs-admin.exe`"")
+        @("Open in Emacs", "`"$prefix\msys64\mingw64\bin\runemacs.exe`"")        
     ) | % {        
         if ($_) {
             $name, $value = $_
@@ -468,8 +416,7 @@ function create-contextmenuentries ($prefix) {
     # All File Type Context Menu
     pushd -LiteralPath "HKCR:\*\shell"
     @(        
-        @("Edit with Emacs", "`"$prefix\emacs\bin\runemacs-user.exe`" %1"),
-        @("Edit with Emacs (Admin)", "`"$prefix\emacs\bin\runemacs-admin.exe`" %1"),
+        @("Edit with Emacs", "`"$prefix\msys64\mingw64\bin\runemacs.exe`" %1"),        
         @("Edit with Vim", "`"$prefix\vim\gvim.exe`" %1")
     ) | % {        
         if ($_) {

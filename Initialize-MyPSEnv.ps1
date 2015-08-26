@@ -1,9 +1,6 @@
-#
-# Intel Windows Operating System (WOS) PowerShell (PS) suite.
-# Initialize PowerShell environment.
 # 
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20150717
+# Latest update: 20150825
 #
 
 function mypsenv-main
@@ -24,12 +21,6 @@ function mypsenv-main
     & {
        Set-PSReadlineOption -EditMode Emacs 
     }
-
-    # Aliases
-    Write-Host "Setting up aliases."
-    & {
-        Set-Alias gh Get-Help -scope global
-    }
 }
 
 function global:Ensure-Module ($module) {
@@ -48,3 +39,12 @@ function global:Ensure-Module ($module) {
 }
 
 mypsenv-main
+
+Write-Host "Setting up aliases."
+Set-Alias gh Get-Help -scope global
+Remove-Item Alias:man -Force 2>&1 | Out-Null
+Remove-Item Alias:wget -Force 2>&1 | Out-Null
+Remove-Item Alias:curl -Force 2>&1 | Out-Null
+Remove-Item Alias:diff -Force 2>&1 | Out-Null
+Remove-Item Alias:h -Force 2>&1 | Out-Null
+Remove-Item Alias:r -Force 2>&1 | Out-Null
