@@ -1,6 +1,6 @@
 # 
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20150825
+# Latest update: 20150826
 #
 
 <#
@@ -59,6 +59,7 @@ param(
 "bin",
 "ConEmuPack",
 "config",
+#"ctags",
 "Documents",
 "emacs",
 "evince",
@@ -70,6 +71,7 @@ param(
 "leiningen",
 "m2",
 "msys64",
+#"Python27",
 "R",
 "SysinternalsSuite",
 "vim",
@@ -155,6 +157,7 @@ function main
     # extra setup beyond unzipping
     & {
         .\scripts\global.ps1 -Destination $Destination -PkgList $PkgList
+        #.\scripts\python27.ps1 -Destination $Destination -PkgList $PkgList
     }    
 
     $initscript = [IO.Path]::Combine($Destination, "init.ps1")
@@ -234,13 +237,16 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
 
 `$env:EDITOR="$("$prefix\vim\gvim.exe".Replace("\", "/"))"
 `$env:PAGER="$("$prefix\msys64\usr\bin\less.exe".Replace("\", "/"))"
-`$env:TERM="xterm"
+#`$env:TERM="xterm"
 
 `$env:JAVA_HOME="$("$prefix\jdk".Replace("\", "/"))"
 `$env:_JAVA_OPTIONS="-Duser.home=`"$prefix`" "+`$env:_JAVA_OPTIONS
 
 `$env:LEIN_HOME="$("$prefix\.lein".Replace("\", "/"))"
 `$env:LEIN_JAVA_CMD="$("$prefix\jdk\bin\java.exe".Replace("\", "/"))"
+
+#`$env:PYTHONHOME="$("$prefix\Python27".Replace("\", "/"))"
+#`$env:PYTHONPATH="$("$prefix\Python27\Lib\site-packages;$prefix\Python27\Lib".Replace("\", "/"))"
 
 `$env:M2_HOME="$("$prefix\apache-maven".Replace("\", "/"))"
 `$env:GRADLE_HOME="$("$prefix\gradle".Replace("\", "/"))"
@@ -251,11 +257,14 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
     `$path=`$env:PATH
     @(      
         "$prefix",
-        "$prefix\bin",
-        "$prefix\global\bin",
+        "$prefix\bin",        
         "$prefix\jdk\bin",        
         "$prefix\gradle\bin",
         "$prefix\.lein\bin",
+        #"$prefix\Python27",
+        #"$prefix\Python27\Scripts",
+        "$prefix\global\bin",
+        #"$prefix\ctags",
         "$prefix\vim",
         "$prefix\SysinternalsSuite",
         "$prefix\ConEmuPack",
@@ -308,12 +317,14 @@ function update-userenv ($prefix) {
 
         @("EDITOR", $("$prefix\vim\gvim.exe".Replace("\", "/"))),
         @("PAGER", $("$prefix\msys64\usr\bin\less.exe".Replace("\", "/"))),
-        @("TERM", "xterm"),
+        #@("TERM", "xterm"),
 
         @("JAVA_HOME", $("$prefix\jdk".Replace("\", "/"))),
         @("_JAVA_OPTIONS", "-Duser.home=`"$prefix`" $env:PWDE_JAVA_OPTIONS"),
         @("LEIN_HOME", $("$prefix\.lein".Replace("\", "/"))),
         @("LEIN_JAVA_CMD", $("$prefix\jdk\bin\java.exe".Replace("\", "/"))),
+        #@("PYTHONHOME", $("$prefix\Python27".Replace("\", "/"))),
+        #@("PYTHONPATH", $("$prefix\Python27\Lib\site-packages;$prefix\Python27\Lib".Replace("\", "/"))),
         @("M2_HOME", $("$prefix\apache-maven".Replace("\", "/"))),
         @("GRADLE_HOME", $("$prefix\gradle".Replace("\", "/"))),
         @("R_HOME", $("$prefix\R".Replace("\", "/"))),        
@@ -321,11 +332,14 @@ function update-userenv ($prefix) {
         @("PATH", $([String]::Join([IO.Path]::PathSeparator, `
             @(
             "$prefix",
-            "$prefix\bin",
-            "$prefix\global\bin",
+            "$prefix\bin",            
             "$prefix\jdk\bin",        
             "$prefix\gradle\bin",
             "$prefix\.lein\bin",
+            #"$prefix\Python27",
+            #"$prefix\Python27\Scripts",
+            "$prefix\global\bin",
+            #"$prefix\ctags",
             "$prefix\vim",
             "$prefix\SysinternalsSuite",
             "$prefix\ConEmuPack",
