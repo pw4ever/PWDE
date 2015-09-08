@@ -158,8 +158,8 @@ function main
     
     # extra setup beyond unzipping
     & {
-        .\scripts\global.ps1 -Destination $Destination -PkgList $PkgList
-        #.\scripts\python27.ps1 -Destination $Destination -PkgList $PkgList
+        & "$PSScriptRoot\scripts\global.ps1" -Destination $Destination -PkgList $PkgList
+        #& "$PSScriptRoot\scripts\python27.ps1" -Destination $Destination -PkgList $PkgList
     }    
 
     $initscript = [IO.Path]::Combine($Destination, "init.ps1")
@@ -442,8 +442,8 @@ function create-contextmenuentries ($prefix) {
     # All File Type Context Menu
     pushd -LiteralPath "HKCR:\*\shell"
     @(        
-        @("Edit with Emacs", "`"$prefix\msys64\mingw64\bin\runemacs.exe`" %1"),        
-        @("Edit with Vim", "`"$prefix\vim\gvim.exe`" %1")
+        @("Edit with Emacs", "`"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`""),        
+        @("Edit with Vim", "`"$prefix\vim\gvim.exe`" `"%1`"")
     ) | % {        
         if ($_) {
             $name, $value = $_
