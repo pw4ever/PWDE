@@ -1,6 +1,6 @@
 # 
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20150826
+# Latest update: 20151009
 #
 
 <#
@@ -56,6 +56,7 @@ param(
     $PkgList=`
 @(
 "apache-maven",
+"Audacity",
 "bin",
 "ConEmuPack",
 "config",
@@ -275,6 +276,7 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\VirtuaWin",
         "$prefix\firefox",
         "$prefix\evince\bin",
+        "$prefix\Audacity",
         "$prefix\apache-maven\bin",
         "$prefix\vlc",
         "$prefix\ffmpeg\bin",
@@ -353,6 +355,7 @@ function update-userenv ($prefix) {
             "$prefix\VirtuaWin",
             "$prefix\firefox",
             "$prefix\evince\bin",
+            "$prefix\Audacity",
             "$prefix\apache-maven\bin",
             "$prefix\vlc",
             "$prefix\ffmpeg\bin",
