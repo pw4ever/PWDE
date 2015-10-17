@@ -1,6 +1,6 @@
 # 
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20151009
+# Latest update: 20151017
 #
 
 <#
@@ -79,7 +79,8 @@ param(
 "SysinternalsSuite",
 "vim",
 "VirtuaWin",
-"vlc"
+"vlc",
+"WinKit"
 ),
 
     [Parameter(
@@ -264,6 +265,8 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\jdk\bin",        
         "$prefix\gradle\bin",
         "$prefix\.lein\bin",
+        "$prefix\Debuggers\x64",
+        "$prefix\Windows Performance Toolkit",
         "$prefix\Git",
         "$prefix\Git\bin",
         #"$prefix\Python27",
@@ -343,6 +346,8 @@ function update-userenv ($prefix) {
             "$prefix\jdk\bin",        
             "$prefix\gradle\bin",
             "$prefix\.lein\bin",
+            "$prefix\Debuggers\x64",
+            "$prefix\Windows Performance Toolkit",
             "$prefix\Git",
             "$prefix\Git\bin",
             #"$prefix\Python27",
