@@ -1,6 +1,6 @@
 # 
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20151017
+# Latest update: 20151105
 #
 
 <#
@@ -435,11 +435,15 @@ function create-contextmenuentries ($prefix) {
     @(        
         @("Open in ConEmu", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell}"),
         @("Open in ConEmu (Admin)", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell (Admin)}"),
-        @("Open in Emacs", "`"$prefix\msys64\mingw64\bin\runemacs.exe`"")        
+        @("Open in Emacs", "`"$prefix\msys64\mingw64\bin\runemacs.exe`""),
+        @("Open in Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\runemacs.exe`""),
+        @("Open with Vim", "`"$prefix\vim\gvim.exe`""),
+        @("Open with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`""),
+        $NULL        
     ) | % {        
         if ($_) {
             $name, $value = $_
-	    Write-Host "Directory Context Menu: $name => $value"
+	        Write-Host "Directory Context Menu: $name => $value"
             $regpath = "HKCR:\Directory\Background\shell\$name"
             New-Item -Path "$regpath\Command" -Force | Out-Null
             Set-ItemProperty -Path "$regpath" -Name "(Default)" -Value "$name"
@@ -451,11 +455,14 @@ function create-contextmenuentries ($prefix) {
     pushd -LiteralPath "HKCR:\*\shell"
     @(        
         @("Edit with Emacs", "`"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`""),        
-        @("Edit with Vim", "`"$prefix\vim\gvim.exe`" `"%1`"")
+        @("Edit with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`""),        
+        @("Edit with Vim", "`"$prefix\vim\gvim.exe`" `"%1`""),
+        @("Edit with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`" `"%1`""),
+        $NULL
     ) | % {        
         if ($_) {
             $name, $value = $_
-	    Write-Host "All File Type Context Menu: $name => $value"	    
+	        Write-Host "All File Type Context Menu: $name => $value"	    
             $regpath = "$name"
             New-Item -Path "$regpath\Command" -Force | Out-Null
             Set-ItemProperty -Path "$regpath" -Name "(Default)" -Value "$name"
