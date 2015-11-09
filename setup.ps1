@@ -251,7 +251,7 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
 `$env:LEIN_JAVA_CMD="$("$prefix\jdk\bin\java.exe".Replace("\", "/"))"
 
 `$env:GOROOT="$("$prefix\go".Replace("\", "/"))"
-`$env:GOPATH="$("$prefix\go".Replace("\", "/"))"
+`$env:GOPATH="$([System.Environment]::GetFolderPath("MyDocuments").Replace("\", "/"))"
 
 #`$env:PYTHONHOME="$("$prefix\Python27".Replace("\", "/"))"
 #`$env:PYTHONPATH="$("$prefix\Python27\Lib\site-packages;$prefix\Python27\Lib".Replace("\", "/"))"
@@ -272,6 +272,7 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\Debuggers\x64",
         "$prefix\Windows Performance Toolkit",
         "$prefix\go\bin",
+        $([IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "bin")),
         "$prefix\Git",
         "$prefix\Git\bin",
         #"$prefix\Python27",
@@ -339,7 +340,7 @@ function update-userenv ($prefix) {
         @("LEIN_HOME", $("$prefix\.lein".Replace("\", "/"))),
         @("LEIN_JAVA_CMD", $("$prefix\jdk\bin\java.exe".Replace("\", "/"))),
         @("GOROOT", $("$prefix\go".Replace("\", "/"))),
-        @("GOPATH", $("$prefix\go".Replace("\", "/"))),
+        @("GOPATH", [System.Environment]::GetFolderPath("MyDocuments").Replace("\", "/")),
         #@("PYTHONHOME", $("$prefix\Python27".Replace("\", "/"))),
         #@("PYTHONPATH", $("$prefix\Python27\Lib\site-packages;$prefix\Python27\Lib".Replace("\", "/"))),
         @("M2_HOME", $("$prefix\apache-maven".Replace("\", "/"))),
@@ -356,6 +357,7 @@ function update-userenv ($prefix) {
             "$prefix\Debuggers\x64",
             "$prefix\Windows Performance Toolkit",
             "$prefix\go\bin",
+            [IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "bin"),
             "$prefix\Git",
             "$prefix\Git\bin",
             #"$prefix\Python27",
