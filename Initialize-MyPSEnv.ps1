@@ -1,6 +1,6 @@
 # 
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20150825
+# Latest update: 20151117
 #
 
 function mypsenv-main
@@ -43,8 +43,8 @@ mypsenv-main
 Write-Host "Setting up aliases."
 Set-Alias gh Get-Help -scope global
 Remove-Item Alias:man -Force 2>&1 | Out-Null
-Remove-Item Alias:wget -Force 2>&1 | Out-Null
-Remove-Item Alias:curl -Force 2>&1 | Out-Null
-Remove-Item Alias:diff -Force 2>&1 | Out-Null
+#Remove-Item Alias:wget -Force 2>&1 | Out-Null
+#Remove-Item Alias:curl -Force 2>&1 | Out-Null
+#Remove-Item Alias:diff -Force 2>&1 | Out-Null
 Remove-Item Alias:h -Force 2>&1 | Out-Null
 Remove-Item Alias:r -Force 2>&1 | Out-Null
