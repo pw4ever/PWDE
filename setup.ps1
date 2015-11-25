@@ -1,6 +1,6 @@
 # 
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20151107
+# Latest update: 20151125
 #
 
 <#
@@ -156,7 +156,7 @@ function main
 
     if (!$SkipUnzipping) {
         $ZipSource=$(Resolve-Path $ZipSource)
-        unzip-files "$ZipSource" "$Destination"
+        unzip-files "$ZipSource" "$Destination" $PkgList
     }
     
     # extra setup beyond unzipping
@@ -207,28 +207,34 @@ function ensure-dir ($dir) {
     }
 }
 
-function unzip-files ($src, $dest) {
+function unzip-files ($src, $dest, $pkglist) {
     $jobs=@()
+    $pkglist = $pkglist | % { "$_.zip" }
     ls "$src/*.zip" | % {
-        $name=$_.FullName
-        Write-Host "Unzipping $name."
-        # Start background jobs for unzipping
-        $jobs+=$(Start-Job -ScriptBlock {
-                    param($name, $dest, $src)
+        # Unzip $_ only if it is in $pkglist
+        if ($pkglist -like $_.Name) {
+            $name=$_.FullName
+            Write-Host "Unzipping $name."
+            # Start background jobs for unzipping
+            $jobs+=$(Start-Job -ScriptBlock {
+                        param($name, $dest, $src)
 
-                    function unzip ($zipfile, $dest, $src) {
-                        #ensure-dir $dest
-                        #[IO.Compression.ZipFile]::ExtractToDirectory($zipfle, $dest)
-                        Invoke-Expression "$src\7za.exe x -o`"$dest`" -y -- `"$zipfile`"" # > $NULL
-                    }
+                        function unzip ($zipfile, $dest, $src) {
+                            #ensure-dir $dest
+                            #[IO.Compression.ZipFile]::ExtractToDirectory($zipfle, $dest)
+                            Invoke-Expression "$src\7za.exe x -o`"$dest`" -y -- `"$zipfile`"" # > $NULL
+                        }
 
-                    unzip "$name" "$dest" "$src"
-                    Write-Host "$name unzipped."
-                    } `
-                    -ArgumentList "$name", "$dest", "$src"
-                    )        
+                        unzip "$name" "$dest" "$src"
+                        Write-Host "$name unzipped."
+                        } `
+                        -ArgumentList "$name", "$dest", "$src"
+                        )
+        }                
     }
-    Wait-Job -Job $jobs
+    if ($jobs) {
+        Wait-Job -Job $jobs
+    }    
 }
 
 function init ($initscript) {
