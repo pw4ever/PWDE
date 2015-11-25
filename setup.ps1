@@ -233,7 +233,7 @@ function unzip-files ($src, $dest, $pkglist) {
         }                
     }
     if ($jobs) {
-        Wait-Job -Job $jobs
+        Wait-Job -Job $jobs | Out-Null
     }    
 }
 
@@ -333,6 +333,52 @@ Write-Host "$Profile will source $initscript."
 function update-userenv ($prefix) {
     $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
 
+    $path=$([String]::Join([IO.Path]::PathSeparator, `
+                            @(
+                            "$prefix",
+                            "$prefix\bin",            
+                            "$prefix\jdk\bin",        
+                            "$prefix\gradle\bin",
+                            "$prefix\.lein\bin",
+                            "$prefix\Debuggers\x64",
+                            "$prefix\Windows Performance Toolkit",
+                            "$prefix\go\bin",
+                            [IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "bin"),
+                            "$prefix\Git",
+                            "$prefix\Git\bin",
+                            #"$prefix\Python27",
+                            #"$prefix\Python27\Scripts",
+                            "$prefix\global\bin",
+                            #"$prefix\ctags",
+                            "$prefix\vim",
+                            "$prefix\SysinternalsSuite",
+                            "$prefix\ConEmuPack",
+                            "$prefix\VirtuaWin",
+                            "$prefix\firefox",
+                            "$prefix\evince\bin",
+                            "$prefix\Audacity",
+                            "$prefix\apache-maven\bin",
+                            "$prefix\vlc",
+                            "$prefix\ffmpeg\bin",
+                            "$prefix\R\bin\x64",
+                            "$prefix\GIMP\bin",
+                            "$prefix\msys64\usr\bin",
+                            "$prefix\msys64\mingw64\bin",
+                            "$prefix\msys64\opt\bin",
+                            "$env:PWDE_PERSISTENT_PATH"
+                            )))
+
+    # Change the current PATH
+    $newpath=$([String]::Join(
+                    [IO.Path]::PathSeparator, `
+                    @(
+                      $path,
+                      [Environment]::GetEnvironmentVariable("PATH", 
+                                                            [EnvironmentVariableTarget]::Machine)
+                    )))
+    Write-Host "Setting current environment variable: |PATH|=|$newpath|."
+    $env:PATH=$newpath
+
     @(        
         @("HOME", $("$prefix".Replace("\", "/"))),
         @("PWDE_HOME", $prefix),
@@ -353,44 +399,11 @@ function update-userenv ($prefix) {
         @("GRADLE_HOME", $("$prefix\gradle".Replace("\", "/"))),
         @("R_HOME", $("$prefix\R".Replace("\", "/"))),        
         @("PATH_BAK", $env:PATH),
-        @("PATH", $([String]::Join([IO.Path]::PathSeparator, `
-            @(
-            "$prefix",
-            "$prefix\bin",            
-            "$prefix\jdk\bin",        
-            "$prefix\gradle\bin",
-            "$prefix\.lein\bin",
-            "$prefix\Debuggers\x64",
-            "$prefix\Windows Performance Toolkit",
-            "$prefix\go\bin",
-            [IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "bin"),
-            "$prefix\Git",
-            "$prefix\Git\bin",
-            #"$prefix\Python27",
-            #"$prefix\Python27\Scripts",
-            "$prefix\global\bin",
-            #"$prefix\ctags",
-            "$prefix\vim",
-            "$prefix\SysinternalsSuite",
-            "$prefix\ConEmuPack",
-            "$prefix\VirtuaWin",
-            "$prefix\firefox",
-            "$prefix\evince\bin",
-            "$prefix\Audacity",
-            "$prefix\apache-maven\bin",
-            "$prefix\vlc",
-            "$prefix\ffmpeg\bin",
-            "$prefix\R\bin\x64",
-            "$prefix\GIMP\bin",
-            "$prefix\msys64\usr\bin",
-            "$prefix\msys64\mingw64\bin",
-            "$prefix\msys64\opt\bin",
-            "$env:PWDE_PERSISTENT_PATH"
-            ))))
+        @("PATH", $path)
     ) | % {
         if ($_) {
             $var, $val, $tar = $_
-            Write-Host "Setting environment variable: |$var|=|$val|"
+            Write-Host "Setting future environment variable: |$var|=|$val|"
             [Environment]::SetEnvironmentVariable($var, $val, $(if ($tar) {$tar} else {[EnvironmentVariableTarget]::User}))
         }
     }
