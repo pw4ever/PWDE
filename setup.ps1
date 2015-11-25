@@ -368,16 +368,7 @@ function update-userenv ($prefix) {
                             "$env:PWDE_PERSISTENT_PATH"
                             )))
 
-    # Change the current PATH
-    $newpath=$([String]::Join(
-                    [IO.Path]::PathSeparator, `
-                    @(
-                      $path,
-                      [Environment]::GetEnvironmentVariable("PATH", 
-                                                            [EnvironmentVariableTarget]::Machine)
-                    )))
-    Write-Host "Setting current environment variable: |PATH|=|$newpath|."
-    $env:PATH=$newpath
+
 
     @(        
         @("HOME", $("$prefix".Replace("\", "/"))),
@@ -403,10 +394,22 @@ function update-userenv ($prefix) {
     ) | % {
         if ($_) {
             $var, $val, $tar = $_
-            Write-Host "Setting future environment variable: |$var|=|$val|"
+            Write-Host "Setting environment variable: |$var|=|$val|"
             [Environment]::SetEnvironmentVariable($var, $val, $(if ($tar) {$tar} else {[EnvironmentVariableTarget]::User}))
+            Set-Content Env:\"$var" "$val"
         }
     }
+
+    # Change the current PATH
+    $newpath=$([String]::Join(
+                    [IO.Path]::PathSeparator, `
+                    @(
+                      $path,
+                      [Environment]::GetEnvironmentVariable("PATH", 
+                                                            [EnvironmentVariableTarget]::Machine)
+                    )))
+    Write-Host "Fixing current environment variable: |PATH|=|$newpath|."
+    $env:PATH=$newpath
 }
 
 function create-shortcuts ($prefix) {
