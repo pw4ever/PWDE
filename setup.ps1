@@ -403,10 +403,10 @@ function update-userenv ($prefix) {
     # Change the current PATH
     $newpath=$([String]::Join(
                     [IO.Path]::PathSeparator, `
-                    @(
-                      $path,
+                    @(                      
                       [Environment]::GetEnvironmentVariable("PATH", 
-                                                            [EnvironmentVariableTarget]::Machine)
+                                                            [EnvironmentVariableTarget]::Machine),
+                      $path
                     )))
     Write-Host "Fixing current environment variable: |PATH|=|$newpath|."
     $env:PATH=$newpath
