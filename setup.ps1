@@ -369,7 +369,6 @@ function update-userenv ($prefix) {
                             )))
 
 
-
     @(        
         @("HOME", $("$prefix".Replace("\", "/"))),
         @("PWDE_HOME", $prefix),
@@ -395,8 +394,8 @@ function update-userenv ($prefix) {
         if ($_) {
             $var, $val, $tar = $_
             Write-Host "Setting environment variable: |$var|=|$val|"
-            [Environment]::SetEnvironmentVariable($var, $val, $(if ($tar) {$tar} else {[EnvironmentVariableTarget]::User}))
             Set-Content Env:\"$var" "$val"
+            [Environment]::SetEnvironmentVariable($var, $val, $(if ($tar) {$tar} else {[EnvironmentVariableTarget]::User}))            
         }
     }
 
