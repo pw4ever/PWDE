@@ -1,6 +1,6 @@
 # 
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20151125
+# Latest update: 20151201
 #
 
 <#
@@ -437,6 +437,7 @@ function create-shortcuts ($prefix) {
         @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\VirtuaWin.lnk"),
 
         @("$prefix\msys64\mingw64\bin\runemacs.exe", "$env:USERPROFILE\Desktop\Emacs.lnk"),        
+        @("$prefix\msys64\mingw64\bin\emacsclientw.exe", "$env:USERPROFILE\Desktop\Emacs Client.lnk"),
 
         @("$prefix\vim\gvim.exe", "$env:USERPROFILE\Desktop\GVim.lnk"),
 
@@ -468,6 +469,8 @@ function create-contextmenuentries ($prefix) {
         @("Open in ConEmu (Admin)", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell (Admin)}"),
         @("Open in Emacs", "`"$prefix\msys64\mingw64\bin\runemacs.exe`""),
         @("Open in Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\runemacs.exe`""),
+        @("Open in Emacs Client", "`"$prefix\msys64\mingw64\bin\emacsclientw.exe`""),
+        @("Open in Emacs Client (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\emacsclientw.exe`""),
         @("Open with Vim", "`"$prefix\vim\gvim.exe`""),
         @("Open with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`""),
         $NULL        
@@ -487,6 +490,8 @@ function create-contextmenuentries ($prefix) {
     @(        
         @("Edit with Emacs", "`"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`""),        
         @("Edit with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`""),        
+        @("Edit with Emacs Client", "`"$prefix\msys64\mingw64\bin\emacsclientw.exe`" `"%1`""),        
+        @("Edit with Emacs Client (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\emacsclientw.exe`" `"%1`""),        
         @("Edit with Vim", "`"$prefix\vim\gvim.exe`" `"%1`""),
         @("Edit with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`" `"%1`""),
         $NULL
