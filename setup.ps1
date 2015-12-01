@@ -395,6 +395,7 @@ function update-userenv ($prefix) {
             $var, $val, $tar = $_
             Write-Host "Setting environment variable: |$var|=|$val|"
             Set-Content Env:\"$var" "$val"
+            [Environment]::SetEnvironmentVariable($var, $val, [System.EnvironmentVariableTarget]::Process)            
             [Environment]::SetEnvironmentVariable($var, $val, $(if ($tar) {$tar} else {[EnvironmentVariableTarget]::User}))            
         }
     }
@@ -408,7 +409,7 @@ function update-userenv ($prefix) {
                       $path
                     )))
     Write-Host "Fixing current environment variable: |PATH|=|$newpath|."
-    $env:PATH=$newpath
+    [Environment]::SetEnvironmentVariable("PATH", $newpath, [System.EnvironmentVariableTarget]::Process)
 }
 
 function create-shortcuts ($prefix) {
