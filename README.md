@@ -1,6 +1,12 @@
 # PWDE: Portable Windows Development Environment.
 
-Start being productive on [Microsoft &reg; Windows &trade; 7+ (i.e., with modern-enough PowerShell supported)](https://www.microsoft.com/en-us/windows) ASAP without the hassle of installing individual "essential" tools, e.g.,  Clojure/Leiningen/JVM8/maven/gradle, Perl, Emacs/Vim, Evince/VLC, MinGW, and beyond.
+Start being productive on [Microsoft &reg; Windows &trade; 7+ (i.e., with modern-enough PowerShell supported)](https://www.microsoft.com/en-us/windows) ASAP without the hassle of installing individual "essential" (in my opinion) tools, e.g.,  Clojure/Leiningen/JVM8, Emacs/Vim, Evince/VLC, MinGW, and beyond.
+
+## TL;DR
+
+Follow the [Release Notes](https://github.com/pw4ever/PWDE/releases/tag/latest) to "install" and use.
+
+Everything will be put under a single top folder (e.g., "C:\PWDE") and be set up to be used on command line or mouse context menu.
 
 ## Batteries Included
 
@@ -25,6 +31,8 @@ The following pieces of (*my* essential) tools are included with (optional) acco
     * [Firefox Web browser](https://www.mozilla.org/en-US/firefox/new/).
     * [Evince PDF viewer](https://wiki.gnome.org/Apps/Evince).
     * [VLC media player](http://www.videolan.org/vlc/index.html).
+    * [Audacity](http://audacityteam.org/).
+    * [GIMP](https://www.gimp.org/).
 * Utilities.
     * [Windows Sysinternals Suite](https://technet.microsoft.com/en-us/sysinternals/bb842062.aspx).
     * [GNU Privacy Guard (GnuPG)](https://www.gnupg.org/).
@@ -32,6 +40,5 @@ The following pieces of (*my* essential) tools are included with (optional) acco
     * [youtube-dl: YouTube downloader](https://rg3.github.io/youtube-dl/).
     * [7-Zip command-line interface: 7za.exe](http://www.7-zip.org/download.html).
 
-## Usage
+... and more. See the [Downloads](https://github.com/pw4ever/PWDE/releases) for the complete list.
 
-Download [the single zip file](https://github.com/pw4ever/PWDE/releases/download/latest/PWDE.zip) and then follow the [Release Notes](https://github.com/pw4ever/PWDE/releases/tag/latest) to "install" and use.
