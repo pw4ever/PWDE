@@ -1,6 +1,6 @@
 # 
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20151201
+# Latest update: 20151202
 #
 
 <#
@@ -374,6 +374,7 @@ function update-userenv ($prefix) {
         @("PWDE_HOME", $prefix),
 
         @("EDITOR", $("$prefix\vim\gvim.exe".Replace("\", "/"))),
+        @("ALTERNATE_EDITOR", $("$prefix\msys64\mingw64\bin\runemacs.exe".Replace("\", "/"))),
         @("PAGER", $("$prefix\msys64\usr\bin\less.exe".Replace("\", "/"))),
         #@("TERM", "xterm"),
 
@@ -415,29 +416,32 @@ function update-userenv ($prefix) {
 function create-shortcuts ($prefix) {
     $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
 
-    function cs ([String]$src, [String]$shortcut, [String]$hotkey) {
+    function create-shortcuts-internal ([String]$src, [String]$shortcut, [String]$argument, [String]$hotkey) {
         # http://stackoverflow.com/a/9701907
-        $sh = New-Object -ComObject WScript.Shell
+        $sh = New-Object -ComObject WScript.Shell        
         $s = $sh.CreateShortcut($shortcut)
-        $s.TargetPath = "$src"
-        if ($hotkey) {
-            $s.HotKey = "$hotkey"
+        $s.TargetPath = $src
+        if (![String]::IsNullOrEmpty($argument)) {
+            $s.Arguments = $argument
         }
-        # Relative working directory
-        $s.WorkingDirectory = ""
+        if (![String]::IsNullOrEmpty($hotkey)) {
+            $s.HotKey = $hotkey
+        }        
+        $s.WorkingDirectory = $prefix
         $s.Save()
     }
 
     @(        
         @("$prefix", "$env:USERPROFILE\Desktop\PWDE.lnk"),
 
-        @("$prefix\ConEmuPack\ConEmu64.exe", "$env:USERPROFILE\Desktop\ConEmu64.lnk", "CTRL+ALT+q"),
+        @("$prefix\ConEmuPack\ConEmu64.exe", "$env:USERPROFILE\Desktop\ConEmu64.lnk", $NULL, "CTRL+ALT+q"),
         @("$prefix\ConEmuPack\ConEmu64.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ConEmu64.lnk"),
 
         @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:USERPROFILE\Desktop\VirtuaWin.lnk"),
         @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\VirtuaWin.lnk"),
-
-        @("$prefix\msys64\mingw64\bin\runemacs.exe", "$env:USERPROFILE\Desktop\Emacs.lnk"),        
+        
+        @("$prefix\msys64\mingw64\bin\emacsclientw.exe", "$env:USERPROFILE\Desktop\Emacs.lnk", "-c -a `"$prefix\msys64\mingw64\bin\runemacs.exe`""),
+        @("$prefix\msys64\mingw64\bin\runemacs.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\EmacsServer.lnk", "--eval `"(server-start)`""),
         
         @("$prefix\vim\gvim.exe", "$env:USERPROFILE\Desktop\GVim.lnk"),
 
@@ -448,9 +452,9 @@ function create-shortcuts ($prefix) {
         @("$prefix\firefox\firefox.exe", "$env:USERPROFILE\Desktop\FireFox.lnk")        
     ) | % {        
         if ($_) {
-            $src, $shortcut, $hotkey = $_
-	        Write-Host "Shortcut: $src => $shortcut"
-            cs "$src" "$shortcut" $(if ($hotkey) {$hotkey} else {$NULL})
+            $src, $shortcut, $argument, $hotkey = $_
+	        Write-Host "Shortcut: $src Arguments:`"$args`" Shortcut:`"$hotkey`" => $shortcut"            
+            create-shortcuts-internal $src $shortcut $argument $hotkey
         }
     }
 }
@@ -467,10 +471,8 @@ function create-contextmenuentries ($prefix) {
     @(        
         @("Open in ConEmu", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell}"),
         @("Open in ConEmu (Admin)", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell (Admin)}"),
-        @("Open in Emacs", "`"$prefix\msys64\mingw64\bin\runemacs.exe`""),
+        @("Open in Emacs", "`"$prefix\msys64\mingw64\bin\emacsclientw.exe`" -c -a `"$prefix\msys64\mingw64\bin\runemacs.exe`""),
         @("Open in Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\runemacs.exe`""),
-        @("Open in Emacs Client", "`"$prefix\msys64\mingw64\bin\emacsclientw.exe`" -c"),
-        @("Open in Emacs Client (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\emacsclientw.exe`" -c"),
         @("Open with Vim", "`"$prefix\vim\gvim.exe`""),
         @("Open with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`""),
         $NULL        
@@ -488,10 +490,8 @@ function create-contextmenuentries ($prefix) {
     # All File Type Context Menu
     pushd -LiteralPath "HKCR:\*\shell"
     @(        
-        @("Edit with Emacs", "`"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`""),        
+        @("Edit with Emacs", "`"$prefix\msys64\mingw64\bin\emacsclientw.exe`" -c -a `"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`""),        
         @("Edit with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`""),        
-        @("Edit with Emacs Client", "`"$prefix\msys64\mingw64\bin\emacsclientw.exe`" `"%1`""),        
-        @("Edit with Emacs Client (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\emacsclientw.exe`" `"%1`""),        
         @("Edit with Vim", "`"$prefix\vim\gvim.exe`" `"%1`""),
         @("Edit with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`" `"%1`""),
         $NULL
