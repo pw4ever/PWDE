@@ -1,6 +1,6 @@
 # 
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20151202
+# Latest update: 20151204
 #
 
 <#
@@ -433,6 +433,8 @@ function create-shortcuts ($prefix) {
 
     @(        
         @("$prefix", "$env:USERPROFILE\Desktop\PWDE.lnk"),
+
+        @("$prefix\SysinternalsSuite\procexp.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ProcExp.lnk"),
 
         @("$prefix\ConEmuPack\ConEmu64.exe", "$env:USERPROFILE\Desktop\ConEmu64.lnk", $NULL, "CTRL+ALT+q"),
         @("$prefix\ConEmuPack\ConEmu64.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ConEmu64.lnk"),
