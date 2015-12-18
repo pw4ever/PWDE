@@ -11,7 +11,9 @@
 .PARAMETER UpstreamURLPrefix
   Upstream URL Prefix (default: https://github.com/pw4ever/PWDE/releases/download/latest).
 .PARAMETER PkgList
-  List of ZIP packages to download/extract. No need to specify unless to select a subset.
+  List of packages to downloading/extraction. No need to specify unless to select a subset.
+.PARAMETER ExcludePkg
+  List of packages to be excluded from downloading/extraction.
 .PARAMETER DownloadOnly
   Stop after downloading.
 .PARAMETER Destination
@@ -36,26 +38,24 @@ SupportsShouldProcess=$True,
 PositionalBinding=$False
 )]
 param(
-    [Parameter(
-    HelpMessage="Download setup from upstream repository to ZipSource. Useful when no local download exists."    
+    [Parameter(    
     )]
     [switch]
     $DownloadFromUpstream,
 
-    [Parameter(
-    HelpMessage="Upstream URL Prefix (default: https://github.com/pw4ever/PWDE/releases/download/latest)."    
+    [Parameter(    
     )]
     [String]
     $UpstreamURLPrefix="https://github.com/pw4ever/PWDE/releases/download/latest",
 
     # ls *.zip | % { write-host "`"$(basename $_ .zip)`","}
-    [Parameter(
-    HelpMessage="List of ZIP packages to download/extract. No need to specify unless to select a subset."    
+    [Parameter(    
     )]
     [String[]]
     $PkgList=`
 @(
 "apache-maven",
+"atom",
 "Audacity",
 "bin",
 "ConEmuPack",
@@ -85,57 +85,60 @@ param(
 "WinKit"
 ),
 
-    [Parameter(
-    HelpMessage="Stop after downloading."    
+    [Parameter(    
+    )]
+    [String[]]
+    $ExcludePkg,
+
+    [Parameter(    
     )]
     [switch]
     $DownloadOnly,
 
-    [Parameter(
-    HelpMessage="Destination path."    
+    [Parameter(    
     )]
     $Destination,
 
-    [Parameter(
-    HelpMessage="Zip source path (default to `$PSScriptRoot)."
+    [Parameter(    
     )]
     $ZipSource=$PSScriptRoot,
 
-    [Parameter(
-    HelpMessage="Skip the time-consuming unzipping."
+    [Parameter(    
     )
     ]
     [switch]
     $SkipUnzipping,
 
-    [Parameter(
-    HelpMessage="Make settings persistent in PoSH Profile."
+    [Parameter(    
     )
     ]
     [switch]
     $UpdatePSProfile,
 
-    [Parameter(
-    HelpMessage="Make settings persistent in user environment."
+    [Parameter(    
     )
     ]
     [switch]
     $UpdateUserEnvironment,
 
-    [Parameter(
-    HelpMessage="Create Desktop shortcuts to common utilities."
+    [Parameter(    
     )
     ]
     [switch]
     $CreateShortcuts,
 
-    [Parameter(
-    HelpMessage="Create context menu entries (requires Admin privilege)."
+    [Parameter(    
     )
     ]
     [switch]
     $CreateContextMenuEntries
 )
+
+if ($ExcludePkg) {
+    $ExcludePkg=$($ExcludePkg | % { $_.ToUpper() })
+}
+
+$PkgList=$($PkgList | ? { ! $($_.ToUpper() -in $ExcludePkg) })
 
 function main
 {
@@ -197,7 +200,7 @@ function download-upstream ($srcprefix, $destprefix, $pkgs) {
         $dest="$destprefix/$item"
 
         $wc.DownloadFile($src, $dest)
-        Write-Host "$src downloaded to $dest."        
+        Write-Host "$src downloaded to $dest."
     }
 }
 
@@ -299,6 +302,8 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\R\bin\x64",
         "$prefix\GIMP\bin",
         "$prefix\VcXsrv\bin",
+        "$prefix\atom\bin",
+        "$prefix\atom\app-1.3.2",
         "$prefix\msys64\usr\bin",
         "$prefix\msys64\mingw64\bin",
         "$prefix\msys64\opt\bin"
@@ -365,6 +370,8 @@ function update-userenv ($prefix) {
                             "$prefix\R\bin\x64",
                             "$prefix\GIMP\bin",
                             "$prefix\VcXsrv\bin",
+                            "$prefix\atom\bin",
+                            "$prefix\atom\app-1.3.2",
                             "$prefix\msys64\usr\bin",
                             "$prefix\msys64\mingw64\bin",
                             "$prefix\msys64\opt\bin",
@@ -456,6 +463,8 @@ function create-shortcuts ($prefix) {
         @("$prefix\R\bin\x64\Rgui.exe", "$env:USERPROFILE\Desktop\RGui x64.lnk"),
 
         @("$prefix\GIMP\bin\gimp-2.8.exe", "$env:USERPROFILE\Desktop\GIMP-2.8.lnk"),
+
+        @("$prefix\atom\app-1.3.2\atom.exe", "$env:USERPROFILE\Desktop\Atom.lnk"),
 
         @("$prefix\firefox\firefox.exe", "$env:USERPROFILE\Desktop\FireFox.lnk")        
     ) | % {        
