@@ -1,4 +1,4 @@
-# 
+#
 # Maintainer: Wei Peng <wei.peng@intel.com>
 # Latest update: 20151218
 #
@@ -38,18 +38,18 @@ SupportsShouldProcess=$True,
 PositionalBinding=$False
 )]
 param(
-    [Parameter(    
+    [Parameter(
     )]
     [switch]
     $DownloadFromUpstream,
 
-    [Parameter(    
+    [Parameter(
     )]
     [String]
     $UpstreamURLPrefix="https://github.com/pw4ever/PWDE/releases/download/latest",
 
     # ls *.zip | % { write-host "`"$(basename $_ .zip)`","}
-    [Parameter(    
+    [Parameter(
     )]
     [String[]]
     $PkgList=`
@@ -85,49 +85,49 @@ param(
 "WinKit"
 ),
 
-    [Parameter(    
+    [Parameter(
     )]
     [String[]]
     $ExcludePkg,
 
-    [Parameter(    
+    [Parameter(
     )]
     [switch]
     $DownloadOnly,
 
-    [Parameter(    
+    [Parameter(
     )]
     $Destination,
 
-    [Parameter(    
+    [Parameter(
     )]
     $ZipSource=$PSScriptRoot,
 
-    [Parameter(    
+    [Parameter(
     )
     ]
     [switch]
     $SkipUnzipping,
 
-    [Parameter(    
+    [Parameter(
     )
     ]
     [switch]
     $UpdatePSProfile,
 
-    [Parameter(    
+    [Parameter(
     )
     ]
     [switch]
     $UpdateUserEnvironment,
 
-    [Parameter(    
+    [Parameter(
     )
     ]
     [switch]
     $CreateShortcuts,
 
-    [Parameter(    
+    [Parameter(
     )
     ]
     [switch]
@@ -155,19 +155,19 @@ function main
         return
     }
 
-    ensure-dir $Destination    
+    ensure-dir $Destination
     $Destination=$(Resolve-Path $Destination)
 
     if (!$SkipUnzipping) {
         $ZipSource=$(Resolve-Path $ZipSource)
         unzip-files "$ZipSource" "$Destination" $PkgList
     }
-    
+
     # extra setup beyond unzipping
     & {
         & "$PSScriptRoot\scripts\global.ps1" -Destination $Destination -PkgList $PkgList
         #& "$PSScriptRoot\scripts\python27.ps1" -Destination $Destination -PkgList $PkgList
-    }    
+    }
 
     $initscript = [IO.Path]::Combine($Destination, "init.ps1")
     init $initscript
@@ -176,7 +176,7 @@ function main
         update-psprofile $initscript
     }
 
-    if ($UpdateUserEnvironment) {        
+    if ($UpdateUserEnvironment) {
         update-userenv $Destination
     }
 
@@ -234,11 +234,11 @@ function unzip-files ($src, $dest, $pkglist) {
                         } `
                         -ArgumentList "$name", "$dest", "$src"
                         )
-        }                
+        }
     }
     if ($jobs) {
         Wait-Job -Job $jobs | Out-Null
-    }    
+    }
 }
 
 function init ($initscript) {
@@ -273,10 +273,10 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
 
 & {
     `$path=`$env:PATH
-    @(      
+    @(
         "$prefix",
-        "$prefix\bin",        
-        "$prefix\jdk\bin",        
+        "$prefix\bin",
+        "$prefix\jdk\bin",
         "$prefix\gradle\bin",
         "$prefix\.lein\bin",
         "$prefix\Debuggers\x64",
@@ -309,7 +309,7 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\msys64\opt\bin"
     ) | % {
         `$p=`$_
-        if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {    
+        if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {
             `$env:PATH="`$p;`$env:PATH"
         }
     }
@@ -333,7 +333,7 @@ if ($initscript -and !$(Get-Content $Profile | Select-String -Pattern "$initscri
 . $initscript
 "@ | Add-Content -Path $Profile -Force
 }
- 
+
 Write-Host "$Profile will source $initscript."
 }
 
@@ -343,8 +343,8 @@ function update-userenv ($prefix) {
     $path=$([String]::Join([IO.Path]::PathSeparator, `
                             @(
                             "$prefix",
-                            "$prefix\bin",            
-                            "$prefix\jdk\bin",        
+                            "$prefix\bin",
+                            "$prefix\jdk\bin",
                             "$prefix\gradle\bin",
                             "$prefix\.lein\bin",
                             "$prefix\Debuggers\x64",
@@ -379,7 +379,7 @@ function update-userenv ($prefix) {
                             )))
 
 
-    @(        
+    @(
         @("HOME", $("$prefix".Replace("\", "/"))),
         @("PWDE_HOME", $prefix),
 
@@ -398,7 +398,7 @@ function update-userenv ($prefix) {
         #@("PYTHONPATH", $("$prefix\Python27\Lib\site-packages;$prefix\Python27\Lib".Replace("\", "/"))),
         @("M2_HOME", $("$prefix\apache-maven".Replace("\", "/"))),
         @("GRADLE_HOME", $("$prefix\gradle".Replace("\", "/"))),
-        @("R_HOME", $("$prefix\R".Replace("\", "/"))),        
+        @("R_HOME", $("$prefix\R".Replace("\", "/"))),
         @("PATH_BAK", $env:PATH),
         @("PATH", $path)
     ) | % {
@@ -406,16 +406,16 @@ function update-userenv ($prefix) {
             $var, $val, $tar = $_
             Write-Host "Setting environment variable: |$var|=|$val|"
             Set-Content Env:\"$var" "$val"
-            [Environment]::SetEnvironmentVariable($var, $val, [System.EnvironmentVariableTarget]::Process)            
-            [Environment]::SetEnvironmentVariable($var, $val, $(if ($tar) {$tar} else {[EnvironmentVariableTarget]::User}))            
+            [Environment]::SetEnvironmentVariable($var, $val, [System.EnvironmentVariableTarget]::Process)
+            [Environment]::SetEnvironmentVariable($var, $val, $(if ($tar) {$tar} else {[EnvironmentVariableTarget]::User}))
         }
     }
 
     # Change the current PATH
     $newpath=$([String]::Join(
                     [IO.Path]::PathSeparator, `
-                    @(                      
-                      [Environment]::GetEnvironmentVariable("PATH", 
+                    @(
+                      [Environment]::GetEnvironmentVariable("PATH",
                                                             [EnvironmentVariableTarget]::Machine),
                       $path
                     )))
@@ -428,7 +428,7 @@ function create-shortcuts ($prefix) {
 
     function create-shortcuts-internal ([String]$src, [String]$shortcut, [String]$argument, [String]$hotkey) {
         # http://stackoverflow.com/a/9701907
-        $sh = New-Object -ComObject WScript.Shell        
+        $sh = New-Object -ComObject WScript.Shell
         $s = $sh.CreateShortcut($shortcut)
         $s.TargetPath = $src
         if (![String]::IsNullOrEmpty($argument)) {
@@ -436,12 +436,12 @@ function create-shortcuts ($prefix) {
         }
         if (![String]::IsNullOrEmpty($hotkey)) {
             $s.HotKey = $hotkey
-        }        
+        }
         $s.WorkingDirectory = $prefix
         $s.Save()
     }
 
-    @(        
+    @(
         @("$prefix", "$env:USERPROFILE\Desktop\PWDE.lnk"),
 
         @("$prefix\SysinternalsSuite\procexp.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ProcExp.lnk"),
@@ -454,10 +454,10 @@ function create-shortcuts ($prefix) {
 
         @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:USERPROFILE\Desktop\VirtuaWin.lnk"),
         @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\VirtuaWin.lnk"),
-        
+
         @("$prefix\msys64\mingw64\bin\emacsclientw.exe", "$env:USERPROFILE\Desktop\Emacs.lnk", "-c -a `"$prefix\msys64\mingw64\bin\runemacs.exe`""),
         @("$prefix\msys64\mingw64\bin\runemacs.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\EmacsServer.lnk", "--eval `"(server-start)`""),
-        
+
         @("$prefix\vim\gvim.exe", "$env:USERPROFILE\Desktop\GVim.lnk"),
 
         @("$prefix\R\bin\x64\Rgui.exe", "$env:USERPROFILE\Desktop\RGui x64.lnk"),
@@ -466,12 +466,14 @@ function create-shortcuts ($prefix) {
 
         @("$prefix\atom\app-1.3.2\atom.exe", "$env:USERPROFILE\Desktop\Atom.lnk"),
 
-        @("$prefix\firefox\firefox.exe", "$env:USERPROFILE\Desktop\FireFox.lnk")        
-    ) | % {        
+        @("$prefix\firefox\firefox.exe", "$env:USERPROFILE\Desktop\FireFox.lnk")
+    ) | % {
         if ($_) {
             $src, $shortcut, $argument, $hotkey = $_
-	        Write-Host "Shortcut: $src Arguments:`"$args`" Shortcut:`"$hotkey`" => $shortcut"            
-            create-shortcuts-internal $src $shortcut $argument $hotkey
+          if (Test-Path "$src") {
+              Write-Host "Shortcut: $src Arguments:`"$args`" Shortcut:`"$hotkey`" => $shortcut"
+              create-shortcuts-internal $src $shortcut $argument $hotkey
+            }
         }
     }
 }
@@ -485,42 +487,51 @@ function create-contextmenuentries ($prefix) {
     New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT | Out-Null
 
     # Directory Context Menu
-    @(        
-        @("Open in ConEmu", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell}"),
-        @("Open in ConEmu (Admin)", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell (Admin)}"),
-        @("Open in Emacs", "`"$prefix\msys64\mingw64\bin\emacsclientw.exe`" -c -a `"$prefix\msys64\mingw64\bin\runemacs.exe`""),
-        @("Open in Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\runemacs.exe`""),
-        @("Open with Vim", "`"$prefix\vim\gvim.exe`""),
-        @("Open with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`""),
-        $NULL        
-    ) | % {        
+    @(
+        @("Open in ConEmu", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell}", "$prefix\ConEmuPack\ConEmu64.exe"),
+        @("Open in ConEmu (Admin)", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell (Admin)}", "$prefix\ConEmuPack\ConEmu64.exe"),
+        @("Open in Emacs", "`"$prefix\msys64\mingw64\bin\emacsclientw.exe`" -c -a `"$prefix\msys64\mingw64\bin\runemacs.exe`"", "$prefix\msys64\mingw64\bin\emacsclientw.exe"),
+        @("Open in Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\runemacs.exe`"", "$prefix\msys64\mingw64\bin\runemacs.exe"),
+        @("Open with Vim", "`"$prefix\vim\gvim.exe`"", "$prefix\vim\gvim.exe"),
+        @("Open with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`"", "$prefix\vim\gvim.exe"),
+        @("Open with Atom", "`"$prefix\atom\app-1.3.2\atom.exe`"", "$prefix\atom\app-1.3.2\atom.exe"),
+        @("Open with Atom (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\atom\app-1.3.2\atom.exe`"", "$prefix\atom\app-1.3.2\atom.exe"),
+        $NULL
+    ) | % {
         if ($_) {
-            $name, $value = $_
-	        Write-Host "Directory Context Menu: $name => $value"
-            $regpath = "HKCR:\Directory\Background\shell\$name"
-            New-Item -Path "$regpath\Command" -Force | Out-Null
-            Set-ItemProperty -Path "$regpath" -Name "(Default)" -Value "$name"
-            Set-ItemProperty -Path "$regpath\Command" -Name "(Default)" -Value "$value"
-        }        
+            $name, $value, $testpath = $_
+            # either $testpath is $null, or $testpath must exists.
+            if (!$testpath -or $(Test-Path "$testpath")) {
+                Write-Host "Directory Context Menu: $name => $value"
+                $regpath = "HKCR:\Directory\Background\shell\$name"
+                New-Item -Path "$regpath\Command" -Force | Out-Null
+                Set-ItemProperty -Path "$regpath" -Name "(Default)" -Value "$name"
+                Set-ItemProperty -Path "$regpath\Command" -Name "(Default)" -Value "$value"
+            }
+        }
     }
 
     # All File Type Context Menu
     pushd -LiteralPath "HKCR:\*\shell"
-    @(        
-        @("Edit with Emacs", "`"$prefix\msys64\mingw64\bin\emacsclientw.exe`" -c -a `"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`""),        
-        @("Edit with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`""),        
-        @("Edit with Vim", "`"$prefix\vim\gvim.exe`" `"%1`""),
-        @("Edit with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`" `"%1`""),
+    @(
+        @("Edit with Emacs", "`"$prefix\msys64\mingw64\bin\emacsclientw.exe`" -c -a `"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`"", "$prefix\msys64\mingw64\bin\emacsclientw.exe"),
+        @("Edit with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`"", "$prefix\msys64\mingw64\bin\runemacs.exe"),
+        @("Edit with Vim", "`"$prefix\vim\gvim.exe`" `"%1`"", "$prefix\vim\gvim.exe"),
+        @("Edit with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`" `"%1`"", "$prefix\vim\gvim.exe"),
+        @("Open with Atom", "`"$prefix\atom\app-1.3.2\atom.exe`" `"%1`"", "$prefix\atom\app-1.3.2\atom.exe"),
+        @("Open with Atom (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\atom\app-1.3.2\atom.exe`" `"%1`"", "$prefix\atom\app-1.3.2\atom.exe"),
         $NULL
-    ) | % {        
+    ) | % {
         if ($_) {
-            $name, $value = $_
-	        Write-Host "All File Type Context Menu: $name => $value"	    
-            $regpath = "$name"
-            New-Item -Path "$regpath\Command" -Force | Out-Null
-            Set-ItemProperty -Path "$regpath" -Name "(Default)" -Value "$name"
-            Set-ItemProperty -Path "$regpath\Command" -Name "(Default)" -Value "$value"
-        }        
+            $name, $value, $testpath = $_
+            if (!$testpath -or $(Test-Path "$testpath")) {
+                Write-Host "All File Type Context Menu: $name => $value"
+                $regpath = "$name"
+                New-Item -Path "$regpath\Command" -Force | Out-Null
+                Set-ItemProperty -Path "$regpath" -Name "(Default)" -Value "$name"
+                Set-ItemProperty -Path "$regpath\Command" -Name "(Default)" -Value "$value"
+            }
+        }
     }
     popd
 
