@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20151218
+# Latest update: 20151225
 #
 
 <#
@@ -77,6 +77,7 @@ param(
 "msys64",
 #"Python27",
 "R",
+"RWEverything",
 "SysinternalsSuite",
 "VcXsrv",
 "vim",
@@ -304,6 +305,7 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\VcXsrv\bin",
         "$prefix\atom\bin",
         "$prefix\atom\app-1.3.2",
+        "$prefix\RWEverything",
         "$prefix\msys64\usr\bin",
         "$prefix\msys64\mingw64\bin",
         "$prefix\msys64\opt\bin"
@@ -372,6 +374,7 @@ function update-userenv ($prefix) {
                             "$prefix\VcXsrv\bin",
                             "$prefix\atom\bin",
                             "$prefix\atom\app-1.3.2",
+                            "$prefix\RWEverything",
                             "$prefix\msys64\usr\bin",
                             "$prefix\msys64\mingw64\bin",
                             "$prefix\msys64\opt\bin",
@@ -459,6 +462,8 @@ function create-shortcuts ($prefix) {
         @("$prefix\msys64\mingw64\bin\runemacs.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\EmacsServer.lnk", "--eval `"(server-start)`""),
 
         @("$prefix\vim\gvim.exe", "$env:USERPROFILE\Desktop\GVim.lnk"),
+
+        @("$prefix\RWEverything\Rw.exe", "$env:USERPROFILE\Desktop\RWEverything.lnk"),
 
         @("$prefix\R\bin\x64\Rgui.exe", "$env:USERPROFILE\Desktop\RGui x64.lnk"),
 
