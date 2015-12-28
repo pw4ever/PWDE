@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20151225
+# Latest update: 20151228
 #
 
 <#
@@ -76,6 +76,7 @@ param(
 "m2",
 "msys64",
 #"Python27",
+"obs-studio",
 "R",
 "RWEverything",
 "SysinternalsSuite",
@@ -306,6 +307,7 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\atom\bin",
         "$prefix\atom\app-1.3.2",
         "$prefix\RWEverything",
+        "$prefix\obs-studio",
         "$prefix\msys64\usr\bin",
         "$prefix\msys64\mingw64\bin",
         "$prefix\msys64\opt\bin"
@@ -375,6 +377,7 @@ function update-userenv ($prefix) {
                             "$prefix\atom\bin",
                             "$prefix\atom\app-1.3.2",
                             "$prefix\RWEverything",
+                            "$prefix\obs-studio",
                             "$prefix\msys64\usr\bin",
                             "$prefix\msys64\mingw64\bin",
                             "$prefix\msys64\opt\bin",
@@ -429,7 +432,7 @@ function update-userenv ($prefix) {
 function create-shortcuts ($prefix) {
     $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
 
-    function create-shortcuts-internal ([String]$src, [String]$shortcut, [String]$argument, [String]$hotkey) {
+    function create-shortcuts-internal ([String]$src, [String]$shortcut, [String]$argument, [String]$hotkey, [String]$workdir) {
         # http://stackoverflow.com/a/9701907
         $sh = New-Object -ComObject WScript.Shell
         $s = $sh.CreateShortcut($shortcut)
@@ -440,7 +443,7 @@ function create-shortcuts ($prefix) {
         if (![String]::IsNullOrEmpty($hotkey)) {
             $s.HotKey = $hotkey
         }
-        $s.WorkingDirectory = $prefix
+        $s.WorkingDirectory = $(if (![String]::IsNullOrEmpty($workdir)) { $workdir } else { $prefix })
         $s.Save()
     }
 
@@ -465,6 +468,8 @@ function create-shortcuts ($prefix) {
 
         @("$prefix\RWEverything\Rw.exe", "$env:USERPROFILE\Desktop\RWEverything.lnk"),
 
+        @("$prefix\obs-studio\bin\64bit\obs64.exe", "$env:USERPROFILE\Desktop\Open Broadcaster Studio 64bit.lnk", $NULL, $NULL, "$prefix\obs-studio\bin\64bit"),
+
         @("$prefix\R\bin\x64\Rgui.exe", "$env:USERPROFILE\Desktop\RGui x64.lnk"),
 
         @("$prefix\GIMP\bin\gimp-2.8.exe", "$env:USERPROFILE\Desktop\GIMP-2.8.lnk"),
@@ -474,10 +479,10 @@ function create-shortcuts ($prefix) {
         @("$prefix\firefox\firefox.exe", "$env:USERPROFILE\Desktop\FireFox.lnk")
     ) | % {
         if ($_) {
-            $src, $shortcut, $argument, $hotkey = $_
+            $src, $shortcut, $argument, $hotkey, $workdir = $_
           if (Test-Path "$src") {
               Write-Host "Shortcut: $src Arguments:`"$args`" Shortcut:`"$hotkey`" => $shortcut"
-              create-shortcuts-internal $src $shortcut $argument $hotkey
+              create-shortcuts-internal $src $shortcut $argument $hotkey $workdir
             }
         }
     }
