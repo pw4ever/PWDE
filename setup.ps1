@@ -78,6 +78,7 @@ param(
 #"Python27",
 "obs-studio",
 "R",
+"radare2",
 "RWEverything",
 "SysinternalsSuite",
 "VcXsrv",
@@ -308,6 +309,7 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\atom\app-1.3.2",
         "$prefix\RWEverything",
         "$prefix\obs-studio",
+        "$prefix\radare2",
         "$prefix\msys64\usr\bin",
         "$prefix\msys64\mingw64\bin",
         "$prefix\msys64\opt\bin"
@@ -378,6 +380,7 @@ function update-userenv ($prefix) {
                             "$prefix\atom\app-1.3.2",
                             "$prefix\RWEverything",
                             "$prefix\obs-studio",
+                            "$prefix\radare2",
                             "$prefix\msys64\usr\bin",
                             "$prefix\msys64\mingw64\bin",
                             "$prefix\msys64\opt\bin",
