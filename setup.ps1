@@ -453,13 +453,13 @@ function create-shortcuts ($prefix) {
     @(
         @("$prefix", "$env:USERPROFILE\Desktop\PWDE.lnk"),
 
-        @("$prefix\SysinternalsSuite\procexp.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ProcExp.lnk"),
+        #@("$prefix\SysinternalsSuite\procexp.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ProcExp.lnk"),
 
         @("$prefix\VcXsrv\xlaunch.exe", "$env:USERPROFILE\Desktop\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch"),
         @("$prefix\VcXsrv\xlaunch.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch"),
 
         @("$prefix\ConEmuPack\ConEmu64.exe", "$env:USERPROFILE\Desktop\ConEmu64.lnk", $NULL, "CTRL+ALT+q"),
-        @("$prefix\ConEmuPack\ConEmu64.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ConEmu64.lnk"),
+        #@("$prefix\ConEmuPack\ConEmu64.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ConEmu64.lnk"),
 
         @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:USERPROFILE\Desktop\VirtuaWin.lnk"),
         @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\VirtuaWin.lnk"),
