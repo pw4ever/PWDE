@@ -72,6 +72,7 @@ param(
 "go",
 "gradle",
 "jdk",
+"Launchy",
 "leiningen",
 "m2",
 "msys64",
@@ -310,6 +311,7 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\RWEverything",
         "$prefix\obs-studio",
         "$prefix\radare2",
+        "$prefix\Launchy",
         "$prefix\msys64\usr\bin",
         "$prefix\msys64\mingw64\bin",
         "$prefix\msys64\opt\bin"
@@ -381,6 +383,7 @@ function update-userenv ($prefix) {
                             "$prefix\RWEverything",
                             "$prefix\obs-studio",
                             "$prefix\radare2",
+                            "$prefix\Launchy",
                             "$prefix\msys64\usr\bin",
                             "$prefix\msys64\mingw64\bin",
                             "$prefix\msys64\opt\bin",
@@ -460,6 +463,9 @@ function create-shortcuts ($prefix) {
 
         @("$prefix\ConEmuPack\ConEmu64.exe", "$env:USERPROFILE\Desktop\ConEmu64.lnk", $NULL, "CTRL+ALT+q"),
         #@("$prefix\ConEmuPack\ConEmu64.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ConEmu64.lnk"),
+
+        @("$prefix\Launchy\Launchy.exe", "$env:USERPROFILE\Desktop\Launchy.lnk"),
+        @("$prefix\Launchy\Launchy.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\Launchy.lnk"),
 
         @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:USERPROFILE\Desktop\VirtuaWin.lnk"),
         @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\VirtuaWin.lnk"),
