@@ -71,6 +71,7 @@ param(
 "global",
 "go",
 "gradle",
+"iasl",
 "jdk",
 "Launchy",
 "leiningen",
@@ -312,6 +313,7 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\obs-studio",
         "$prefix\radare2",
         "$prefix\Launchy",
+        "$prefix\iasl",
         "$prefix\msys64\usr\bin",
         "$prefix\msys64\mingw64\bin",
         "$prefix\msys64\opt\bin"
@@ -384,6 +386,7 @@ function update-userenv ($prefix) {
                             "$prefix\obs-studio",
                             "$prefix\radare2",
                             "$prefix\Launchy",
+                            "$prefix\iasl",                             
                             "$prefix\msys64\usr\bin",
                             "$prefix\msys64\mingw64\bin",
                             "$prefix\msys64\opt\bin",
