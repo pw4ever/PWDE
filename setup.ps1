@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20151228
+# Latest update: 20160107
 #
 
 <#
@@ -81,6 +81,7 @@ param(
 "obs-studio",
 "R",
 "radare2",
+"Recoll",
 "RWEverything",
 "SysinternalsSuite",
 "VcXsrv",
@@ -314,6 +315,7 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\radare2",
         "$prefix\Launchy",
         "$prefix\iasl",
+        "$prefix\Recoll",
         "$prefix\msys64\usr\bin",
         "$prefix\msys64\mingw64\bin",
         "$prefix\msys64\opt\bin"
@@ -386,7 +388,8 @@ function update-userenv ($prefix) {
                             "$prefix\obs-studio",
                             "$prefix\radare2",
                             "$prefix\Launchy",
-                            "$prefix\iasl",                             
+                            "$prefix\iasl",
+                            "$prefix\Recoll",
                             "$prefix\msys64\usr\bin",
                             "$prefix\msys64\mingw64\bin",
                             "$prefix\msys64\opt\bin",
@@ -460,6 +463,8 @@ function create-shortcuts ($prefix) {
         @("$prefix", "$env:USERPROFILE\Desktop\PWDE.lnk"),
 
         #@("$prefix\SysinternalsSuite\procexp.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ProcExp.lnk"),
+
+        @("$prefix\Recoll\recoll.exe", "$env:USERPROFILE\Desktop\Recoll.lnk"),
 
         @("$prefix\VcXsrv\xlaunch.exe", "$env:USERPROFILE\Desktop\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch"),
         @("$prefix\VcXsrv\xlaunch.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch"),
