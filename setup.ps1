@@ -78,7 +78,7 @@ param(
 "m2",
 "msys64",
 #"Python27",
-"obs-studio",
+#"obs-studio",
 "R",
 "radare2",
 "Recoll",
@@ -311,7 +311,7 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\atom\bin",
         "$prefix\atom\app-1.3.2",
         "$prefix\RWEverything",
-        "$prefix\obs-studio",
+        #"$prefix\obs-studio",
         "$prefix\radare2",
         "$prefix\Launchy",
         "$prefix\iasl",
@@ -385,7 +385,7 @@ function update-userenv ($prefix) {
                             "$prefix\atom\bin",
                             "$prefix\atom\app-1.3.2",
                             "$prefix\RWEverything",
-                            "$prefix\obs-studio",
+                            #"$prefix\obs-studio",
                             "$prefix\radare2",
                             "$prefix\Launchy",
                             "$prefix\iasl",
@@ -485,7 +485,7 @@ function create-shortcuts ($prefix) {
 
         @("$prefix\RWEverything\Rw.exe", "$env:USERPROFILE\Desktop\RWEverything.lnk"),
 
-        @("$prefix\obs-studio\bin\64bit\obs64.exe", "$env:USERPROFILE\Desktop\Open Broadcaster Studio 64bit.lnk", $NULL, $NULL, "$prefix\obs-studio\bin\64bit"),
+        #@("$prefix\obs-studio\bin\64bit\obs64.exe", "$env:USERPROFILE\Desktop\Open Broadcaster Studio 64bit.lnk", $NULL, $NULL, "$prefix\obs-studio\bin\64bit"),
 
         @("$prefix\R\bin\x64\Rgui.exe", "$env:USERPROFILE\Desktop\RGui x64.lnk"),
 
