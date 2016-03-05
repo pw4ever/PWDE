@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20160107
+# Latest update: 20160304
 #
 
 <#
@@ -76,6 +76,7 @@ param(
 "Launchy",
 "leiningen",
 "m2",
+"mRemoteNG",
 "msys64",
 #"Python27",
 #"obs-studio",
@@ -318,7 +319,8 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\Recoll",
         "$prefix\msys64\usr\bin",
         "$prefix\msys64\mingw64\bin",
-        "$prefix\msys64\opt\bin"
+        "$prefix\msys64\opt\bin",
+        "$prefix\mRemoteNG"
     ) | % {
         `$p=`$_
         if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {
@@ -393,6 +395,7 @@ function update-userenv ($prefix) {
                             "$prefix\msys64\usr\bin",
                             "$prefix\msys64\mingw64\bin",
                             "$prefix\msys64\opt\bin",
+                            "$prefix\mRemoteNG",
                             "$env:PWDE_PERSISTENT_PATH"
                             )))
 
@@ -492,6 +495,8 @@ function create-shortcuts ($prefix) {
         @("$prefix\GIMP\bin\gimp-2.8.exe", "$env:USERPROFILE\Desktop\GIMP-2.8.lnk"),
 
         @("$prefix\atom\app-1.3.2\atom.exe", "$env:USERPROFILE\Desktop\Atom.lnk"),
+
+        @("$prefix\mRemoteNG\mRemoteNG.exe", "$env:USERPROFILE\Desktop\mRemoteNG.lnk"),
 
         @("$prefix\firefox\firefox.exe", "$env:USERPROFILE\Desktop\FireFox.lnk")
     ) | % {
