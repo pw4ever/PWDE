@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20160304
+# Latest update: 20160407
 #
 
 <#
@@ -286,8 +286,6 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         "$prefix\jdk\bin",
         "$prefix\gradle\bin",
         "$prefix\.lein\bin",
-        "$prefix\Debuggers\x64",
-        "$prefix\Windows Performance Toolkit",
         "$prefix\go\bin",
         $([IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "bin")),
         "$prefix\Git",
@@ -298,6 +296,10 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
         #"$prefix\ctags",
         "$prefix\vim",
         "$prefix\SysinternalsSuite",
+        "$prefix\WinKit\bin",
+        "$prefix\WinKit\dbg",
+        "$prefix\WinKit\tools",
+        "$prefix\WinKit\wpt",
         "$prefix\ConEmuPack",
         "$prefix\VirtuaWin",
         "$prefix\firefox",
@@ -361,8 +363,6 @@ function update-userenv ($prefix) {
                             "$prefix\jdk\bin",
                             "$prefix\gradle\bin",
                             "$prefix\.lein\bin",
-                            "$prefix\Debuggers\x64",
-                            "$prefix\Windows Performance Toolkit",
                             "$prefix\go\bin",
                             [IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "bin"),
                             "$prefix\Git",
@@ -373,6 +373,10 @@ function update-userenv ($prefix) {
                             #"$prefix\ctags",
                             "$prefix\vim",
                             "$prefix\SysinternalsSuite",
+                            "$prefix\WinKit\bin",
+                            "$prefix\WinKit\dbg",
+                            "$prefix\WinKit\tools",
+                            "$prefix\WinKit\wpt",
                             "$prefix\ConEmuPack",
                             "$prefix\VirtuaWin",
                             "$prefix\firefox",
