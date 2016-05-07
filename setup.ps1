@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20160407
+# Latest update: 20160506
 #
 
 <#
@@ -60,7 +60,6 @@ param(
 "bin",
 "ConEmuPack",
 "config",
-#"ctags",
 "Documents",
 "emacs",
 "evince",
@@ -78,8 +77,6 @@ param(
 "m2",
 "mRemoteNG",
 "msys64",
-#"Python27",
-#"obs-studio",
 "R",
 "radare2",
 "Recoll",
@@ -173,7 +170,6 @@ function main
     # extra setup beyond unzipping
     & {
         & "$PSScriptRoot\scripts\global.ps1" -Destination $Destination -PkgList $PkgList
-        #& "$PSScriptRoot\scripts\python27.ps1" -Destination $Destination -PkgList $PkgList
     }
 
     $initscript = [IO.Path]::Combine($Destination, "init.ps1")
@@ -256,73 +252,142 @@ $prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
 # For app that looks for HOME, e.g., Emacs, Vim
 `$env:HOME="$("$prefix".Replace("\", "/"))"
 `$env:PWDE_HOME="$prefix"
-
-`$env:EDITOR="$("$prefix\vim\gvim.exe".Replace("\", "/"))"
-`$env:PAGER="$("$prefix\msys64\usr\bin\less.exe".Replace("\", "/"))"
 #`$env:TERM="xterm"
 
+$(if ($pkglist -contains "vim") { @"
+`$env:EDITOR="$("$prefix\vim\gvim.exe".Replace("\", "/"))"
+"@ })
+$(if ($pkglist -contains "msys64") { @"
+`$env:PAGER="$("$prefix\msys64\usr\bin\less.exe".Replace("\", "/"))"
+"@ })
+
+$(if ($pkglist -contains "jdk") { @"
 `$env:JAVA_HOME="$("$prefix\jdk".Replace("\", "/"))"
 `$env:_JAVA_OPTIONS="-Duser.home=`"$prefix`" "+`$env:_JAVA_OPTIONS
-
-`$env:LEIN_HOME="$("$prefix\.lein".Replace("\", "/"))"
 `$env:LEIN_JAVA_CMD="$("$prefix\jdk\bin\java.exe".Replace("\", "/"))"
+"@ })
 
+$(if ($pkglist -contains "leiningen") { @"
+`$env:LEIN_HOME="$("$prefix\.lein".Replace("\", "/"))"
+"@ })
+
+$(if ($pkglist -contains "go") { @"
 `$env:GOROOT="$("$prefix\go".Replace("\", "/"))"
 `$env:GOPATH="$([System.Environment]::GetFolderPath("MyDocuments").Replace("\", "/"))"
+"@ })
 
-#`$env:PYTHONHOME="$("$prefix\Python27".Replace("\", "/"))"
-#`$env:PYTHONPATH="$("$prefix\Python27\Lib\site-packages;$prefix\Python27\Lib".Replace("\", "/"))"
-
+$(if ($pkglist -contains "apache-maven") { @"
 `$env:M2_HOME="$("$prefix\apache-maven".Replace("\", "/"))"
-`$env:GRADLE_HOME="$("$prefix\gradle".Replace("\", "/"))"
+"@ })
 
+$(if ($pkglist -contains "gradle") { @"
+`$env:GRADLE_HOME="$("$prefix\gradle".Replace("\", "/"))"
+"@ })
+
+$(if ($pkglist -contains "R") { @"
 `$env:R_HOME="$("$prefix\R".Replace("\", "/"))"
+"@ })
 
 & {
     `$path=`$env:PATH
     @(
         "$prefix",
+$(if ($pkglist -contains "bin") { @"
         "$prefix\bin",
+"@ })
+$(if ($pkglist -contains "jdk") { @"
         "$prefix\jdk\bin",
+"@ })
+$(if ($pkglist -contains "gradle") { @"
         "$prefix\gradle\bin",
+"@ })
+$(if ($pkglist -contains "leiningen") { @"
         "$prefix\.lein\bin",
+"@ })
+$(if ($pkglist -contains "go") { @"
         "$prefix\go\bin",
-        $([IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "bin")),
+"@ })
+        "$([IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "bin"))",
+$(if ($pkglist -contains "Git") { @"
         "$prefix\Git",
         "$prefix\Git\cmd",
-        #"$prefix\Python27",
-        #"$prefix\Python27\Scripts",
+"@ })
+$(if ($pkglist -contains "global") { @"
         "$prefix\global\bin",
-        #"$prefix\ctags",
+"@ })
+$(if ($pkglist -contains "vim") { @"
         "$prefix\vim",
+"@ })
+$(if ($pkglist -contains "SysinternalsSuite") { @"
         "$prefix\SysinternalsSuite",
+"@ })
+$(if ($pkglist -contains "WinKit") { @"
         "$prefix\WinKit\bin",
         "$prefix\WinKit\dbg",
         "$prefix\WinKit\tools",
         "$prefix\WinKit\wpt",
+"@ })
+$(if ($pkglist -contains "ConEmuPack") { @"
         "$prefix\ConEmuPack",
+"@ })
+$(if ($pkglist -contains "VirtuaWin") { @"
         "$prefix\VirtuaWin",
+"@ })
+$(if ($pkglist -contains "firefox") { @"
         "$prefix\firefox",
+"@})
+$(if ($pkglist -contains "evince") { @"
         "$prefix\evince\bin",
+"@ })
+$(if ($pkglist -contains "Audacity") { @"
         "$prefix\Audacity",
+"@ })
+$(if ($pkglist -contains "apache-maven") { @"
         "$prefix\apache-maven\bin",
+"@ })
+$(if ($pkglist -contains "vlc") { @"
         "$prefix\vlc",
+"@ })
+$(if ($pkglist -contains "ffmpeg") { @"
         "$prefix\ffmpeg\bin",
+"@ })
+$(if ($pkglist -contains "R") { @"
         "$prefix\R\bin\x64",
+"@ })
+$(if ($pkglist -contains "GIMP") { @"
         "$prefix\GIMP\bin",
+"@ })
+$(if ($pkglist -contains "VcXsrv") { @"
         "$prefix\VcXsrv\bin",
+"@ })
+$(if ($pkglist -contains "atom") { @"
         "$prefix\atom\bin",
         "$prefix\atom\app-1.3.2",
+
+"@ })
+$(if ($pkglist -contains "RWEverything") { @"
         "$prefix\RWEverything",
-        #"$prefix\obs-studio",
+"@ })
+$(if ($pkglist -contains "radare2") { @"
         "$prefix\radare2",
+"@ })
+$(if ($pkglist -contains "Launchy") { @"
         "$prefix\Launchy",
+"@ })
+$(if ($pkglist -contains "iasl") { @"
         "$prefix\iasl",
+"@ })
+$(if ($pkglist -contains "Recoll") { @"
         "$prefix\Recoll",
+"@ })
+$(if ($pkglist -contains "msys64") { @"
         "$prefix\msys64\usr\bin",
         "$prefix\msys64\mingw64\bin",
         "$prefix\msys64\opt\bin",
+"@ })
+$(if ($pkglist -contains "mRemoteNG") { @"
         "$prefix\mRemoteNG"
+"@ })
     ) | % {
         `$p=`$_
         if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {
@@ -357,75 +422,165 @@ function update-userenv ($prefix) {
     $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
 
     $path=$([String]::Join([IO.Path]::PathSeparator, `
-                            @(
+                            $(@(
                             "$prefix",
-                            "$prefix\bin",
-                            "$prefix\jdk\bin",
-                            "$prefix\gradle\bin",
-                            "$prefix\.lein\bin",
-                            "$prefix\go\bin",
+$(if ($pkglist -contains "bin") {
+                            "$prefix\bin"
+} else { $NULL }),
+$(if ($pkglist -contains "jdk") {
+                            "$prefix\jdk\bin"
+} else { $NULL }),
+$(if ($pkglist -contains "gradle") {
+                            "$prefix\gradle\bin"
+} else { $NULL }),
+$(if ($pkglist -contains "leiningen") {
+                            "$prefix\.lein\bin"
+} else { $NULL }),
+$(if ($pkglist -contains "go") {
+                            "$prefix\go\bin"
+} else { $NULL }),
                             [IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "bin"),
+$(if ($pkglist -contains "Git") {
+    [String]::Join([IO.Path]::PathSeparator, `
+    @(
                             "$prefix\Git",
-                            "$prefix\Git\cmd",
-                            #"$prefix\Python27",
-                            #"$prefix\Python27\Scripts",
-                            "$prefix\global\bin",
-                            #"$prefix\ctags",
-                            "$prefix\vim",
-                            "$prefix\SysinternalsSuite",
+                            "$prefix\Git\cmd"
+    ))
+} else { $NULL }),
+
+$(if ($pkglist -contains "global") {
+                            "$prefix\global\bin"
+} else { $NULL }),
+$(if ($pkglist -contains "vim") {
+                            "$prefix\vim"
+} else { $NULL }),
+$(if ($pkglist -contains "SysinternalsSuite") {
+                            "$prefix\SysinternalsSuite"
+} else { $NULL }),
+$(if ($pkglist -contains "WinKit") {
+    [String]::Join([IO.Path]::PathSeparator, `
+    @(
                             "$prefix\WinKit\bin",
                             "$prefix\WinKit\dbg",
                             "$prefix\WinKit\tools",
-                            "$prefix\WinKit\wpt",
-                            "$prefix\ConEmuPack",
-                            "$prefix\VirtuaWin",
-                            "$prefix\firefox",
-                            "$prefix\evince\bin",
-                            "$prefix\Audacity",
-                            "$prefix\apache-maven\bin",
-                            "$prefix\vlc",
-                            "$prefix\ffmpeg\bin",
-                            "$prefix\R\bin\x64",
-                            "$prefix\GIMP\bin",
-                            "$prefix\VcXsrv\bin",
+                            "$prefix\WinKit\wpt"
+    ))
+} else { $NULL }),
+$(if ($pkglist -contains "ConEmuPack") {
+                            "$prefix\ConEmuPack"
+} else { $NULL }),
+$(if ($pkglist -contains "VirtuaWin") {
+                            "$prefix\VirtuaWin"
+} else { $NULL }),
+$(if ($pkglist -contains "firefox") {
+                            "$prefix\firefox"
+} else { $NULL }),
+$(if ($pkglist -contains "evince") {
+                            "$prefix\evince\bin"
+} else { $NULL }),
+$(if ($pkglist -contains "Audacity") {
+                            "$prefix\Audacity"
+} else { $NULL }),
+$(if ($pkglist -contains "apache-maven") {
+                            "$prefix\apache-maven\bin"
+} else { $NULL }),
+$(if ($pkglist -contains "vlc") {
+                            "$prefix\vlc"
+} else { $NULL }),
+$(if ($pkglist -contains "ffmpeg") {
+                            "$prefix\ffmpeg\bin"
+} else { $NULL }),
+$(if ($pkglist -contains "R") {
+                            "$prefix\R\bin\x64"
+} else { $NULL }),
+$(if ($pkglist -contains "GIMP") {
+                            "$prefix\GIMP\bin"
+} else { $NULL }),
+$(if ($pkglist -contains "VcXsrv") {
+                            "$prefix\VcXsrv\bin"
+} else { $NULL }),
+$(if ($pkglist -contains "atom") {
+    [String]::Join([IO.Path]::PathSeparator, `
+    @(
                             "$prefix\atom\bin",
-                            "$prefix\atom\app-1.3.2",
-                            "$prefix\RWEverything",
-                            #"$prefix\obs-studio",
-                            "$prefix\radare2",
-                            "$prefix\Launchy",
-                            "$prefix\iasl",
-                            "$prefix\Recoll",
+                            "$prefix\atom\app-1.3.2"
+    ))
+} else { $NULL }),
+$(if ($pkglist -contains "RWEverything") {
+                            "$prefix\RWEverything"
+} else { $NULL }),
+$(if ($pkglist -contains "radare2") {
+                            "$prefix\radare2"
+} else { $NULL }),
+$(if ($pkglist -contains "Launchy") {
+                            "$prefix\Launchy"
+} else { $NULL }),
+$(if ($pkglist -contains "iasl") {
+                            "$prefix\iasl"
+} else { $NULL }),
+$(if ($pkglist -contains "Recoll") {
+                            "$prefix\Recoll"
+} else { $NULL }),
+$(if ($pkglist -contains "msys64") {
+    [String]::Join([IO.Path]::PathSeparator, `
+    @(
                             "$prefix\msys64\usr\bin",
                             "$prefix\msys64\mingw64\bin",
-                            "$prefix\msys64\opt\bin",
-                            "$prefix\mRemoteNG",
+                            "$prefix\msys64\opt\bin"
+    ))
+} else { $NULL }),
+$(if ($pkglist -contains "mRemoteNG") {
+                            "$prefix\mRemoteNG"
+} else { $NULL }),
                             "$env:PWDE_PERSISTENT_PATH"
-                            )))
+                            ) | ? {$_})))
 
 
     @(
         @("HOME", $("$prefix".Replace("\", "/"))),
         @("PWDE_HOME", $prefix),
 
-        @("EDITOR", $("$prefix\vim\gvim.exe".Replace("\", "/"))),
-        @("ALTERNATE_EDITOR", $("$prefix\msys64\mingw64\bin\runemacs.exe".Replace("\", "/"))),
-        @("PAGER", $("$prefix\msys64\usr\bin\less.exe".Replace("\", "/"))),
-        #@("TERM", "xterm"),
+$(if ($pkglist -contains "vim") {
+        @("EDITOR", $("$prefix\vim\gvim.exe".Replace("\", "/")))
+} else { $NULL }),
 
-        @("JAVA_HOME", $("$prefix\jdk".Replace("\", "/"))),
-        @("_JAVA_OPTIONS", "-Duser.home=`"$prefix`" $env:PWDE_JAVA_OPTIONS"),
-        @("LEIN_HOME", $("$prefix\.lein".Replace("\", "/"))),
-        @("LEIN_JAVA_CMD", $("$prefix\jdk\bin\java.exe".Replace("\", "/"))),
-        @("GOROOT", $("$prefix\go".Replace("\", "/"))),
-        @("GOPATH", [System.Environment]::GetFolderPath("MyDocuments").Replace("\", "/")),
-        #@("PYTHONHOME", $("$prefix\Python27".Replace("\", "/"))),
-        #@("PYTHONPATH", $("$prefix\Python27\Lib\site-packages;$prefix\Python27\Lib".Replace("\", "/"))),
-        @("M2_HOME", $("$prefix\apache-maven".Replace("\", "/"))),
-        @("GRADLE_HOME", $("$prefix\gradle".Replace("\", "/"))),
-        @("R_HOME", $("$prefix\R".Replace("\", "/"))),
+$(if ($pkglist -contains "msys64") {
+        @("ALTERNATE_EDITOR", $("$prefix\msys64\mingw64\bin\runemacs.exe".Replace("\", "/")))
+} else { $NULL }),
+$(if ($pkglist -contains "msys64") {
+        @("PAGER", $("$prefix\msys64\usr\bin\less.exe".Replace("\", "/")))
+} else { $NULL }),
+        #@("TERM", "xterm"),
+$(if ($pkglist -contains "jdk") {
+        @("JAVA_HOME", $("$prefix\jdk".Replace("\", "/")))
+} else { $NULL }),
+$(if ($pkglist -contains "jdk") {
+        @("_JAVA_OPTIONS", "-Duser.home=`"$prefix`" $env:PWDE_JAVA_OPTIONS")
+} else { $NULL }),
+$(if ($pkglist -contains "leiningen") {
+        @("LEIN_HOME", $("$prefix\.lein".Replace("\", "/")))
+} else { $NULL }),
+$(if ($pkglist -contains "jdk") {
+        @("LEIN_JAVA_CMD", $("$prefix\jdk\bin\java.exe".Replace("\", "/")))
+} else { $NULL }),
+$(if ($pkglist -contains "go") {
+        @("GOROOT", $("$prefix\go".Replace("\", "/")))
+} else { $NULL }),
+$(if ($pkglist -contains "go") {
+        @("GOPATH", [System.Environment]::GetFolderPath("MyDocuments").Replace("\", "/"))
+} else { $NULL }),
+$(if ($pkglist -contains "apache-maven") {
+        @("M2_HOME", $("$prefix\apache-maven".Replace("\", "/")))
+} else { $NULL }),
+$(if ($pkglist -contains "gradle") {
+        @("GRADLE_HOME", $("$prefix\gradle".Replace("\", "/")))
+} else { $NULL }),
+$(if ($pkglist -contains "R") {
+        @("R_HOME", $("$prefix\R".Replace("\", "/")))
+} else { $NULL }),
         @("PATH_BAK", $env:PATH),
-        @("PATH", $path)
+        @("PATH", $path),
+        $NULL
     ) | % {
         if ($_) {
             $var, $val, $tar = $_
@@ -469,40 +624,92 @@ function create-shortcuts ($prefix) {
     @(
         @("$prefix", "$env:USERPROFILE\Desktop\PWDE.lnk"),
 
-        #@("$prefix\SysinternalsSuite\procexp.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ProcExp.lnk"),
+$(if ($pkglist -contains "SysinternalsSuite") {
+        @("$prefix\SysinternalsSuite\procexp.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ProcExp.lnk")
+} else { $NULL }),
 
-        @("$prefix\Recoll\recoll.exe", "$env:USERPROFILE\Desktop\Recoll.lnk"),
+$(if ($pkglist -contains "Recoll") {
+        @("$prefix\Recoll\recoll.exe", "$env:USERPROFILE\Desktop\Recoll.lnk")
+} else { $NULL }),
 
-        @("$prefix\VcXsrv\xlaunch.exe", "$env:USERPROFILE\Desktop\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch"),
-        @("$prefix\VcXsrv\xlaunch.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch"),
+$(if ($pkglist -contains "VcXsrv") {        
+        @("$prefix\VcXsrv\xlaunch.exe", "$env:USERPROFILE\Desktop\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch")
+} else { $NULL }),
+$(if ($pkglist -contains "VcXsrv") {        
+        @("$prefix\VcXsrv\xlaunch.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch")
+} else { $NULL }),
 
-        @("$prefix\ConEmuPack\ConEmu64.exe", "$env:USERPROFILE\Desktop\ConEmu64.lnk", $NULL, "CTRL+ALT+q"),
-        #@("$prefix\ConEmuPack\ConEmu64.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ConEmu64.lnk"),
 
-        @("$prefix\Launchy\Launchy.exe", "$env:USERPROFILE\Desktop\Launchy.lnk"),
-        @("$prefix\Launchy\Launchy.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\Launchy.lnk"),
+$(if ($pkglist -contains "ConEmuPack") {        
+        @("$prefix\ConEmuPack\ConEmu64.exe", "$env:USERPROFILE\Desktop\ConEmu64.lnk", $NULL, "CTRL+ALT+q")
+} else { $NULL }),
+$(if ($pkglist -contains "ConEmuPack") {        
+        #@("$prefix\ConEmuPack\ConEmu64.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ConEmu64.lnk")
+} else { $NULL }),
 
-        @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:USERPROFILE\Desktop\VirtuaWin.lnk"),
-        @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\VirtuaWin.lnk"),
 
-        @("$prefix\msys64\mingw64\bin\emacsclientw.exe", "$env:USERPROFILE\Desktop\Emacs.lnk", "-c -a `"$prefix\msys64\mingw64\bin\runemacs.exe`""),
-        @("$prefix\msys64\mingw64\bin\runemacs.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\EmacsServer.lnk", "--eval `"(server-start)`""),
+$(if ($pkglist -contains "Launchy") {        
+        @("$prefix\Launchy\Launchy.exe", "$env:USERPROFILE\Desktop\Launchy.lnk")
+} else { $NULL }),
+$(if ($pkglist -contains "Launchy") {        
+        @("$prefix\Launchy\Launchy.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\Launchy.lnk")
+} else { $NULL }),
 
-        @("$prefix\vim\gvim.exe", "$env:USERPROFILE\Desktop\GVim.lnk"),
 
-        @("$prefix\RWEverything\Rw.exe", "$env:USERPROFILE\Desktop\RWEverything.lnk"),
+$(if ($pkglist -contains "VirtuaWin") {        
+        @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:USERPROFILE\Desktop\VirtuaWin.lnk")
+} else { $NULL }),
 
-        #@("$prefix\obs-studio\bin\64bit\obs64.exe", "$env:USERPROFILE\Desktop\Open Broadcaster Studio 64bit.lnk", $NULL, $NULL, "$prefix\obs-studio\bin\64bit"),
+$(if ($pkglist -contains "VirtuaWin") {        
+        @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\VirtuaWin.lnk")
+} else { $NULL }),
 
-        @("$prefix\R\bin\x64\Rgui.exe", "$env:USERPROFILE\Desktop\RGui x64.lnk"),
 
-        @("$prefix\GIMP\bin\gimp-2.8.exe", "$env:USERPROFILE\Desktop\GIMP-2.8.lnk"),
+$(if ($pkglist -contains "msys64") {        
+        @("$prefix\msys64\mingw64\bin\emacsclientw.exe", "$env:USERPROFILE\Desktop\Emacs.lnk", "-c -a `"$prefix\msys64\mingw64\bin\runemacs.exe`"")
+} else { $NULL }),
 
-        @("$prefix\atom\app-1.3.2\atom.exe", "$env:USERPROFILE\Desktop\Atom.lnk"),
+$(if ($pkglist -contains "msys64") {        
+        @("$prefix\msys64\mingw64\bin\runemacs.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\EmacsServer.lnk", "--eval `"(server-start)`"")
+} else { $NULL }),
 
-        @("$prefix\mRemoteNG\mRemoteNG.exe", "$env:USERPROFILE\Desktop\mRemoteNG.lnk"),
 
+$(if ($pkglist -contains "vim") {        
+        @("$prefix\vim\gvim.exe", "$env:USERPROFILE\Desktop\GVim.lnk")
+} else { $NULL }),
+
+
+$(if ($pkglist -contains "RWEverything") {        
+        @("$prefix\RWEverything\Rw.exe", "$env:USERPROFILE\Desktop\RWEverything.lnk")
+} else { $NULL }),
+
+
+$(if ($pkglist -contains "R") {        
+        @("$prefix\R\bin\x64\Rgui.exe", "$env:USERPROFILE\Desktop\RGui x64.lnk")
+} else { $NULL }),
+
+
+$(if ($pkglist -contains "GIMP") {        
+        @("$prefix\GIMP\bin\gimp-2.8.exe", "$env:USERPROFILE\Desktop\GIMP-2.8.lnk")
+} else { $NULL }),
+
+
+$(if ($pkglist -contains "atom") {        
+        @("$prefix\atom\app-1.3.2\atom.exe", "$env:USERPROFILE\Desktop\Atom.lnk")
+} else { $NULL }),
+
+
+$(if ($pkglist -contains "mRemoteNG") {        
+        @("$prefix\mRemoteNG\mRemoteNG.exe", "$env:USERPROFILE\Desktop\mRemoteNG.lnk")
+} else { $NULL }),
+
+
+$(if ($pkglist -contains "firefox") {        
         @("$prefix\firefox\firefox.exe", "$env:USERPROFILE\Desktop\FireFox.lnk")
+} else { $NULL }),
+
+    $NULL
+
     ) | % {
         if ($_) {
             $src, $shortcut, $argument, $hotkey, $workdir = $_
@@ -524,14 +731,30 @@ function create-contextmenuentries ($prefix) {
 
     # Directory Context Menu
     @(
-        @("Open in ConEmu", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell}", "$prefix\ConEmuPack\ConEmu64.exe"),
-        @("Open in ConEmu (Admin)", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell (Admin)}", "$prefix\ConEmuPack\ConEmu64.exe"),
-        @("Open in Emacs", "`"$prefix\msys64\mingw64\bin\emacsclientw.exe`" -c -a `"$prefix\msys64\mingw64\bin\runemacs.exe`"", "$prefix\msys64\mingw64\bin\emacsclientw.exe"),
-        @("Open in Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\runemacs.exe`"", "$prefix\msys64\mingw64\bin\runemacs.exe"),
-        @("Open with Vim", "`"$prefix\vim\gvim.exe`"", "$prefix\vim\gvim.exe"),
-        @("Open with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`"", "$prefix\vim\gvim.exe"),
-        @("Open with Atom", "`"$prefix\atom\app-1.3.2\atom.exe`"", "$prefix\atom\app-1.3.2\atom.exe"),
-        @("Open with Atom (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\atom\app-1.3.2\atom.exe`"", "$prefix\atom\app-1.3.2\atom.exe"),
+$(if ($pkglist -contains "ConEmuPack") {
+        @("Open in ConEmu", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell}", "$prefix\ConEmuPack\ConEmu64.exe")
+} else { $NULL }),
+$(if ($pkglist -contains "ConEmuPack") {
+        @("Open in ConEmu (Admin)", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell (Admin)}", "$prefix\ConEmuPack\ConEmu64.exe")
+} else { $NULL }),
+$(if ($pkglist -contains "msys64") {
+        @("Open in Emacs", "`"$prefix\msys64\mingw64\bin\emacsclientw.exe`" -c -a `"$prefix\msys64\mingw64\bin\runemacs.exe`"", "$prefix\msys64\mingw64\bin\emacsclientw.exe")
+} else { $NULL }),
+$(if ($pkglist -contains "msys64") {
+        @("Open in Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\runemacs.exe`"", "$prefix\msys64\mingw64\bin\runemacs.exe")
+} else { $NULL }),
+$(if ($pkglist -contains "vim") {
+        @("Open with Vim", "`"$prefix\vim\gvim.exe`"", "$prefix\vim\gvim.exe")
+} else { $NULL }),
+$(if ($pkglist -contains "vim") {
+        @("Open with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`"", "$prefix\vim\gvim.exe")
+} else { $NULL }),
+$(if ($pkglist -contains "atom") {
+        @("Open with Atom", "`"$prefix\atom\app-1.3.2\atom.exe`"", "$prefix\atom\app-1.3.2\atom.exe")
+} else { $NULL }),
+$(if ($pkglist -contains "atom") {
+        @("Open with Atom (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\atom\app-1.3.2\atom.exe`"", "$prefix\atom\app-1.3.2\atom.exe")
+} else { $NULL }),
         $NULL
     ) | % {
         if ($_) {
@@ -550,12 +773,24 @@ function create-contextmenuentries ($prefix) {
     # All File Type Context Menu
     pushd -LiteralPath "HKCR:\*\shell"
     @(
-        @("Edit with Emacs", "`"$prefix\msys64\mingw64\bin\emacsclientw.exe`" -c -a `"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`"", "$prefix\msys64\mingw64\bin\emacsclientw.exe"),
-        @("Edit with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`"", "$prefix\msys64\mingw64\bin\runemacs.exe"),
-        @("Edit with Vim", "`"$prefix\vim\gvim.exe`" `"%1`"", "$prefix\vim\gvim.exe"),
-        @("Edit with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`" `"%1`"", "$prefix\vim\gvim.exe"),
-        @("Open with Atom", "`"$prefix\atom\app-1.3.2\atom.exe`" `"%1`"", "$prefix\atom\app-1.3.2\atom.exe"),
-        @("Open with Atom (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\atom\app-1.3.2\atom.exe`" `"%1`"", "$prefix\atom\app-1.3.2\atom.exe"),
+$(if ($pkglist -contains "msys64") {
+        @("Edit with Emacs", "`"$prefix\msys64\mingw64\bin\emacsclientw.exe`" -c -a `"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`"", "$prefix\msys64\mingw64\bin\emacsclientw.exe")
+} else { $NULL }),
+$(if ($pkglist -contains "msys64") {
+        @("Edit with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`"", "$prefix\msys64\mingw64\bin\runemacs.exe")
+} else { $NULL }),
+$(if ($pkglist -contains "vim") {
+        @("Edit with Vim", "`"$prefix\vim\gvim.exe`" `"%1`"", "$prefix\vim\gvim.exe")
+} else { $NULL }),
+$(if ($pkglist -contains "vim") {
+        @("Edit with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`" `"%1`"", "$prefix\vim\gvim.exe")
+} else { $NULL }),
+$(if ($pkglist -contains "atom") {
+        @("Open with Atom", "`"$prefix\atom\app-1.3.2\atom.exe`" `"%1`"", "$prefix\atom\app-1.3.2\atom.exe")
+} else { $NULL }),
+$(if ($pkglist -contains "atom") {
+        @("Open with Atom (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\atom\app-1.3.2\atom.exe`" `"%1`"", "$prefix\atom\app-1.3.2\atom.exe")
+} else { $NULL }),
         $NULL
     ) | % {
         if ($_) {
