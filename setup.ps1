@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20160506
+# Latest update: 20160719
 #
 
 <#
@@ -77,6 +77,7 @@ param(
 "m2",
 "mRemoteNG",
 "msys64",
+"nodejs",
 "R",
 "radare2",
 "Recoll",
@@ -304,6 +305,9 @@ $(if ($pkglist -contains "gradle") { @"
 $(if ($pkglist -contains "leiningen") { @"
         "$prefix\.lein\bin",
 "@ })
+$(if ($pkglist -contains "nodejs") { @"
+        "$prefix\nodejs",
+"@ })
 $(if ($pkglist -contains "go") { @"
         "$prefix\go\bin",
 "@ })
@@ -435,6 +439,9 @@ $(if ($pkglist -contains "gradle") {
 } else { $NULL }),
 $(if ($pkglist -contains "leiningen") {
                             "$prefix\.lein\bin"
+} else { $NULL }),
+$(if ($pkglist -contains "nodejs") {
+                            "$prefix\nodejs"
 } else { $NULL }),
 $(if ($pkglist -contains "go") {
                             "$prefix\go\bin"
