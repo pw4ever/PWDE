@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20160719
+# Latest update: 20160727
 #
 
 <#
@@ -634,6 +634,11 @@ function create-shortcuts ($prefix) {
 $(if ($pkglist -contains "SysinternalsSuite") {
         @("$prefix\SysinternalsSuite\procexp.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ProcExp.lnk")
 } else { $NULL }),
+
+$(if ($pkglist -contains "bin") {
+        @("$prefix\bin\NegativeScreen.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\NegativeScreen.lnk")
+} else { $NULL }),
+
 
 $(if ($pkglist -contains "Recoll") {
         @("$prefix\Recoll\recoll.exe", "$env:USERPROFILE\Desktop\Recoll.lnk")
