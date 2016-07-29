@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20160728
+# Latest update: 20160729
 #
 
 <#
@@ -79,6 +79,7 @@ param(
 "msys64",
 "nodejs",
 "PEBrowse64",
+"PEBrowsePro",
 "R",
 "radare2",
 "Recoll",
@@ -396,6 +397,9 @@ $(if ($pkglist -contains "mRemoteNG") { @"
 $(if ($pkglist -contains "PEBrowse64") { @"
         "$prefix\PEBrowse64"
 "@ })
+$(if ($pkglist -contains "PEBrowsePro") { @"
+        "$prefix\PEBrowsePro"
+"@ })
     ) | % {
         `$p=`$_
         if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {
@@ -545,7 +549,10 @@ $(if ($pkglist -contains "mRemoteNG") {
 } else { $NULL }),
 $(if ($pkglist -contains "PEBrowse64") {
                             "$prefix\PEBrowse64"
-} else { $NULL })
+} else { $NULL }),
+$(if ($pkglist -contains "PEBrowsePro") {
+                            "$prefix\PEBrowsePro"
+} else { $NULL }),
                             "$env:PWDE_PERSISTENT_PATH"
                             ) | ? {$_})))
 
