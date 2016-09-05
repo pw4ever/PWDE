@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20160729
+# Latest update: 20160905
 #
 
 <#
@@ -78,6 +78,7 @@ param(
 "mRemoteNG",
 "msys64",
 "nodejs",
+"nmap",
 "PEBrowse64",
 "PEBrowsePro",
 "R",
@@ -324,6 +325,9 @@ $(if ($pkglist -contains "global") { @"
 $(if ($pkglist -contains "vim") { @"
         "$prefix\vim",
 "@ })
+$(if ($pkglist -contains "nmap") { @"
+        "$prefix\nmap",
+"@ })
 $(if ($pkglist -contains "SysinternalsSuite") { @"
         "$prefix\SysinternalsSuite",
 "@ })
@@ -468,6 +472,9 @@ $(if ($pkglist -contains "global") {
 } else { $NULL }),
 $(if ($pkglist -contains "vim") {
                             "$prefix\vim"
+} else { $NULL }),
+$(if ($pkglist -contains "nmap") {
+                            "$prefix\nmap"
 } else { $NULL }),
 $(if ($pkglist -contains "SysinternalsSuite") {
                             "$prefix\SysinternalsSuite"
