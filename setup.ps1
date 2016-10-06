@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20160905
+# Latest update: 20161006
 #
 
 <#
@@ -58,6 +58,7 @@ param(
 "atom",
 "Audacity",
 "bin",
+"ClojureCLR",
 "ConEmuPack",
 "config",
 "Documents",
@@ -308,6 +309,9 @@ $(if ($pkglist -contains "gradle") { @"
 $(if ($pkglist -contains "leiningen") { @"
         "$prefix\.lein\bin",
 "@ })
+$(if ($pkglist -contains "ClojureCLR") { @"
+        "$prefix\ClojureCLR",
+"@ })
 $(if ($pkglist -contains "nodejs") { @"
         "$prefix\nodejs",
 "@ })
@@ -451,6 +455,9 @@ $(if ($pkglist -contains "gradle") {
 } else { $NULL }),
 $(if ($pkglist -contains "leiningen") {
                             "$prefix\.lein\bin"
+} else { $NULL }),
+$(if ($pkglist -contains "ClojureCLR") {
+                            "$prefix\ClojureCLR"
 } else { $NULL }),
 $(if ($pkglist -contains "nodejs") {
                             "$prefix\nodejs"
