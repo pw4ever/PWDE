@@ -326,6 +326,9 @@ $(if ($pkglist -contains "Git") { @"
 $(if ($pkglist -contains "global") { @"
         "$prefix\global\bin",
 "@ })
+$(if ($pkglist -contains "emacs") { @"
+        "$prefix\emacs\bin",
+"@ })
 $(if ($pkglist -contains "vim") { @"
         "$prefix\vim",
 "@ })
@@ -398,6 +401,7 @@ $(if ($pkglist -contains "msys64") { @"
         "$prefix\msys64\usr\bin",
         "$prefix\msys64\mingw64\bin",
         "$prefix\msys64\opt\bin",
+        "$prefix\msys64",
 "@ })
 $(if ($pkglist -contains "mRemoteNG") { @"
         "$prefix\mRemoteNG"
@@ -477,6 +481,9 @@ $(if ($pkglist -contains "Git") {
 $(if ($pkglist -contains "global") {
                             "$prefix\global\bin"
 } else { $NULL }),
+$(if ($pkglist -contains "emacs") {
+                            "$prefix\emacs\bin"
+} else { $NULL }),
 $(if ($pkglist -contains "vim") {
                             "$prefix\vim"
 } else { $NULL }),
@@ -555,7 +562,8 @@ $(if ($pkglist -contains "msys64") {
     @(
                             "$prefix\msys64\usr\bin",
                             "$prefix\msys64\mingw64\bin",
-                            "$prefix\msys64\opt\bin"
+                            "$prefix\msys64\opt\bin",
+                            "$prefix\msys64"
     ))
 } else { $NULL }),
 $(if ($pkglist -contains "mRemoteNG") {
@@ -579,8 +587,8 @@ $(if ($pkglist -contains "vim") {
         @("EDITOR", $("$prefix\vim\gvim.exe".Replace("\", "/")))
 } else { $NULL }),
 
-$(if ($pkglist -contains "msys64") {
-        @("ALTERNATE_EDITOR", $("$prefix\msys64\mingw64\bin\runemacs.exe".Replace("\", "/")))
+$(if ($pkglist -contains "emacs") {
+        @("ALTERNATE_EDITOR", $("$prefix\emacs\bin\runemacs.exe".Replace("\", "/")))
 } else { $NULL }),
 $(if ($pkglist -contains "msys64") {
         @("PAGER", $("$prefix\msys64\usr\bin\less.exe".Replace("\", "/")))
@@ -708,12 +716,12 @@ $(if ($pkglist -contains "VirtuaWin") {
 } else { $NULL }),
 
 
-$(if ($pkglist -contains "msys64") {        
-        @("$prefix\msys64\mingw64\bin\emacsclientw.exe", "$env:USERPROFILE\Desktop\Emacs.lnk", "-c -a `"$prefix\msys64\mingw64\bin\runemacs.exe`"")
+$(if ($pkglist -contains "emacs") {        
+        @("$prefix\emacs\bin\emacsclientw.exe", "$env:USERPROFILE\Desktop\Emacs.lnk", "-c -a `"$prefix\emacs\bin\runemacs.exe`"")
 } else { $NULL }),
 
-$(if ($pkglist -contains "msys64") {        
-        @("$prefix\msys64\mingw64\bin\runemacs.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\EmacsServer.lnk", "--eval `"(server-start)`"")
+$(if ($pkglist -contains "emacs") {        
+        @("$prefix\emacs\bin\runemacs.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\EmacsServer.lnk", "--eval `"(server-start)`"")
 } else { $NULL }),
 
 
@@ -780,11 +788,11 @@ $(if ($pkglist -contains "ConEmuPack") {
 $(if ($pkglist -contains "ConEmuPack") {
         @("Open in ConEmu (Admin)", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell (Admin)}", "$prefix\ConEmuPack\ConEmu64.exe")
 } else { $NULL }),
-$(if ($pkglist -contains "msys64") {
-        @("Open in Emacs", "`"$prefix\msys64\mingw64\bin\emacsclientw.exe`" -c -a `"$prefix\msys64\mingw64\bin\runemacs.exe`"", "$prefix\msys64\mingw64\bin\emacsclientw.exe")
+$(if ($pkglist -contains "emacs") {
+        @("Open in Emacs", "`"$prefix\emacs\bin\emacsclientw.exe`" -c -a `"$prefix\emacs\bin\runemacs.exe`"", "$prefix\emacs\bin\emacsclientw.exe")
 } else { $NULL }),
-$(if ($pkglist -contains "msys64") {
-        @("Open in Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\runemacs.exe`"", "$prefix\msys64\mingw64\bin\runemacs.exe")
+$(if ($pkglist -contains "emacs") {
+        @("Open in Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\emacs\bin\runemacs.exe`"", "$prefix\emacs\bin\runemacs.exe")
 } else { $NULL }),
 $(if ($pkglist -contains "vim") {
         @("Open with Vim", "`"$prefix\vim\gvim.exe`"", "$prefix\vim\gvim.exe")
@@ -816,11 +824,11 @@ $(if ($pkglist -contains "atom") {
     # All File Type Context Menu
     pushd -LiteralPath "HKCR:\*\shell"
     @(
-$(if ($pkglist -contains "msys64") {
-        @("Edit with Emacs", "`"$prefix\msys64\mingw64\bin\emacsclientw.exe`" -c -a `"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`"", "$prefix\msys64\mingw64\bin\emacsclientw.exe")
+$(if ($pkglist -contains "emacs") {
+        @("Edit with Emacs", "`"$prefix\emacs\bin\emacsclientw.exe`" -c -a `"$prefix\emacs\bin\runemacs.exe`" `"%1`"", "$prefix\emacs\bin\emacsclientw.exe")
 } else { $NULL }),
 $(if ($pkglist -contains "msys64") {
-        @("Edit with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\msys64\mingw64\bin\runemacs.exe`" `"%1`"", "$prefix\msys64\mingw64\bin\runemacs.exe")
+        @("Edit with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\emacs\bin\runemacs.exe`" `"%1`"", "$prefix\emacs\bin\runemacs.exe")
 } else { $NULL }),
 $(if ($pkglist -contains "vim") {
         @("Edit with Vim", "`"$prefix\vim\gvim.exe`" `"%1`"", "$prefix\vim\gvim.exe")
