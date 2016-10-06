@@ -595,6 +595,9 @@ $(if ($pkglist -contains "jdk") {
 $(if ($pkglist -contains "leiningen") {
         @("LEIN_HOME", $("$prefix\.lein".Replace("\", "/")))
 } else { $NULL }),
+$(if ($pkglist -contains "ClojureCLR") {
+        @("CLOJURECLR_HOME", $("$prefix\ClojureCLR".Replace("\", "\")))
+} else { $NULL }),
 $(if ($pkglist -contains "jdk") {
         @("LEIN_JAVA_CMD", $("$prefix\jdk\bin\java.exe".Replace("\", "/")))
 } else { $NULL }),
