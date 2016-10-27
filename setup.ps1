@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20161006
+# Latest update: 20161027
 #
 
 <#
@@ -65,7 +65,7 @@ param(
 "emacs",
 "evince",
 "ffmpeg",
-"firefox",
+#"firefox",
 "GIMP",
 "Git",
 "global",
