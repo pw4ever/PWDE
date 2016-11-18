@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20161027
+# Latest update: 20161118
 #
 
 <#
@@ -783,16 +783,16 @@ function create-contextmenuentries ($prefix) {
     # Directory Context Menu
     @(
 $(if ($pkglist -contains "ConEmuPack") {
-        @("Open in ConEmu", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell}", "$prefix\ConEmuPack\ConEmu64.exe")
+        @("Open with ConEmu", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell}", "$prefix\ConEmuPack\ConEmu64.exe")
 } else { $NULL }),
 $(if ($pkglist -contains "ConEmuPack") {
-        @("Open in ConEmu (Admin)", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell (Admin)}", "$prefix\ConEmuPack\ConEmu64.exe")
+        @("Open with ConEmu (Admin)", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell (Admin)}", "$prefix\ConEmuPack\ConEmu64.exe")
 } else { $NULL }),
 $(if ($pkglist -contains "emacs") {
-        @("Open in Emacs", "`"$prefix\emacs\bin\emacsclientw.exe`" -c -a `"$prefix\emacs\bin\runemacs.exe`"", "$prefix\emacs\bin\emacsclientw.exe")
+        @("Open with Emacs", "`"$prefix\emacs\bin\emacsclientw.exe`" -c -a `"$prefix\emacs\bin\runemacs.exe`"", "$prefix\emacs\bin\emacsclientw.exe")
 } else { $NULL }),
 $(if ($pkglist -contains "emacs") {
-        @("Open in Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\emacs\bin\runemacs.exe`"", "$prefix\emacs\bin\runemacs.exe")
+        @("Open with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\emacs\bin\runemacs.exe`"", "$prefix\emacs\bin\runemacs.exe")
 } else { $NULL }),
 $(if ($pkglist -contains "vim") {
         @("Open with Vim", "`"$prefix\vim\gvim.exe`"", "$prefix\vim\gvim.exe")
@@ -800,12 +800,12 @@ $(if ($pkglist -contains "vim") {
 $(if ($pkglist -contains "vim") {
         @("Open with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`"", "$prefix\vim\gvim.exe")
 } else { $NULL }),
-$(if ($pkglist -contains "atom") {
-        @("Open with Atom", "`"$prefix\atom\app-1.3.2\atom.exe`"", "$prefix\atom\app-1.3.2\atom.exe")
-} else { $NULL }),
-$(if ($pkglist -contains "atom") {
-        @("Open with Atom (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\atom\app-1.3.2\atom.exe`"", "$prefix\atom\app-1.3.2\atom.exe")
-} else { $NULL }),
+#(if ($pkglist -contains "atom") {
+#        @("Open with Atom", "`"$prefix\atom\app-1.3.2\atom.exe`"", "$prefix\atom\app-1.3.2\atom.exe")
+#} else { $NULL }),
+#$(if ($pkglist -contains "atom") {
+#        @("Open with Atom (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\atom\app-1.3.2\atom.exe`"", "$prefix\atom\app-1.3.2\atom.exe")
+#} else { $NULL }),
         $NULL
     ) | % {
         if ($_) {
@@ -834,14 +834,17 @@ $(if ($pkglist -contains "vim") {
         @("Edit with Vim", "`"$prefix\vim\gvim.exe`" `"%1`"", "$prefix\vim\gvim.exe")
 } else { $NULL }),
 $(if ($pkglist -contains "vim") {
+        @("View with Vim", "`"$prefix\vim\gvim.exe`" -R `"%1`"", "$prefix\vim\gvim.exe")
+} else { $NULL }),
+$(if ($pkglist -contains "vim") {
         @("Edit with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`" `"%1`"", "$prefix\vim\gvim.exe")
 } else { $NULL }),
-$(if ($pkglist -contains "atom") {
-        @("Open with Atom", "`"$prefix\atom\app-1.3.2\atom.exe`" `"%1`"", "$prefix\atom\app-1.3.2\atom.exe")
-} else { $NULL }),
-$(if ($pkglist -contains "atom") {
-        @("Open with Atom (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\atom\app-1.3.2\atom.exe`" `"%1`"", "$prefix\atom\app-1.3.2\atom.exe")
-} else { $NULL }),
+#$(if ($pkglist -contains "atom") {
+#        @("Edit with Atom", "`"$prefix\atom\app-1.3.2\atom.exe`" `"%1`"", "$prefix\atom\app-1.3.2\atom.exe")
+#} else { $NULL }),
+#$(if ($pkglist -contains "atom") {
+#        @("Edit with Atom (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\atom\app-1.3.2\atom.exe`" `"%1`"", "$prefix\atom\app-1.3.2\atom.exe")
+#} else { $NULL }),
         $NULL
     ) | % {
         if ($_) {
