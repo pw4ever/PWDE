@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20161118
+# Latest update: 20161207
 #
 
 <#
@@ -82,6 +82,7 @@ param(
 "nmap",
 "PEBrowse64",
 "PEBrowsePro",
+"putty",
 "R",
 "radare2",
 "Recoll",
@@ -412,6 +413,9 @@ $(if ($pkglist -contains "PEBrowse64") { @"
 $(if ($pkglist -contains "PEBrowsePro") { @"
         "$prefix\PEBrowsePro"
 "@ })
+$(if ($pkglist -contains "putty") { @"
+        "$prefix\putty"
+"@ })
     ) | % {
         `$p=`$_
         if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {
@@ -574,6 +578,9 @@ $(if ($pkglist -contains "PEBrowse64") {
 } else { $NULL }),
 $(if ($pkglist -contains "PEBrowsePro") {
                             "$prefix\PEBrowsePro"
+} else { $NULL }),
+$(if ($pkglist -contains "putty") {
+                            "$prefix\putty"
 } else { $NULL }),
                             "$env:PWDE_PERSISTENT_PATH"
                             ) | ? {$_})))
