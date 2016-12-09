@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20161207
+# Latest update: 20161209
 #
 
 <#
@@ -676,10 +676,11 @@ function create-shortcuts ($prefix) {
 
     @(
         @("$prefix", "$env:USERPROFILE\Desktop\PWDE.lnk"),
-
+<#
 $(if ($pkglist -contains "SysinternalsSuite") {
         @("$prefix\SysinternalsSuite\procexp.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ProcExp.lnk")
 } else { $NULL }),
+#>
 
 $(if ($pkglist -contains "bin") {
         @("$prefix\bin\NegativeScreen.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\NegativeScreen.lnk")
@@ -709,10 +710,11 @@ $(if ($pkglist -contains "ConEmuPack") {
 $(if ($pkglist -contains "Launchy") {        
         @("$prefix\Launchy\Launchy.exe", "$env:USERPROFILE\Desktop\Launchy.lnk")
 } else { $NULL }),
+<#
 $(if ($pkglist -contains "Launchy") {        
         @("$prefix\Launchy\Launchy.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\Launchy.lnk")
 } else { $NULL }),
-
+#>
 
 $(if ($pkglist -contains "VirtuaWin") {        
         @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:USERPROFILE\Desktop\VirtuaWin.lnk")
@@ -764,6 +766,14 @@ $(if ($pkglist -contains "mRemoteNG") {
 
 $(if ($pkglist -contains "firefox") {        
         @("$prefix\firefox\firefox.exe", "$env:USERPROFILE\Desktop\FireFox.lnk")
+} else { $NULL }),
+
+$(if ($pkglist -contains "putty") {
+        @("$prefix\putty\PAGEANT.exe", "$env:USERPROFILE\Desktop\PAGEANT.lnk")
+} else { $NULL }),
+
+$(if ($pkglist -contains "putty") {
+        @("$prefix\putty\PAGEANT.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\PAGEANT.lnk")
 } else { $NULL }),
 
     $NULL
