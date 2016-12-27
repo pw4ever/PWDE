@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20161209
+# Latest update: 20161223
 #
 
 <#
@@ -73,6 +73,7 @@ param(
 "gradle",
 "iasl",
 "jdk",
+"jpdfbookmarks",
 "Launchy",
 "leiningen",
 "m2",
@@ -416,6 +417,9 @@ $(if ($pkglist -contains "PEBrowsePro") { @"
 $(if ($pkglist -contains "putty") { @"
         "$prefix\putty"
 "@ })
+$(if ($pkglist -contains "jpdfbookmarks") { @"
+        "$prefix\jpdfbookmarks"
+"@ })
     ) | % {
         `$p=`$_
         if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {
@@ -581,6 +585,9 @@ $(if ($pkglist -contains "PEBrowsePro") {
 } else { $NULL }),
 $(if ($pkglist -contains "putty") {
                             "$prefix\putty"
+} else { $NULL }),
+$(if ($pkglist -contains "jpdfbookmarks") {
+                            "$prefix\jpdfbookmarks"
 } else { $NULL }),
                             "$env:PWDE_PERSISTENT_PATH"
                             ) | ? {$_})))
@@ -766,6 +773,16 @@ $(if ($pkglist -contains "mRemoteNG") {
 
 $(if ($pkglist -contains "firefox") {        
         @("$prefix\firefox\firefox.exe", "$env:USERPROFILE\Desktop\FireFox.lnk")
+} else { $NULL }),
+
+
+$(if ($pkglist -contains "jpdfbookmarks") {
+        @("$prefix\jpdfbookmarks\jpdfbookmarks.exe", "$env:USERPROFILE\Desktop\jpdfbookmarks.lnk")
+} else { $NULL }),
+
+
+$(if ($pkglist -contains "putty") {
+        @("$prefix\putty\PUTTY.exe", "$env:USERPROFILE\Desktop\PUTTY.lnk")
 } else { $NULL }),
 
 $(if ($pkglist -contains "putty") {
