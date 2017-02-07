@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20161223
+# Latest update: 20170206
 #
 
 <#
@@ -79,6 +79,7 @@ param(
 "m2",
 "mRemoteNG",
 "msys64",
+"nasm",
 "nodejs",
 "nmap",
 "PEBrowse64",
@@ -420,6 +421,9 @@ $(if ($pkglist -contains "putty") { @"
 $(if ($pkglist -contains "jpdfbookmarks") { @"
         "$prefix\jpdfbookmarks"
 "@ })
+$(if ($pkglist -contains "nasm") { @"
+        "$prefix\nasm"
+"@ })
     ) | % {
         `$p=`$_
         if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {
@@ -588,6 +592,9 @@ $(if ($pkglist -contains "putty") {
 } else { $NULL }),
 $(if ($pkglist -contains "jpdfbookmarks") {
                             "$prefix\jpdfbookmarks"
+} else { $NULL }),
+$(if ($pkglist -contains "nasm") {
+                            "$prefix\nasm"
 } else { $NULL }),
                             "$env:PWDE_PERSISTENT_PATH"
                             ) | ? {$_})))
