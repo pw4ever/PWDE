@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20170206
+# Latest update: 20170303
 #
 
 <#
@@ -321,6 +321,9 @@ $(if ($pkglist -contains "nodejs") { @"
 $(if ($pkglist -contains "go") { @"
         "$prefix\go\bin",
 "@ })
+$(if ($pkglist -contains "go") { @"
+        "$prefix\gopath\bin",
+"@ })
         "$([IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "bin"))",
 $(if ($pkglist -contains "Git") { @"
         "$prefix\Git",
@@ -480,6 +483,9 @@ $(if ($pkglist -contains "nodejs") {
 } else { $NULL }),
 $(if ($pkglist -contains "go") {
                             "$prefix\go\bin"
+} else { $NULL }),
+$(if ($pkglist -contains "go") {
+                            "$prefix\gopath\bin"
 } else { $NULL }),
                             [IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "bin"),
 $(if ($pkglist -contains "Git") {
