@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20170303
+# Latest update: 20170602
 #
 
 <#
@@ -94,7 +94,8 @@ param(
 "vim",
 "VirtuaWin",
 "vlc",
-"WinKit"
+"WinKit",
+"ynp-tools"
 ),
 
     [Parameter(
@@ -427,6 +428,9 @@ $(if ($pkglist -contains "jpdfbookmarks") { @"
 $(if ($pkglist -contains "nasm") { @"
         "$prefix\nasm"
 "@ })
+$(if ($pkglist -contains "ynp-tools") { @"
+        "$prefix\ynp-tools"
+"@ })
     ) | % {
         `$p=`$_
         if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {
@@ -601,6 +605,9 @@ $(if ($pkglist -contains "jpdfbookmarks") {
 } else { $NULL }),
 $(if ($pkglist -contains "nasm") {
                             "$prefix\nasm"
+} else { $NULL }),
+$(if ($pkglist -contains "ynp-tools") {
+                            "$prefix\ynp-tools"
 } else { $NULL }),
                             "$env:PWDE_PERSISTENT_PATH"
                             ) | ? {$_})))
