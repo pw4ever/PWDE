@@ -199,13 +199,19 @@ function main
     # finalization
     & {
         if ($PkgList -contains "global") {
-            & "$PSScriptRoot\scripts\global.ps1" -Destination $Destination -PkgList $PkgList
+            $path="$PSScriptRoot\scripts\global.ps1"
+            Write-Verbose "Finalization: $path."
+            & $path -Destination $Destination -PkgList $PkgList
         }
         if ($PkgList -contains "gcmw") {
-            & "$PSScriptRoot\scripts\gcmw.ps1" -Destination $Destination -PkgList $PkgList
+            $path="$PSScriptRoot\scripts\gcmw.ps1"
+            Write-Verbose "Finalization: $path."
+            & $path -Destination $Destination -PkgList $PkgList
         }
         if ($PkgList -contains "Git") {
-            & "$PSScriptRoot\scripts\Git.ps1" -Destination $Destination -PkgList $PkgList
+            $path="$PSScriptRoot\scripts\Git.ps1"
+            Write-Verbose "Finalization: $path."
+            & $path -Destination $Destination -PkgList $PkgList
         }
     }
 }
