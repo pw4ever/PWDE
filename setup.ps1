@@ -165,6 +165,11 @@ $PkgList=$($PkgList | ? { ! $($_.ToUpper() -in $ExcludePkg) })
 
 function main
 {
+    if ($InstallChocolatey) {
+        # https://chocolatey.org/install
+        iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+    }
+
     if ($DownloadFromUpstream) {
         ensure-dir $ZipSource
         download-upstream $UpstreamURLPrefix $ZipSource $PkgList
@@ -173,8 +178,11 @@ function main
     if ($DownloadOnly) {
         return
     }
-    elseif (! $Destination) {
-        Write-Error "Need Destination if not DownloadOnly"
+
+    if ([string]::IsNullOrWhiteSpace($Destination)) {
+        if (!$InstallChocolatey) {
+            Write-Error "Need -Destination if not -DownloadOnly."
+        }
         return
     }
 
@@ -203,11 +211,6 @@ function main
 
     if ($CreateContextMenuEntries) {
         create-contextmenuentries $Destination
-    }
-
-    if ($InstallChocolatey) {
-        # https://chocolatey.org/install
-        iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
     }
 
     # finalization
