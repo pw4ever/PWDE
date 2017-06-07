@@ -30,6 +30,8 @@
   Create Desktop shortcuts.
 .PARAMETER CreateContextMenuEntries
   Create context menu entries (requires Admin privilege).
+.PARAMETER InstallChocolatey
+  Install Chocolatey (https://chocolatey.org/).
 #>
 
 [CmdletBinding(
@@ -145,7 +147,14 @@ param(
     )
     ]
     [switch]
-    $CreateContextMenuEntries
+    $CreateContextMenuEntries,
+
+    [Parameter(
+    )
+    ]
+    [switch]
+    $InstallChocolatey
+
 )
 
 if ($ExcludePkg) {
@@ -194,6 +203,11 @@ function main
 
     if ($CreateContextMenuEntries) {
         create-contextmenuentries $Destination
+    }
+
+    if ($InstallChocolatey) {
+        # https://chocolatey.org/install
+        iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
     }
 
     # finalization
