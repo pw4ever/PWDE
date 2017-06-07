@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20170602
+# Latest update: 20170607
 #
 
 <#
@@ -66,6 +66,7 @@ param(
 "evince",
 "ffmpeg",
 #"firefox",
+"gcmw",
 "GIMP",
 "Git",
 "global",
@@ -176,11 +177,6 @@ function main
         unzip-files "$ZipSource" "$Destination" $PkgList
     }
 
-    # extra setup beyond unzipping
-    & {
-        & "$PSScriptRoot\scripts\global.ps1" -Destination $Destination -PkgList $PkgList
-    }
-
     $initscript = [IO.Path]::Combine($Destination, "init.ps1")
     init $initscript
 
@@ -198,6 +194,19 @@ function main
 
     if ($CreateContextMenuEntries) {
         create-contextmenuentries $Destination
+    }
+
+    # finalization
+    & {
+        if ($PkgList -contains "global") {
+            & "$PSScriptRoot\scripts\global.ps1" -Destination $Destination -PkgList $PkgList
+        }
+        if ($PkgList -contains "gcmw") {
+            & "$PSScriptRoot\scripts\gcmw.ps1" -Destination $Destination -PkgList $PkgList
+        }
+        if ($PkgList -contains "Git") {
+            & "$PSScriptRoot\scripts\Git.ps1" -Destination $Destination -PkgList $PkgList
+        }
     }
 }
 
