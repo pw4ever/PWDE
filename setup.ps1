@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20170607
+# Latest update: 20170609
 #
 
 <#
@@ -59,6 +59,7 @@ param(
 "apache-maven",
 "atom",
 "Audacity",
+"AutoHotkey",
 "bin",
 "ClojureCLR",
 "ConEmuPack",
@@ -463,6 +464,9 @@ $(if ($pkglist -contains "nasm") { @"
 $(if ($pkglist -contains "ynp-tools") { @"
         "$prefix\ynp-tools"
 "@ })
+$(if ($pkglist -contains "AutoHotkey") { @"
+        "$prefix\AutoHotkey"
+"@ })
     ) | % {
         `$p=`$_
         if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {
@@ -640,6 +644,9 @@ $(if ($pkglist -contains "nasm") {
 } else { $NULL }),
 $(if ($pkglist -contains "ynp-tools") {
                             "$prefix\ynp-tools"
+} else { $NULL }),
+$(if ($pkglist -contains "AutoHotkey") {
+                            "$prefix\AutoHotkey"
 } else { $NULL }),
                             "$env:PWDE_PERSISTENT_PATH"
                             ) | ? {$_})))
