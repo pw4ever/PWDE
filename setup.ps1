@@ -83,7 +83,8 @@ param(
 "vim",
 "VirtuaWin",
 "WinKit",
-"ynp-tools"
+"ynp-tools",
+"zVirtualDesktop"
 ),
 
     [Parameter(
@@ -804,6 +805,12 @@ $(if ($pkglist -contains "RWEverything") {
 
 $(if ($pkglist -contains "putty") {
         @("$prefix\putty\PAGEANT.exe", "$startup\PAGEANT.lnk")
+} else { $NULL }),
+
+
+$(if (($pkglist -contains "zVirtualDesktop") -and ([System.Environment]::OSVersion.Version.Major -ge 10)) {
+        # zVirtualDesktop only for Window 10 or greater.
+        @("$prefix\zVirtualDesktop\zVirtualDesktop.exe", "$startup\zVirtualDesktop.lnk")
 } else { $NULL }),
 
 
