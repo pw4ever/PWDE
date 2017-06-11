@@ -168,6 +168,7 @@ param(
     "scriptcs",
     "vcxsrv",
     "vlc",
+    "wireshark",
     "youtube-dl",
     $NULL
     )
