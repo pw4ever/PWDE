@@ -152,6 +152,7 @@ param(
     ]
     $ChocoPkgs=@(
     "audacity",
+    "beyondcompare",
     "ffmpeg",
     "firefox",
     "gimp",
