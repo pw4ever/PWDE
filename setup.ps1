@@ -757,56 +757,55 @@ function create-shortcuts ($prefix) {
         $s.Save()
     }
 
+    $desktop=[Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)
+    $startup=[Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)
     @(
-        @("$prefix", "$env:USERPROFILE\Desktop\PWDE.lnk"),
+        @("$prefix", "$desktop\PWDE.lnk"),
+
+
+$(if ($pkglist -contains "bin") {
+        @("$prefix\bin\NegativeScreen.exe", "$startup\NegativeScreen.lnk")
+} else { $NULL }),
+
 <#
-$(if ($pkglist -contains "SysinternalsSuite") {
-        @("$prefix\SysinternalsSuite\procexp.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ProcExp.lnk")
+$(if ($pkglist -contains "VcXsrv") {        
+        @("$prefix\VcXsrv\xlaunch.exe", "$startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch")
 } else { $NULL }),
 #>
 
-$(if ($pkglist -contains "bin") {
-        @("$prefix\bin\NegativeScreen.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\NegativeScreen.lnk")
-} else { $NULL }),
-
-
-$(if ($pkglist -contains "VcXsrv") {        
-        @("$prefix\VcXsrv\xlaunch.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch")
-} else { $NULL }),
-
-
 $(if ($pkglist -contains "ConEmuPack") {        
-        @("$prefix\ConEmuPack\ConEmu64.exe", "$env:USERPROFILE\Desktop\ConEmu64.lnk", $NULL, "CTRL+ALT+q")
+        @("$prefix\ConEmuPack\ConEmu64.exe", "$desktop\ConEmu64.lnk", $NULL, "CTRL+ALT+q")
 } else { $NULL }),
 
 
 $(if ($pkglist -contains "VirtuaWin") {        
-        @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:USERPROFILE\Desktop\VirtuaWin.lnk")
+        @("$prefix\VirtuaWin\VirtuaWin.exe", "$desktop\VirtuaWin.lnk")
 } else { $NULL }),
 
 
 $(if ($pkglist -contains "emacs") {        
-        @("$prefix\emacs\bin\emacsclientw.exe", "$env:USERPROFILE\Desktop\Emacs.lnk", "-c -a `"$prefix\emacs\bin\runemacs.exe`"")
+        @("$prefix\emacs\bin\emacsclientw.exe", "$desktop\Emacs.lnk", "-c -a `"$prefix\emacs\bin\runemacs.exe`"")
 } else { $NULL }),
 
 $(if ($pkglist -contains "emacs") {        
-        @("$prefix\emacs\bin\runemacs.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\EmacsServer.lnk", "--eval `"(server-start)`"")
+        @("$prefix\emacs\bin\runemacs.exe", "$startup\EmacsServer.lnk", "--eval `"(server-start)`"")
 } else { $NULL }),
 
 
 $(if ($pkglist -contains "vim") {        
-        @("$prefix\vim\gvim.exe", "$env:USERPROFILE\Desktop\GVim.lnk")
+        @("$prefix\vim\gvim.exe", "$desktop\GVim.lnk")
 } else { $NULL }),
 
 
 $(if ($pkglist -contains "RWEverything") {        
-        @("$prefix\RWEverything\Rw.exe", "$env:USERPROFILE\Desktop\RWEverything.lnk")
+        @("$prefix\RWEverything\Rw.exe", "$desktop\RWEverything.lnk")
 } else { $NULL }),
 
 
 $(if ($pkglist -contains "putty") {
-        @("$prefix\putty\PAGEANT.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\PAGEANT.lnk")
+        @("$prefix\putty\PAGEANT.exe", "$startup\PAGEANT.lnk")
 } else { $NULL }),
+
 
     $NULL
 
