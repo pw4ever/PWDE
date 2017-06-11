@@ -80,7 +80,6 @@ param(
 "radare2",
 "RWEverything",
 "SysinternalsSuite",
-"VcXsrv",
 "vim",
 "VirtuaWin",
 "WinKit",
