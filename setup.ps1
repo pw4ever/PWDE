@@ -161,6 +161,7 @@ param(
     "intellijidea-community",
     "jdk8",
     "maven",
+    "nmap",
     "nodejs",
     "nuget.commandline",
     "obs-studio",
