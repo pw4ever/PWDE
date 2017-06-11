@@ -56,6 +56,7 @@ param(
     [String[]]
     $PkgList=`
 @(
+"1pengw",
 "AutoHotkey",
 "bin",
 "ConEmuPack",
@@ -812,6 +813,11 @@ $(if ($pkglist -contains "putty") {
 $(if (($pkglist -contains "zVirtualDesktop") -and ([System.Environment]::OSVersion.Version.Major -ge 10)) {
         # zVirtualDesktop only for Window 10 or greater.
         @("$prefix\zVirtualDesktop\zVirtualDesktop.exe", "$startup\zVirtualDesktop.lnk")
+} else { $NULL }),
+
+
+$(if (($pkglist -contains "1pengw")) {
+        @("$prefix\1pengw\wm.exe", "$startup\wm.lnk")
 } else { $NULL }),
 
 
