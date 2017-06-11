@@ -56,48 +56,33 @@ param(
     [String[]]
     $PkgList=`
 @(
-"apache-maven",
-"atom",
-"Audacity",
 "AutoHotkey",
 "bin",
-"ClojureCLR",
 "ConEmuPack",
 "config",
 "Documents",
 "emacs",
 "evince",
-"ffmpeg",
-#"firefox",
 "gcmw",
-"GIMP",
 "Git",
 "global",
 "go",
-"gradle",
 "iasl",
 "jdk",
 "jpdfbookmarks",
-"Launchy",
 "leiningen",
 "m2",
-"mRemoteNG",
 "msys64",
 "nasm",
-"nodejs",
-"nmap",
 "PEBrowse64",
 "PEBrowsePro",
 "putty",
-"R",
 "radare2",
-"Recoll",
 "RWEverything",
 "SysinternalsSuite",
 "VcXsrv",
 "vim",
 "VirtuaWin",
-"vlc",
 "WinKit",
 "ynp-tools"
 ),
@@ -755,13 +740,6 @@ $(if ($pkglist -contains "bin") {
 } else { $NULL }),
 
 
-$(if ($pkglist -contains "Recoll") {
-        @("$prefix\Recoll\recoll.exe", "$env:USERPROFILE\Desktop\Recoll.lnk")
-} else { $NULL }),
-
-$(if ($pkglist -contains "VcXsrv") {        
-        @("$prefix\VcXsrv\xlaunch.exe", "$env:USERPROFILE\Desktop\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch")
-} else { $NULL }),
 $(if ($pkglist -contains "VcXsrv") {        
         @("$prefix\VcXsrv\xlaunch.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch")
 } else { $NULL }),
@@ -770,26 +748,10 @@ $(if ($pkglist -contains "VcXsrv") {
 $(if ($pkglist -contains "ConEmuPack") {        
         @("$prefix\ConEmuPack\ConEmu64.exe", "$env:USERPROFILE\Desktop\ConEmu64.lnk", $NULL, "CTRL+ALT+q")
 } else { $NULL }),
-$(if ($pkglist -contains "ConEmuPack") {        
-        #@("$prefix\ConEmuPack\ConEmu64.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\ConEmu64.lnk")
-} else { $NULL }),
 
-
-$(if ($pkglist -contains "Launchy") {        
-        @("$prefix\Launchy\Launchy.exe", "$env:USERPROFILE\Desktop\Launchy.lnk")
-} else { $NULL }),
-<#
-$(if ($pkglist -contains "Launchy") {        
-        @("$prefix\Launchy\Launchy.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\Launchy.lnk")
-} else { $NULL }),
-#>
 
 $(if ($pkglist -contains "VirtuaWin") {        
         @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:USERPROFILE\Desktop\VirtuaWin.lnk")
-} else { $NULL }),
-
-$(if ($pkglist -contains "VirtuaWin") {        
-        @("$prefix\VirtuaWin\VirtuaWin.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\VirtuaWin.lnk")
 } else { $NULL }),
 
 
@@ -811,44 +773,6 @@ $(if ($pkglist -contains "RWEverything") {
         @("$prefix\RWEverything\Rw.exe", "$env:USERPROFILE\Desktop\RWEverything.lnk")
 } else { $NULL }),
 
-
-$(if ($pkglist -contains "R") {        
-        @("$prefix\R\bin\x64\Rgui.exe", "$env:USERPROFILE\Desktop\RGui x64.lnk")
-} else { $NULL }),
-
-
-$(if ($pkglist -contains "GIMP") {        
-        @("$prefix\GIMP\bin\gimp-2.8.exe", "$env:USERPROFILE\Desktop\GIMP-2.8.lnk")
-} else { $NULL }),
-
-
-$(if ($pkglist -contains "atom") {        
-        @("$prefix\atom\app-1.3.2\atom.exe", "$env:USERPROFILE\Desktop\Atom.lnk")
-} else { $NULL }),
-
-
-$(if ($pkglist -contains "mRemoteNG") {        
-        @("$prefix\mRemoteNG\mRemoteNG.exe", "$env:USERPROFILE\Desktop\mRemoteNG.lnk")
-} else { $NULL }),
-
-
-$(if ($pkglist -contains "firefox") {        
-        @("$prefix\firefox\firefox.exe", "$env:USERPROFILE\Desktop\FireFox.lnk")
-} else { $NULL }),
-
-
-$(if ($pkglist -contains "jpdfbookmarks") {
-        @("$prefix\jpdfbookmarks\jpdfbookmarks.exe", "$env:USERPROFILE\Desktop\jpdfbookmarks.lnk")
-} else { $NULL }),
-
-
-$(if ($pkglist -contains "putty") {
-        @("$prefix\putty\PUTTY.exe", "$env:USERPROFILE\Desktop\PUTTY.lnk")
-} else { $NULL }),
-
-$(if ($pkglist -contains "putty") {
-        @("$prefix\putty\PAGEANT.exe", "$env:USERPROFILE\Desktop\PAGEANT.lnk")
-} else { $NULL }),
 
 $(if ($pkglist -contains "putty") {
         @("$prefix\putty\PAGEANT.exe", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\PAGEANT.lnk")
@@ -895,12 +819,6 @@ $(if ($pkglist -contains "vim") {
 $(if ($pkglist -contains "vim") {
         @("Open with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`"", "$prefix\vim\gvim.exe")
 } else { $NULL }),
-#(if ($pkglist -contains "atom") {
-#        @("Open with Atom", "`"$prefix\atom\app-1.3.2\atom.exe`"", "$prefix\atom\app-1.3.2\atom.exe")
-#} else { $NULL }),
-#$(if ($pkglist -contains "atom") {
-#        @("Open with Atom (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\atom\app-1.3.2\atom.exe`"", "$prefix\atom\app-1.3.2\atom.exe")
-#} else { $NULL }),
         $NULL
     ) | % {
         if ($_) {
