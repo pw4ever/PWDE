@@ -139,8 +139,34 @@ param(
     )
     ]
     [switch]
-    $InstallChocolatey
+    $InstallChocolatey,
 
+    [Parameter(
+    )
+    ]
+    [switch]
+    $InstallChocoPkgs,
+
+    [Parameter(
+    )
+    ]
+    $ChocoPkgs=@(
+    "audacity",
+    "ffmpeg",
+    "firefox",
+    "gimp",
+    "gradle",
+    "jdk8",
+    "maven",
+    "nuget.commandline",
+    "obs-studio",
+    "sysinternals",
+    "scriptcs",
+    "vcxsrv",
+    "vlc",
+    "youtube-dl",
+    $NULL
+    )
 )
 
 if ($ExcludePkg) {
@@ -156,6 +182,11 @@ function main
         [System.Net.WebRequest]::DefaultWebProxy.Credentials = [System.Net.CredentialCache]::DefaultCredential
         iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
         [Environment]::SetEnvironmentVariable("PATH", "$ALLUSERSPROFILE\chocolatey\bin;$env:PATH", [EnvironmentVariableTarget]::Process)
+    }
+
+    $choco=(gcm choco.exe -ErrorAction SilentlyContinue).Path
+    if ($InstallChocoPkgs -and $choco) {
+        invoke-expression -Command "& ""$choco"" install -y $([String]::Join(" ", $ChocoPkgs))"
     }
 
     if ($DownloadFromUpstream) {
