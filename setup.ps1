@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20170610
+# Latest update: 20170611
 #
 
 <#
@@ -168,7 +168,9 @@ function main
 {
     if ($InstallChocolatey) {
         # https://chocolatey.org/install
+        [System.Net.WebRequest]::DefaultWebProxy.Credentials = [System.Net.CredentialCache]::DefaultCredential
         iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+        [Environment]::SetEnvironmentVariable("PATH", "$ALLUSERSPROFILE\chocolatey\bin;$env:PATH", [EnvironmentVariableTarget]::Process)
     }
 
     if ($DownloadFromUpstream) {
