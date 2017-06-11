@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20170609
+# Latest update: 20170610
 #
 
 <#
@@ -465,7 +465,7 @@ $(if ($pkglist -contains "ynp-tools") { @"
         "$prefix\ynp-tools"
 "@ })
 $(if ($pkglist -contains "AutoHotkey") { @"
-        "$prefix\AutoHotkey"
+        "$prefix\AutoHotkey\Compiler"
 "@ })
     ) | % {
         `$p=`$_
@@ -646,7 +646,7 @@ $(if ($pkglist -contains "ynp-tools") {
                             "$prefix\ynp-tools"
 } else { $NULL }),
 $(if ($pkglist -contains "AutoHotkey") {
-                            "$prefix\AutoHotkey"
+                            "$prefix\AutoHotkey\Compiler"
 } else { $NULL }),
                             "$env:PWDE_PERSISTENT_PATH"
                             ) | ? {$_})))
