@@ -158,6 +158,7 @@ param(
         "beyondcompare",
         "conemu",
         "ctags",
+        "dependencywalker",
         "evince",
         "ffmpeg",
         "firefox",
