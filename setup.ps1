@@ -522,6 +522,9 @@ $(if ($pkglist -contains "ynp-tools") { @"
 $(if ($pkglist -contains "AutoHotkey") { @"
         "$prefix\AutoHotkey\Compiler"
 "@ })
+$(if ($pkglist -contains "1pengw") { @"
+        "$prefix\1pengw"
+"@ })
     ) | % {
         `$p=`$_
         if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {
@@ -702,6 +705,9 @@ $(if ($pkglist -contains "ynp-tools") {
 } else { $NULL }),
 $(if ($pkglist -contains "AutoHotkey") {
                             "$prefix\AutoHotkey\Compiler"
+} else { $NULL }),
+$(if ($pkglist -contains "1pengw") {
+                            "$prefix\1pengw"
 } else { $NULL }),
                             "$env:PWDE_PERSISTENT_PATH"
                             ) | ? {$_})))
