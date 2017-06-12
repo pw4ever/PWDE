@@ -246,7 +246,9 @@ function main
 
     $choco=(gcm choco.exe -ErrorAction SilentlyContinue).Path
     if ($InstallChocoPkgs -and $choco) {
-        invoke-expression -Command "& ""$choco"" install -y$(if($ForceInstallChocoPkgs) { "f" }) $([String]::Join(" ", $ChocoPkgs))"
+        foreach ($pkg in $ChocoPkgs) {
+            try { invoke-expression -Command "& ""$choco"" install $pkg -y$(if($ForceInstallChocoPkgs) { "f" })" } catch {}
+        }
         try { refreshenv } catch {}
     }
 
