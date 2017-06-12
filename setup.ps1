@@ -38,6 +38,8 @@
   Install Chocolatey packages.
 .PARAMETER ChocoPkgs
   Array of Chocolatey packages to be installed.
+.PARAMETER ForceInstallChocoPkgs
+  Array of Chocolatey packages to be installed.
 #>
 
 [CmdletBinding(
@@ -216,7 +218,15 @@ param(
         "wireshark",
         "youtube-dl",
         $NULL
-        )
+        ),
+
+
+    [Parameter(
+    )
+    ]
+    [switch]
+    $ForceInstallChocoPkgs
+
 )
 
 if ($ExcludePkg) {
@@ -236,7 +246,7 @@ function main
 
     $choco=(gcm choco.exe -ErrorAction SilentlyContinue).Path
     if ($InstallChocoPkgs -and $choco) {
-        invoke-expression -Command "& ""$choco"" install -y $([String]::Join(" ", $ChocoPkgs))"
+        invoke-expression -Command "& ""$choco"" install -y$(if($ForceInstallChocoPkgs) { "f" }) $([String]::Join(" ", $ChocoPkgs))"
         try { refreshenv } catch {}
     }
 
