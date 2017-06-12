@@ -158,6 +158,7 @@ param(
     "autohotkey",
     "beyondcompare",
     "conemu",
+    "ctags",
     "evince",
     "ffmpeg",
     "firefox",
