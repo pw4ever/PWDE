@@ -817,7 +817,7 @@ $(if ($pkglist -contains "R") {
 function create-shortcuts ($prefix) {
     $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
 
-    function create-shortcuts-internal ([String]$src, [String]$shortcut, [String]$argument, [String]$hotkey, [String]$workdir) {
+    function create-shortcuts-internal ([String]$src, [String]$shortcut, [String]$argument, [String]$hotkey, [String]$workdir, [Bool]$admin) {
         # http://stackoverflow.com/a/9701907
         $sh = New-Object -ComObject WScript.Shell
         $s = $sh.CreateShortcut($shortcut)
@@ -830,6 +830,18 @@ function create-shortcuts ($prefix) {
         }
         $s.WorkingDirectory = $(if (![String]::IsNullOrEmpty($workdir)) { $workdir } else { $prefix })
         $s.Save()
+
+        if ($admin) {
+            # hack: https://blogs.msdn.microsoft.com/abhinaba/2013/04/02/c-code-for-creating-shortcuts-with-admin-privilege/
+            $fs=New-Object IO.FileStream -ArgumentList $shortcut, ([IO.FileMode]::Open), ([IO.FileAccess]::ReadWrite)
+            try {
+                $fs.Seek(21, [IO.SeekOrigin]::Begin) | Out-Null
+                $fs.WriteByte(0x22) | Out-Null
+            }
+            finally {
+                $fs.Dispose() | Out-Null
+            }
+        }
     }
 
     $desktop=[Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)
@@ -839,12 +851,12 @@ function create-shortcuts ($prefix) {
 
 
 $(if ($target=$(gcm negativescreen.exe -ErrorAction SilentlyContinue).path) {
-        @($target, "$startup\NegativeScreen.lnk")
+        @($target, "$startup\NegativeScreen.lnk", $NULL, $NULL, $NULL, $true)
 } else { $NULL }),
 
 
 $($cmd="$prefix\VcXsrv\xlaunch.exe"; if (Test-Path $cmd -PathType Leaf -ErrorAction SilentlyContinue) {
-        @($cmd, "$startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch")
+        @($cmd, "$startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch", $NULL, $NULL, $true)
 } else { $NULL }),
 
 
@@ -873,7 +885,7 @@ $(if ($target=(gcm gvim.exe -ErrorAction SilentlyContinue).path) {
 
 
 $(if ($target=(gcm Rw.exe -ErrorAction SilentlyContinue).path) {
-        @($target, "$desktop\RWEverything.lnk")
+        @($target, "$desktop\RWEverything.lnk", $NULL, $NULL, $NULL, $true)
 } else { $NULL }),
 
 
@@ -883,7 +895,7 @@ $(if ($target=$(gcm PAGEANT.exe -ErrorAction SilentlyContinue).path) {
 
 
 $(if ($target=$(gcm procexp64.exe -ErrorAction SilentlyContinue).path) {
-        @($target, "$startup\procexp64.lnk")
+        @($target, "$startup\procexp64.lnk", $NULL, $NULL, $NULL, $true)
 } else { $NULL }),
 
 
@@ -896,7 +908,7 @@ $($cmd="$prefix\zVirtualDesktop\zVirtualDesktop.exe"; if ((Test-Path $cmd -PathT
 
 
 $($cmd="$prefix\1pengw\wm.exe"; if ((test-path $cmd -PathType Leaf -ErrorAction SilentlyContinue)) {
-        @($cmd, "$startup\wm.lnk")
+        @($cmd, "$startup\wm.lnk", $NULL, $NULL, $NULL, $true)
 } else { $NULL }),
 
 
