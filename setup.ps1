@@ -807,58 +807,58 @@ function create-shortcuts ($prefix) {
         @("$prefix", "$desktop\PWDE.lnk"),
 
 
-$(if ($pkglist -contains "bin") {
-        @("$prefix\bin\NegativeScreen.exe", "$startup\NegativeScreen.lnk")
-} else { $NULL }),
-
-<#
-$(if ($pkglist -contains "VcXsrv") {        
-        @("$prefix\VcXsrv\xlaunch.exe", "$startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch")
-} else { $NULL }),
-#>
-
-$(if ($pkglist -contains "ConEmuPack") {        
-        @("$prefix\ConEmuPack\ConEmu64.exe", "$desktop\ConEmu64.lnk", $NULL, "CTRL+ALT+q")
+$(if ($target=$(gcm negativescreen.exe -ErrorAction SilentlyContinue).path) {
+        @($target, "$startup\NegativeScreen.lnk")
 } else { $NULL }),
 
 
-$(if ($pkglist -contains "VirtuaWin") {        
-        @("$prefix\VirtuaWin\VirtuaWin.exe", "$desktop\VirtuaWin.lnk")
+$($cmd="$prefix\VcXsrv\xlaunch.exe"; if (Test-Path $cmd -PathType Leaf -ErrorAction SilentlyContinue) {
+        @($cmd, "$startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch")
 } else { $NULL }),
 
 
-$(if ($pkglist -contains "emacs") {        
-        @("$prefix\emacs\bin\emacsclientw.exe", "$desktop\Emacs.lnk", "-c -a `"$prefix\emacs\bin\runemacs.exe`"")
-} else { $NULL }),
-
-$(if ($pkglist -contains "emacs") {        
-        @("$prefix\emacs\bin\runemacs.exe", "$startup\EmacsServer.lnk", "--eval `"(server-start)`"")
+$(if ($target=$(gcm conemu64.exe -ErrorAction SilentlyContinue).path) {
+        @($target, "$desktop\ConEmu64.lnk", $NULL, "CTRL+ALT+q")
 } else { $NULL }),
 
 
-$(if ($pkglist -contains "vim") {        
-        @("$prefix\vim\gvim.exe", "$desktop\GVim.lnk")
+$(if ($target=(gcm "VirtuaWin" -ErrorAction SilentlyContinue).path) {
+        @($target, "$desktop\VirtuaWin.lnk")
 } else { $NULL }),
 
 
-$(if ($pkglist -contains "RWEverything") {        
-        @("$prefix\RWEverything\Rw.exe", "$desktop\RWEverything.lnk")
+$(if (($ec=(gcm "emacsclientw.exe" -ErrorAction SilentlyContinue).path) -and ($re=(gcm "runemacs.exe" -ErrorAction SilentlyContinue).path)) {
+        @($ec, "$desktop\Emacs.lnk", "-c -a `"$re`"")
+} else { $NULL }),
+
+$(if ($re=(gcm "runemacs.exe" -ErrorAction SilentlyContinue).path) {
+        @($re, "$startup\EmacsServer.lnk", "--eval `"(server-start)`"")
 } else { $NULL }),
 
 
-$(if ($pkglist -contains "putty") {
-        @("$prefix\putty\PAGEANT.exe", "$startup\PAGEANT.lnk")
+$(if ($target=(gcm gvim.exe -ErrorAction SilentlyContinue).path) {
+        @($target, "$desktop\GVim.lnk")
 } else { $NULL }),
 
 
-$(if (($pkglist -contains "zVirtualDesktop") -and ([System.Environment]::OSVersion.Version.Major -ge 10)) {
+$(if ($target=(gcm Rw.exe -ErrorAction SilentlyContinue).path) {
+        @($target, "$desktop\RWEverything.lnk")
+} else { $NULL }),
+
+
+$(if ($target=$(gcm PAGEANT.exe -ErrorAction SilentlyContinue).path) {
+        @($target, "$startup\PAGEANT.lnk")
+} else { $NULL }),
+
+
+$(if (($target=$(gcm zVitualDesktop.exe -ErrorAction SilentlyContinue).path) -and ([System.Environment]::OSVersion.Version.Major -ge 10)) {
         # zVirtualDesktop only for Window 10 or greater.
-        @("$prefix\zVirtualDesktop\zVirtualDesktop.exe", "$startup\zVirtualDesktop.lnk")
+        @($target, "$startup\zVirtualDesktop.lnk")
 } else { $NULL }),
 
 
-$(if (($pkglist -contains "1pengw")) {
-        @("$prefix\1pengw\wm.exe", "$startup\wm.lnk")
+$($cmd="$prefix\1pengw\wm.exe"; if ((test-path $cmd -PathType Leaf -ErrorAction SilentlyContinue)) {
+        @($cmd, "$startup\wm.lnk")
 } else { $NULL }),
 
 
@@ -885,23 +885,23 @@ function create-contextmenuentries ($prefix) {
 
     # Directory Context Menu
     @(
-$(if ($pkglist -contains "ConEmuPack") {
-        @("Open with ConEmu", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell}", "$prefix\ConEmuPack\ConEmu64.exe")
+$(if ($target=(gcm "ConEmu64.exe" -ErrorAction SilentlyContinue).path) {
+        @("Open with ConEmu", "`"$target`" /cmd {PowerShell}", $target)
 } else { $NULL }),
-$(if ($pkglist -contains "ConEmuPack") {
-        @("Open with ConEmu (Admin)", "`"$prefix\ConEmuPack\ConEmu64.exe`" /cmd {PowerShell (Admin)}", "$prefix\ConEmuPack\ConEmu64.exe")
+$(if ($target=(gcm "ConEmu64.exe" -ErrorAction SilentlyContinue).path) {
+        @("Open with ConEmu (Admin)", "`"$target`" /cmd {PowerShell (Admin)}", $target)
 } else { $NULL }),
-$(if ($pkglist -contains "emacs") {
-        @("Open with Emacs", "`"$prefix\emacs\bin\emacsclientw.exe`" -c -a `"$prefix\emacs\bin\runemacs.exe`"", "$prefix\emacs\bin\emacsclientw.exe")
+$(if (($ec=(gcm "emacsclientw.exe" -ErrorAction SilentlyContinue).path) -and ($re=(gcm "runemacs.exe" -ErrorAction SilentlyContinue).path)) {
+        @("Open with Emacs", "`"$ec`" -c -a `"$re`"", "$ec")
 } else { $NULL }),
-$(if ($pkglist -contains "emacs") {
-        @("Open with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\emacs\bin\runemacs.exe`"", "$prefix\emacs\bin\runemacs.exe")
+$(if ($re=(gcm "runemacs.exe" -ErrorAction SilentlyContinue).path) {
+        @("Open with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$re`"", "$re")
 } else { $NULL }),
-$(if ($pkglist -contains "vim") {
-        @("Open with Vim", "`"$prefix\vim\gvim.exe`"", "$prefix\vim\gvim.exe")
+$(if ($target=(gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
+        @("Open with Vim", "`"$target`"", "$target")
 } else { $NULL }),
-$(if ($pkglist -contains "vim") {
-        @("Open with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`"", "$prefix\vim\gvim.exe")
+$(if ($target=(gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
+        @("Open with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$target`"", "$target")
 } else { $NULL }),
         $NULL
     ) | % {
@@ -921,27 +921,21 @@ $(if ($pkglist -contains "vim") {
     # All File Type Context Menu
     pushd -LiteralPath "HKCR:\*\shell"
     @(
-$(if ($pkglist -contains "emacs") {
-        @("Edit with Emacs", "`"$prefix\emacs\bin\emacsclientw.exe`" -c -a `"$prefix\emacs\bin\runemacs.exe`" `"%1`"", "$prefix\emacs\bin\emacsclientw.exe")
+$(if (($ec=(gcm "emacsclientw.exe" -ErrorAction SilentlyContinue).path) -and ($re=(gcm "runemacs.exe" -ErrorAction SilentlyContinue).path)) {
+        @("Edit with Emacs", "`"$ec`" -c -a `"$re`" `"%1`"", "$re")
 } else { $NULL }),
-$(if ($pkglist -contains "msys64") {
-        @("Edit with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\emacs\bin\runemacs.exe`" `"%1`"", "$prefix\emacs\bin\runemacs.exe")
+$(if ($re=(gcm "runemacs.exe" -ErrorAction SilentlyContinue).path) {
+        @("Edit with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$re`" `"%1`"", "$re")
 } else { $NULL }),
-$(if ($pkglist -contains "vim") {
-        @("Edit with Vim", "`"$prefix\vim\gvim.exe`" `"%1`"", "$prefix\vim\gvim.exe")
+$(if ($target=(gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
+        @("Edit with Vim", "`"$target`" `"%1`"", "$target")
 } else { $NULL }),
-$(if ($pkglist -contains "vim") {
-        @("View with Vim", "`"$prefix\vim\gvim.exe`" -R `"%1`"", "$prefix\vim\gvim.exe")
+$(if ($target=(gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
+        @("View with Vim", "`"$target`" -R `"%1`"", "$target")
 } else { $NULL }),
-$(if ($pkglist -contains "vim") {
-        @("Edit with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\vim\gvim.exe`" `"%1`"", "$prefix\vim\gvim.exe")
+$(if ($target=(gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
+        @("Edit with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$target`" `"%1`"", "$target")
 } else { $NULL }),
-#$(if ($pkglist -contains "atom") {
-#        @("Edit with Atom", "`"$prefix\atom\app-1.3.2\atom.exe`" `"%1`"", "$prefix\atom\app-1.3.2\atom.exe")
-#} else { $NULL }),
-#$(if ($pkglist -contains "atom") {
-#        @("Edit with Atom (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$prefix\atom\app-1.3.2\atom.exe`" `"%1`"", "$prefix\atom\app-1.3.2\atom.exe")
-#} else { $NULL }),
         $NULL
     ) | % {
         if ($_) {
