@@ -283,6 +283,10 @@ function main
         create-contextmenuentries $Destination
     }
 
+    if ($CreateServices) {
+        create-services $Destination
+    }
+
     # finalization
     & {
         if ($PkgList -contains "global") {
@@ -971,6 +975,40 @@ $(if ($target=(gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
     popd
 
     Remove-PSDrive -Name HKCR
+}
+
+function create-services ($prefix) {
+    $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
+
+    # https://gallery.technet.microsoft.com/scriptcenter/Script-to-add-an-item-to-f523f1f3
+    # http://www.howtogeek.com/107965/how-to-add-any-application-shortcut-to-windows-explorers-context-menu/
+
+    $nssm=[IO.Path]::Combine($PSScriptRoot, "nssm.exe")
+    if (!(Test-Path $nssm -PathType Leaf)) { return } # proceed only if nssm is available
+
+    @(
+        <# # example # https://nssm.cc/commands
+        @("PWDE_wm", "$prefix\1pengw\wm.exe", $NULL, @(
+            @("reset", "ObjectName"),
+            @("set", "Type SERVICE_INTERACTIVE_PROCESS"),
+            $NULL
+        )),
+        #>
+        $NULL
+    ) | ? { $_ } | % {
+        $name, $prog, $args, $settings = $_
+        if (!([String]::IsNullOrWhiteSpace($name)) -and !([String]::IsNullOrWhiteSpace($prog)) -and (Test-Path $prog -PathType Leaf)) {
+            Write-Verbose "Install Service $name ($prog)."
+            Invoke-Expression "& `"$nssm`" install `"$name`" `"$prog`" $args"
+            foreach ($setting in $settings) {
+                if ($setting) {
+                    $action, $param = $setting
+                    Invoke-Expression "& `"$nssm`" $action `"$name`" $param"
+                }
+            }
+        }
+    }
+
 }
 
 main
