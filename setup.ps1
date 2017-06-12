@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20170611
+# Latest update: 20170612
 #
 
 <#
@@ -181,6 +181,7 @@ param(
         "nuget.commandline",
         "obs-studio",
         "openssh",
+        "pdftk"
         "python2",
         "python3",
         "putty",
