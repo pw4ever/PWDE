@@ -852,9 +852,14 @@ $(if ($target=$(gcm PAGEANT.exe -ErrorAction SilentlyContinue).path) {
 } else { $NULL }),
 
 
-$(if (($target=$(gcm zVitualDesktop.exe -ErrorAction SilentlyContinue).path) -and ([System.Environment]::OSVersion.Version.Major -ge 10)) {
+$(if ($target=$(gcm procexp64.exe -ErrorAction SilentlyContinue).path) {
+        @($target, "$startup\procexp64.lnk")
+} else { $NULL }),
+
+
+$($cmd="$prefix\zVirtualDesktop\zVirtualDesktop.exe"; if ((Test-Path $cmd -PathType Leaf -ErrorAction SilentlyContinue) -and ([System.Environment]::OSVersion.Version.Major -ge 10)) {
         # zVirtualDesktop only for Window 10 or greater.
-        @($target, "$startup\zVirtualDesktop.lnk")
+        @($cmd, "$startup\zVirtualDesktop.lnk")
 } else { $NULL }),
 
 
