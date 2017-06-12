@@ -30,8 +30,14 @@
   Create Desktop shortcuts.
 .PARAMETER CreateContextMenuEntries
   Create context menu entries (requires Admin privilege).
+.PARAMETER CreateServices
+  Create services (requires Admin privilege).
 .PARAMETER InstallChocolatey
   Install Chocolatey (https://chocolatey.org/).
+.PARAMETER InstallChocoPkgs
+  Install Chocolatey packages.
+.PARAMETER ChocoPkgs
+  Array of Chocolatey packages to be installed.
 #>
 
 [CmdletBinding(
@@ -134,6 +140,12 @@ param(
     ]
     [switch]
     $CreateContextMenuEntries,
+
+    [Parameter(
+    )
+    ]
+    [switch]
+    $CreateServices,
 
     [Parameter(
     )
