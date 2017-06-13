@@ -22,8 +22,6 @@
   Zip source path (default to `$PSScriptRoot).
 .PARAMETER SkipUnzipping
   Skip the time-consuming unzipping.
-.PARAMETER UpdatePSProfile
-  Make settings persistent by sourcing "init.ps1" in PoSH profile.
 .PARAMETER UpdateUserEnvironment
   Make settings persistent in user environment.
 .PARAMETER CreateShortcuts
@@ -118,12 +116,6 @@ param(
     ]
     [switch]
     $SkipUnzipping,
-
-    [Parameter(
-    )
-    ]
-    [switch]
-    $UpdatePSProfile,
 
     [Parameter(
     )
@@ -277,13 +269,6 @@ function main
         unzip-files "$ZipSource" "$Destination" $PkgList
     }
 
-    $initscript = [IO.Path]::Combine($Destination, "init.ps1")
-    init $initscript
-
-    if ($UpdatePSProfile) {
-        update-psprofile $initscript
-    }
-
     if ($UpdateUserEnvironment) {
         update-userenv $Destination
     }
@@ -372,446 +357,126 @@ function unzip-files ($src, $dest, $pkglist) {
     }
 }
 
-function init ($initscript) {
-New-Item -Path "$initscript" -Force -ItemType File > $NULL
-$initscript=$(Resolve-Path "$initscript")
-$prefix=$(Split-Path "$initscript" -Parent).TrimEnd("\")
-@"
-# For app that looks for HOME, e.g., Emacs, Vim
-`$env:HOME="$("$prefix".Replace("\", "/"))"
-`$env:PWDE_HOME="$prefix"
-#`$env:TERM="xterm"
-
-$(if ($pkglist -contains "vim") { @"
-`$env:EDITOR="$("$prefix\vim\gvim.exe".Replace("\", "/"))"
-"@ })
-$(if ($pkglist -contains "msys64") { @"
-`$env:PAGER="$("$prefix\msys64\usr\bin\less.exe".Replace("\", "/"))"
-"@ })
-
-$(if ($pkglist -contains "jdk") { @"
-`$env:JAVA_HOME="$("$prefix\jdk".Replace("\", "/"))"
-`$env:_JAVA_OPTIONS="-Duser.home=`"$prefix`" "+`$env:_JAVA_OPTIONS
-`$env:LEIN_JAVA_CMD="$("$prefix\jdk\bin\java.exe".Replace("\", "/"))"
-"@ })
-
-$(if ($pkglist -contains "leiningen") { @"
-`$env:LEIN_HOME="$("$prefix\.lein".Replace("\", "/"))"
-"@ })
-
-$(if ($pkglist -contains "go") { @"
-`$env:GOROOT="$("$prefix\go".Replace("\", "/"))"
-`$env:GOPATH="$([System.Environment]::GetFolderPath("MyDocuments").Replace("\", "/"))"
-"@ })
-
-$(if ($pkglist -contains "apache-maven") { @"
-`$env:M2_HOME="$("$prefix\apache-maven".Replace("\", "/"))"
-"@ })
-
-$(if ($pkglist -contains "gradle") { @"
-`$env:GRADLE_HOME="$("$prefix\gradle".Replace("\", "/"))"
-"@ })
-
-$(if ($pkglist -contains "R") { @"
-`$env:R_HOME="$("$prefix\R".Replace("\", "/"))"
-"@ })
-
-& {
-    `$path=`$env:PATH
-    @(
-        "$prefix",
-$(if ($pkglist -contains "bin") { @"
-        "$prefix\bin",
-"@ })
-$(if ($pkglist -contains "jdk") { @"
-        "$prefix\jdk\bin",
-"@ })
-$(if ($pkglist -contains "gradle") { @"
-        "$prefix\gradle\bin",
-"@ })
-$(if ($pkglist -contains "leiningen") { @"
-        "$prefix\.lein\bin",
-"@ })
-$(if ($pkglist -contains "ClojureCLR") { @"
-        "$prefix\ClojureCLR",
-"@ })
-$(if ($pkglist -contains "nodejs") { @"
-        "$prefix\nodejs",
-"@ })
-$(if ($pkglist -contains "go") { @"
-        "$prefix\go\bin",
-"@ })
-$(if ($pkglist -contains "go") { @"
-        "$prefix\gopath\bin",
-"@ })
-        "$([IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "bin"))",
-$(if ($pkglist -contains "Git") { @"
-        "$prefix\Git",
-        "$prefix\Git\cmd",
-"@ })
-$(if ($pkglist -contains "global") { @"
-        "$prefix\global\bin",
-"@ })
-$(if ($pkglist -contains "emacs") { @"
-        "$prefix\emacs\bin",
-"@ })
-$(if ($pkglist -contains "vim") { @"
-        "$prefix\vim",
-"@ })
-$(if ($pkglist -contains "nmap") { @"
-        "$prefix\nmap",
-"@ })
-$(if ($pkglist -contains "SysinternalsSuite") { @"
-        "$prefix\SysinternalsSuite",
-"@ })
-$(if ($pkglist -contains "WinKit") { @"
-        "$prefix\WinKit\bin",
-        "$prefix\WinKit\dbg",
-        "$prefix\WinKit\tools",
-        "$prefix\WinKit\wpt",
-"@ })
-$(if ($pkglist -contains "ConEmuPack") { @"
-        "$prefix\ConEmuPack",
-"@ })
-$(if ($pkglist -contains "VirtuaWin") { @"
-        "$prefix\VirtuaWin",
-"@ })
-$(if ($pkglist -contains "firefox") { @"
-        "$prefix\firefox",
-"@})
-$(if ($pkglist -contains "evince") { @"
-        "$prefix\evince\bin",
-"@ })
-$(if ($pkglist -contains "Audacity") { @"
-        "$prefix\Audacity",
-"@ })
-$(if ($pkglist -contains "apache-maven") { @"
-        "$prefix\apache-maven\bin",
-"@ })
-$(if ($pkglist -contains "vlc") { @"
-        "$prefix\vlc",
-"@ })
-$(if ($pkglist -contains "ffmpeg") { @"
-        "$prefix\ffmpeg\bin",
-"@ })
-$(if ($pkglist -contains "R") { @"
-        "$prefix\R\bin\x64",
-"@ })
-$(if ($pkglist -contains "GIMP") { @"
-        "$prefix\GIMP\bin",
-"@ })
-$(if ($pkglist -contains "VcXsrv") { @"
-        "$prefix\VcXsrv\bin",
-"@ })
-$(if ($pkglist -contains "atom") { @"
-        "$prefix\atom\bin",
-        "$prefix\atom\app-1.3.2",
-
-"@ })
-$(if ($pkglist -contains "RWEverything") { @"
-        "$prefix\RWEverything",
-"@ })
-$(if ($pkglist -contains "radare2") { @"
-        "$prefix\radare2",
-"@ })
-$(if ($pkglist -contains "Launchy") { @"
-        "$prefix\Launchy",
-"@ })
-$(if ($pkglist -contains "iasl") { @"
-        "$prefix\iasl",
-"@ })
-$(if ($pkglist -contains "Recoll") { @"
-        "$prefix\Recoll",
-"@ })
-$(if ($pkglist -contains "msys64") { @"
-        "$prefix\msys64\usr\bin",
-        "$prefix\msys64\mingw64\bin",
-        "$prefix\msys64\opt\bin",
-        "$prefix\msys64",
-"@ })
-$(if ($pkglist -contains "mRemoteNG") { @"
-        "$prefix\mRemoteNG"
-"@ })
-$(if ($pkglist -contains "PEBrowse64") { @"
-        "$prefix\PEBrowse64"
-"@ })
-$(if ($pkglist -contains "PEBrowsePro") { @"
-        "$prefix\PEBrowsePro"
-"@ })
-$(if ($pkglist -contains "putty") { @"
-        "$prefix\putty"
-"@ })
-$(if ($pkglist -contains "jpdfbookmarks") { @"
-        "$prefix\jpdfbookmarks"
-"@ })
-$(if ($pkglist -contains "nasm") { @"
-        "$prefix\nasm"
-"@ })
-$(if ($pkglist -contains "ynp-tools") { @"
-        "$prefix\ynp-tools"
-"@ })
-$(if ($pkglist -contains "AutoHotkey") { @"
-        "$prefix\AutoHotkey\Compiler"
-"@ })
-$(if ($pkglist -contains "1pengw") { @"
-        "$prefix\1pengw"
-"@ })
-    ) | % {
-        `$p=`$_
-        if (!`$("`$path" | Select-String -Pattern "`$p" -SimpleMatch)) {
-            `$env:PATH="`$p;`$env:PATH"
-        }
-    }
-
-    if (`$env:PWDE_PERSISTENT_PATH) {
-        `$env:PATH+=";`$env:PWDE_PERSISTENT_PATH"
-    }
-}
-"@ | Set-Content -Path "$initscript" -Force
-
-Write-Host "$initscript created."
-}
-
-function update-psprofile ($initscript) {
-# Get the full path to $initscript.
-$initscript=$(Resolve-Path $initscript).Path
-
-if ($initscript -and !$(Get-Content $Profile | Select-String -Pattern "$initscript" -SimpleMatch)) {
-@"
-# Initialize the Portable Development Environment (PDevEnv).
-. $initscript
-"@ | Add-Content -Path $Profile -Force
-}
-
-Write-Host "$Profile will source $initscript."
-}
-
 function update-userenv ($prefix) {
     $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
 
-    $path=$([String]::Join([IO.Path]::PathSeparator, `
-                            $(@(
+    $path=([String]::Join([IO.Path]::PathSeparator, `
+                            (@(
                             "$prefix",
-$(if ($pkglist -contains "bin") {
-                            "$prefix\bin"
-} else { $NULL }),
-$(if ($pkglist -contains "jdk") {
-                            "$prefix\jdk\bin"
-} else { $NULL }),
-$(if ($pkglist -contains "gradle") {
-                            "$prefix\gradle\bin"
-} else { $NULL }),
-$(if ($pkglist -contains "leiningen") {
-                            "$prefix\.lein\bin"
-} else { $NULL }),
-$(if ($pkglist -contains "ClojureCLR") {
-                            "$prefix\ClojureCLR"
-} else { $NULL }),
-$(if ($pkglist -contains "nodejs") {
-                            "$prefix\nodejs"
-} else { $NULL }),
-$(if ($pkglist -contains "go") {
-                            "$prefix\go\bin"
-} else { $NULL }),
-$(if ($pkglist -contains "go") {
-                            "$prefix\gopath\bin"
-} else { $NULL }),
+                            "$prefix\bin",
+                            "$prefix\jdk\bin",
+                            "$prefix\gradle\bin",
+                            "$prefix\.lein\bin",
+                            "$prefix\ClojureCLR",
+                            "$prefix\nodejs",
+                            "$prefix\go\bin",
+                            "$prefix\gopath\bin",
                             [IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "bin"),
-$(if ($pkglist -contains "Git") {
-    [String]::Join([IO.Path]::PathSeparator, `
-    @(
                             "$prefix\Git",
-                            "$prefix\Git\cmd"
-    ))
-} else { $NULL }),
-
-$(if ($pkglist -contains "global") {
-                            "$prefix\global\bin"
-} else { $NULL }),
-$(if ($pkglist -contains "emacs") {
-                            "$prefix\emacs\bin"
-} else { $NULL }),
-$(if ($pkglist -contains "vim") {
-                            "$prefix\vim"
-} else { $NULL }),
-$(if ($pkglist -contains "nmap") {
-                            "$prefix\nmap"
-} else { $NULL }),
-$(if ($pkglist -contains "SysinternalsSuite") {
-                            "$prefix\SysinternalsSuite"
-} else { $NULL }),
-$(if ($pkglist -contains "WinKit") {
-    [String]::Join([IO.Path]::PathSeparator, `
-    @(
+                            "$prefix\Git\cmd",
+                            "$prefix\global\bin",
+                            "$prefix\emacs\bin",
+                            "$prefix\vim",
+                            "$prefix\nmap",
+                            "$prefix\SysinternalsSuite",
                             "$prefix\WinKit\bin",
                             "$prefix\WinKit\dbg",
                             "$prefix\WinKit\tools",
                             "$prefix\WinKit\wpt"
-    ))
-} else { $NULL }),
-$(if ($pkglist -contains "ConEmuPack") {
-                            "$prefix\ConEmuPack"
-} else { $NULL }),
-$(if ($pkglist -contains "VirtuaWin") {
-                            "$prefix\VirtuaWin"
-} else { $NULL }),
-$(if ($pkglist -contains "firefox") {
-                            "$prefix\firefox"
-} else { $NULL }),
-$(if ($pkglist -contains "evince") {
-                            "$prefix\evince\bin"
-} else { $NULL }),
-$(if ($pkglist -contains "Audacity") {
-                            "$prefix\Audacity"
-} else { $NULL }),
-$(if ($pkglist -contains "apache-maven") {
-                            "$prefix\apache-maven\bin"
-} else { $NULL }),
-$(if ($pkglist -contains "vlc") {
-                            "$prefix\vlc"
-} else { $NULL }),
-$(if ($pkglist -contains "ffmpeg") {
-                            "$prefix\ffmpeg\bin"
-} else { $NULL }),
-$(if ($pkglist -contains "R") {
-                            "$prefix\R\bin\x64"
-} else { $NULL }),
-$(if ($pkglist -contains "GIMP") {
-                            "$prefix\GIMP\bin"
-} else { $NULL }),
-$(if ($pkglist -contains "VcXsrv") {
-                            "$prefix\VcXsrv\bin"
-} else { $NULL }),
-$(if ($pkglist -contains "atom") {
-    [String]::Join([IO.Path]::PathSeparator, `
-    @(
-                            "$prefix\atom\bin",
-                            "$prefix\atom\app-1.3.2"
-    ))
-} else { $NULL }),
-$(if ($pkglist -contains "RWEverything") {
-                            "$prefix\RWEverything"
-} else { $NULL }),
-$(if ($pkglist -contains "radare2") {
-                            "$prefix\radare2"
-} else { $NULL }),
-$(if ($pkglist -contains "Launchy") {
-                            "$prefix\Launchy"
-} else { $NULL }),
-$(if ($pkglist -contains "iasl") {
-                            "$prefix\iasl"
-} else { $NULL }),
-$(if ($pkglist -contains "Recoll") {
-                            "$prefix\Recoll"
-} else { $NULL }),
-$(if ($pkglist -contains "msys64") {
-    [String]::Join([IO.Path]::PathSeparator, `
-    @(
+                            "$prefix\ConEmuPack",
+                            "$prefix\VirtuaWin",
+                            "$prefix\Audacity",
+                            "$prefix\evince\bin",
+                            "$prefix\apache-maven\bin",
+                            "$prefix\vlc",
+                            "$prefix\ffmpeg\bin",
+                            "$prefix\R\bin\x64",
+                            "$prefix\GIMP\bin",
+                            "$prefix\VcXsrv\bin",
+                            "$prefix\RWEverything",
+                            "$prefix\radare2",
+                            "$prefix\iasl",
                             "$prefix\msys64\usr\bin",
                             "$prefix\msys64\mingw64\bin",
                             "$prefix\msys64\opt\bin",
-                            "$prefix\msys64"
-    ))
-} else { $NULL }),
-$(if ($pkglist -contains "mRemoteNG") {
-                            "$prefix\mRemoteNG"
-} else { $NULL }),
-$(if ($pkglist -contains "PEBrowse64") {
-                            "$prefix\PEBrowse64"
-} else { $NULL }),
-$(if ($pkglist -contains "PEBrowsePro") {
-                            "$prefix\PEBrowsePro"
-} else { $NULL }),
-$(if ($pkglist -contains "putty") {
-                            "$prefix\putty"
-} else { $NULL }),
-$(if ($pkglist -contains "jpdfbookmarks") {
-                            "$prefix\jpdfbookmarks"
-} else { $NULL }),
-$(if ($pkglist -contains "nasm") {
-                            "$prefix\nasm"
-} else { $NULL }),
-$(if ($pkglist -contains "ynp-tools") {
-                            "$prefix\ynp-tools"
-} else { $NULL }),
-$(if ($pkglist -contains "AutoHotkey") {
-                            "$prefix\AutoHotkey\Compiler"
-} else { $NULL }),
-$(if ($pkglist -contains "1pengw") {
-                            "$prefix\1pengw"
-} else { $NULL }),
-                            "$env:PWDE_PERSISTENT_PATH"
-                            ) | ? {$_})))
-
+                            "$prefix\msys64",
+                            "$prefix\mRemoteNG",
+                            "$prefix\PEBrowse64",
+                            "$prefix\PEBrowsePro",
+                            "$prefix\putty",
+                            "$prefix\jpdfbookmarks",
+                            "$prefix\nasm",
+                            "$prefix\ynp-tools",
+                            "$prefix\AutoHotkey\Compiler",
+                            "$prefix\1pengw",
+                            $NULL
+                            ) | ? { !([String]::IsNullOrWhiteSpace($_)) -and (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue) })))
+    $path+="$([IO.Path]::PathSeparator)$env:PWDE_PERSISTENT_PATH"
 
     @(
-        @("HOME", $("$prefix".Replace("\", "/"))),
-        @("PWDE_HOME", $prefix),
-
-$(if ($pkglist -contains "vim") {
-        @("EDITOR", $("$prefix\vim\gvim.exe".Replace("\", "/")))
-} else { $NULL }),
-
-$(if ($pkglist -contains "emacs") {
-        @("ALTERNATE_EDITOR", $("$prefix\emacs\bin\runemacs.exe".Replace("\", "/")))
-} else { $NULL }),
-$(if ($pkglist -contains "msys64") {
-        @("PAGER", $("$prefix\msys64\usr\bin\less.exe".Replace("\", "/")))
-} else { $NULL }),
-        #@("TERM", "xterm"),
-$(if ($pkglist -contains "jdk") {
-        @("JAVA_HOME", $("$prefix\jdk".Replace("\", "/")))
-} else { $NULL }),
-$(if ($pkglist -contains "jdk") {
-        @("_JAVA_OPTIONS", "-Duser.home=`"$prefix`" $env:PWDE_JAVA_OPTIONS")
-} else { $NULL }),
-$(if ($pkglist -contains "leiningen") {
-        @("LEIN_HOME", $("$prefix\.lein".Replace("\", "/")))
-} else { $NULL }),
-$(if ($pkglist -contains "ClojureCLR") {
-        @("CLOJURECLR_HOME", $("$prefix\ClojureCLR".Replace("\", "\")))
-} else { $NULL }),
-$(if ($pkglist -contains "jdk") {
-        @("LEIN_JAVA_CMD", $("$prefix\jdk\bin\java.exe".Replace("\", "/")))
-} else { $NULL }),
-$(if ($pkglist -contains "go") {
-        @("GOROOT", $("$prefix\go".Replace("\", "/")))
-} else { $NULL }),
-$(if ($pkglist -contains "go") {
-        @("GOPATH", [System.Environment]::GetFolderPath("MyDocuments").Replace("\", "/"))
-} else { $NULL }),
-$(if ($pkglist -contains "apache-maven") {
-        @("M2_HOME", $("$prefix\apache-maven".Replace("\", "/")))
-} else { $NULL }),
-$(if ($pkglist -contains "gradle") {
-        @("GRADLE_HOME", $("$prefix\gradle".Replace("\", "/")))
-} else { $NULL }),
-$(if ($pkglist -contains "R") {
-        @("R_HOME", $("$prefix\R".Replace("\", "/")))
-} else { $NULL }),
         @("PATH_BAK", $env:PATH),
-        @("PATH", $path),
+        @("PATH", ([String]::Join([IO.Path]::PathSeparator, @(
+            [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::Machine),
+            $path
+        )))),
         $NULL
-    ) | % {
-        if ($_) {
+    ) | ? { ! ([String]::IsNullOrWhiteSpace($_)) } | % {
             $var, $val, $tar = $_
             Write-Host "Setting environment variable: |$var|=|$val|"
             Set-Content Env:\"$var" "$val"
             [Environment]::SetEnvironmentVariable($var, $val, [System.EnvironmentVariableTarget]::Process)
             [Environment]::SetEnvironmentVariable($var, $val, $(if ($tar) {$tar} else {[EnvironmentVariableTarget]::User}))
-        }
     }
 
-    # Change the current PATH
-    $newpath=$([String]::Join(
-                    [IO.Path]::PathSeparator, `
-                    @(
-                      [Environment]::GetEnvironmentVariable("PATH",
-                                                            [EnvironmentVariableTarget]::Machine),
-                      $path
-                    )))
-    Write-Host "Fixing current environment variable: |PATH|=|$newpath|."
-    [Environment]::SetEnvironmentVariable("PATH", $newpath, [System.EnvironmentVariableTarget]::Process)
+    @(
+        @("HOME", $("$prefix".Replace("\", "/"))),
+        @("PWDE_HOME", $prefix.Replace("\", "/")),
+
+$(if ($target=(gcm gvim.exe -ErrorAction SilentlyContinue).path) {
+        @("EDITOR", $target.Replace("\", "/"))
+} else { $NULL }),
+
+$(if ($target=(gcm runemacs.exe -ErrorAction SilentlyContinue).path) {
+        @("ALTERNATE_EDITOR", $target.Replace("\", "/"))
+} else { $NULL }),
+$(if ($target=(gcm less.exe -ErrorAction SilentlyContinue).path) {
+        @("PAGER", $target.Replace("\", "/"))
+} else { $NULL }),
+$(if (Test-Path ([IO.Path]::Combine("$prefix", "jdk", "bin", "javac.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
+        @("JAVA_HOME", "$prefix\jdk".Replace("\", "/"))
+} else { $NULL }),
+$(if (Test-Path ([IO.Path]::Combine("$prefix", "jdk", "bin", "javac.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
+        @("_JAVA_OPTIONS", "-Duser.home=`"$prefix`" $env:PWDE_JAVA_OPTIONS")
+} else { $NULL }),
+$(if (Test-Path ([IO.Path]::Combine("$prefix", ".lein", "bin", "lein.bat")) -PathType Leaf -ErrorAction SilentlyContinue) {
+        @("LEIN_HOME", "$prefix\.lein".Replace("\", "/"))
+} else { $NULL }),
+$(if (Test-Path ([IO.Path]::Combine("$prefix", "jdk", "bin", "java.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
+        @("LEIN_JAVA_CMD", "$prefix\jdk\bin\java.exe".Replace("\", "/"))
+} else { $NULL }),
+$(if (Test-Path ([IO.Path]::Combine("$prefix", "go", "bin", "go.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
+        @("GOROOT", "$prefix\go".Replace("\", "/"))
+} else { $NULL }),
+$(if ((gcm go.exe -ErrorAction SilentlyContinue).path) {
+        @("GOPATH", ([System.Environment]::GetFolderPath("MyDocuments")).Replace("\", "/"))
+} else { $NULL }),
+$(if (Test-Path ([IO.Path]::Combine("$prefix", "apache-maven", "bin", "mvn")) -PathType Leaf -ErrorAction SilentlyContinue) {
+        @("M2_HOME", "$prefix\apache-maven".Replace("\", "/"))
+} else { $NULL }),
+$(if (Test-Path ([IO.Path]::Combine("$prefix", "gradle", "bin", "gradle")) -PathType Leaf -ErrorAction SilentlyContinue) {
+        @("GRADLE_HOME", "$prefix\gradle".Replace("\", "/"))
+} else { $NULL }),
+$(if (Test-Path ([IO.Path]::Combine("$prefix", "R", "bin", "x64", "R.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
+        @("R_HOME", "$prefix\R".Replace("\", "/"))
+} else { $NULL }),
+        $NULL
+    ) | ? { !([String]::IsNullOrWhiteSpace($_)) } | % {
+        $var, $val, $tar = $_
+        Write-Host "Setting environment variable: |$var|=|$val|"
+        Set-Content Env:\"$var" "$val"
+        [Environment]::SetEnvironmentVariable($var, $val, [System.EnvironmentVariableTarget]::Process)
+        [Environment]::SetEnvironmentVariable($var, $val, $(if ($tar) {$tar} else {[EnvironmentVariableTarget]::User}))
+    }
 }
 
 function create-shortcuts ($prefix) {
