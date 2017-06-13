@@ -577,12 +577,11 @@ $(if ($target=$(gcm procexp64.exe -ErrorAction SilentlyContinue).path) {
 } else { $NULL }),
 
 
-<#
 $($cmd="$prefix\zVirtualDesktop\zVirtualDesktop.exe"; if ((Test-Path $cmd -PathType Leaf -ErrorAction SilentlyContinue) -and ([System.Environment]::OSVersion.Version.Major -ge 10)) {
         # zVirtualDesktop only for Window 10 or greater.
-        @($cmd, "$startup\zVirtualDesktop.lnk")
+        @($cmd, "$desktop\zVirtualDesktop.lnk", $NULL, $NULL, $NULL, $true)
 } else { $NULL }),
-#>
+
 
 $($cmd="$prefix\1pengw\wm.exe"; if ((test-path $cmd -PathType Leaf -ErrorAction SilentlyContinue)) {
         @($cmd, "$startup\wm.lnk", $NULL, $NULL, $NULL, $false)
