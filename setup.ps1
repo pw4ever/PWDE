@@ -851,12 +851,18 @@ function create-shortcuts ($prefix) {
 
 
 $(if ($target=$(gcm negativescreen.exe -ErrorAction SilentlyContinue).path) {
-        @($target, "$startup\NegativeScreen.lnk", $NULL, $NULL, $NULL, $true)
+        @($target, "$startup\NegativeScreen.lnk", $NULL, $NULL, $NULL, $false)
+} else { $NULL }),
+$(if ($target=$(gcm negativescreen.exe -ErrorAction SilentlyContinue).path) {
+        @($target, "$desktop\NegativeScreen.lnk", $NULL, $NULL, $NULL, $true)
 } else { $NULL }),
 
 
 $($cmd="$prefix\VcXsrv\xlaunch.exe"; if (Test-Path $cmd -PathType Leaf -ErrorAction SilentlyContinue) {
-        @($cmd, "$startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch", $NULL, $NULL, $true)
+        @($cmd, "$startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch", $NULL, $NULL, $false)
+} else { $NULL }),
+$($cmd="$prefix\VcXsrv\xlaunch.exe"; if (Test-Path $cmd -PathType Leaf -ErrorAction SilentlyContinue) {
+        @($cmd, "$desktop\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch", $NULL, $NULL, $true)
 } else { $NULL }),
 
 
@@ -895,7 +901,10 @@ $(if ($target=$(gcm PAGEANT.exe -ErrorAction SilentlyContinue).path) {
 
 
 $(if ($target=$(gcm procexp64.exe -ErrorAction SilentlyContinue).path) {
-        @($target, "$startup\procexp64.lnk", $NULL, $NULL, $NULL, $true)
+        @($target, "$desktop\procexp64.lnk", $NULL, $NULL, $NULL, $false)
+} else { $NULL }),
+$(if ($target=$(gcm procexp64.exe -ErrorAction SilentlyContinue).path) {
+        @($target, "$desktop\procexp64.lnk", $NULL, $NULL, $NULL, $true)
 } else { $NULL }),
 
 
@@ -906,9 +915,11 @@ $($cmd="$prefix\zVirtualDesktop\zVirtualDesktop.exe"; if ((Test-Path $cmd -PathT
 } else { $NULL }),
 #>
 
-
 $($cmd="$prefix\1pengw\wm.exe"; if ((test-path $cmd -PathType Leaf -ErrorAction SilentlyContinue)) {
-        @($cmd, "$startup\wm.lnk", $NULL, $NULL, $NULL, $true)
+        @($cmd, "$startup\wm.lnk", $NULL, $NULL, $NULL, $false)
+} else { $NULL }),
+$($cmd="$prefix\1pengw\wm.exe"; if ((test-path $cmd -PathType Leaf -ErrorAction SilentlyContinue)) {
+        @($cmd, "$desktop\wm.lnk", $NULL, $NULL, $NULL, $true)
 } else { $NULL }),
 
 
