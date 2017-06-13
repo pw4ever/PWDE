@@ -194,6 +194,7 @@ param(
         "python3",
         "putty",
         "r.project",
+        "r.studio",
         "ruby",
         "rufus",
         "scriptcs",
