@@ -690,7 +690,7 @@ function create-services ($prefix) {
     # https://gallery.technet.microsoft.com/scriptcenter/Script-to-add-an-item-to-f523f1f3
     # http://www.howtogeek.com/107965/how-to-add-any-application-shortcut-to-windows-explorers-context-menu/
 
-    $nssm=[IO.Path]::Combine($PSScriptRoot, "nssm.exe")
+    $nssm=[IO.Path]::Combine($PSScriptRoot, "helper", "nssm.exe")
     if (!(Test-Path $nssm -PathType Leaf)) { return } # proceed only if nssm is available
 
     @(
