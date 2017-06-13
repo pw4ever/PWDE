@@ -610,7 +610,7 @@ $(if ($target=$(gcm bginfo.exe -ErrorAction SilentlyContinue).path) {
         if ($_) {
             $src, $shortcut, $argument, $hotkey, $workdir, $admin = $_
           if (Test-Path "$src") {
-              Write-Host "Shortcut: $src Arguments:`"$args`" Shortcut:`"$hotkey`" => $shortcut"
+              Write-Host "Shortcut: $src Arguments:`"$args`" Hotkey:`"$hotkey`" => $shortcut"
               create-shortcuts-internal -src $src -shortcut $shortcut -argument $argument `
                     -hotkey $hotkey -workdir $workdir -admin $admin
             }
