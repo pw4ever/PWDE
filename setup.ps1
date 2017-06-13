@@ -177,6 +177,7 @@ param(
         "intellijidea-community",
         "ilmerge",
         "jdk8",
+        "launchy",
         "maven",
         "mremoteng",
         "nasm",
