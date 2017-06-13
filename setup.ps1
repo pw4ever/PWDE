@@ -591,6 +591,19 @@ $($cmd="$prefix\1pengw\wm.exe"; if ((test-path $cmd -PathType Leaf -ErrorAction 
 } else { $NULL }),
 
 
+$(if ($target=$(gcm bginfo.exe -ErrorAction SilentlyContinue).path) {
+        & { copy-item "$PSScriptRoot\helper\black_text.bgi" "$prefix" -Force -ErrorAction SilentlyContinue | Out-Null }
+        if (Test-Path "$prefix\black_text.bgi" -PathType Leaf -ErrorAction SilentlyContinue) {
+            @($target, "$startup\bginfo.lnk", "`"$prefix\black_text.bgi`" /timer:0", $NULL, $NULL, $false)
+        } else { $NULL }
+} else { $NULL }),
+$(if ($target=$(gcm bginfo.exe -ErrorAction SilentlyContinue).path) {
+        & { copy-item "$PSScriptRoot\helper\black_text.bgi" "$prefix" -Force -ErrorAction SilentlyContinue | Out-Null }
+        if (Test-Path "$prefix\black_text.bgi" -PathType Leaf -ErrorAction SilentlyContinue) {
+            @($target, "$desktop\bginfo.lnk", "`"$prefix\black_text.bgi`" /timer:0", $NULL, $NULL, $false)
+        } else { $NULL }
+} else { $NULL }),
+
     $NULL
 
     ) | % {
