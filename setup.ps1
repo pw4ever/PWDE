@@ -817,7 +817,7 @@ $(if ($pkglist -contains "R") {
 function create-shortcuts ($prefix) {
     $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
 
-    function create-shortcuts-internal ([String]$src, [String]$shortcut, [String]$argument, [String]$hotkey, [String]$workdir, [Bool]$admin) {
+    function create-shortcuts-internal ([String]$src, [String]$shortcut, [String]$argument, [String]$hotkey, [String]$workdir, $admin) {
         # http://stackoverflow.com/a/9701907
         $sh = New-Object -ComObject WScript.Shell
         $s = $sh.CreateShortcut($shortcut)
@@ -916,10 +916,11 @@ $($cmd="$prefix\1pengw\wm.exe"; if ((test-path $cmd -PathType Leaf -ErrorAction 
 
     ) | % {
         if ($_) {
-            $src, $shortcut, $argument, $hotkey, $workdir = $_
+            $src, $shortcut, $argument, $hotkey, $workdir, $admin = $_
           if (Test-Path "$src") {
               Write-Host "Shortcut: $src Arguments:`"$args`" Shortcut:`"$hotkey`" => $shortcut"
-              create-shortcuts-internal $src $shortcut $argument $hotkey $workdir
+              create-shortcuts-internal -src $src -shortcut $shortcut -argument $argument `
+                    -hotkey $hotkey -workdir $workdir -admin $admin
             }
         }
     }
