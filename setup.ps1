@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20170612
+# Latest update: 20170613
 #
 
 <#
@@ -173,6 +173,7 @@ param(
         "Git-Credential-Manager-for-Windows",
         "global",
         "golang",
+        "GoogleChrome",
         "gradle",
         "intellijidea-community",
         "ilmerge",
@@ -192,6 +193,7 @@ param(
         "python2",
         "python3",
         "putty",
+        "r.project",
         "ruby",
         "rufus",
         "scriptcs",
