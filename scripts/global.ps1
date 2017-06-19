@@ -89,7 +89,7 @@ New-Item -Path "$name" -Force -ItemType File > $NULL
 #	:tc=native:
 #
 default:\
-	:tc=native:tc=pygments:
+	:tc=native:
 native:\
 	:tc=gtags:tc=htags:
 user:\
@@ -113,7 +113,7 @@ gtags:\
 	:tc=common:\
 	:tc=builtin-parser:
 builtin-parser:\
-	:langmap=c\:.c.h,yacc\:.y,asm\:.s.S,java\:.java,cpp\:.c++.cc.hh.cpp.cxx.hxx.hpp.C.H,php\:.php.php3.phtml:
+	:langmap=c\:.c.h.w,yacc\:.y,asm\:.s.S.asm.ASM,java\:.java,cpp\:.c++.cc.hh.cpp.cxx.hxx.hpp.C.H,php\:.php.php3.phtml:
 #
 # skeleton for user's custom parser.
 #
