@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20170630
+# Latest update: 20170701
 #
 
 <#
@@ -26,6 +26,8 @@
   Make settings persistent in user environment.
 .PARAMETER CreateShortcuts
   Create Desktop shortcuts.
+.PARAMETER CreateStartupShortcuts
+  Create startup shortcuts.
 .PARAMETER CreateContextMenuEntries
   Create context menu entries (requires Admin privilege).
 .PARAMETER CreateServices
@@ -127,6 +129,12 @@ param(
     ]
     [switch]
     $CreateShortcuts,
+
+    [Parameter(
+    )
+    ]
+    [switch]
+    $CreateStartupShortcuts,
 
     [Parameter(
     )
@@ -278,6 +286,10 @@ function main
 
     if ($CreateShortcuts) {
         create-shortcuts $Destination
+    }
+
+    if ($CreateStartupShortcuts) {
+        create-startupshortcuts $Destination
     }
 
     if ($CreateContextMenuEntries) {
@@ -484,33 +496,6 @@ $(if (Test-Path ([IO.Path]::Combine("$prefix", "R", "bin", "x64", "R.exe")) -Pat
 function create-shortcuts ($prefix) {
     $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
 
-    function create-shortcuts-internal ([String]$src, [String]$shortcut, [String]$argument, [String]$hotkey, [String]$workdir, $admin) {
-        # http://stackoverflow.com/a/9701907
-        $sh = New-Object -ComObject WScript.Shell
-        $s = $sh.CreateShortcut($shortcut)
-        $s.TargetPath = $src
-        if (![String]::IsNullOrEmpty($argument)) {
-            $s.Arguments = $argument
-        }
-        if (![String]::IsNullOrEmpty($hotkey)) {
-            $s.HotKey = $hotkey
-        }
-        $s.WorkingDirectory = $(if (![String]::IsNullOrEmpty($workdir)) { $workdir } else { $prefix })
-        $s.Save()
-
-        if ($admin) {
-            # hack: https://blogs.msdn.microsoft.com/abhinaba/2013/04/02/c-code-for-creating-shortcuts-with-admin-privilege/
-            $fs=New-Object IO.FileStream -ArgumentList $shortcut, ([IO.FileMode]::Open), ([IO.FileAccess]::ReadWrite)
-            try {
-                $fs.Seek(21, [IO.SeekOrigin]::Begin) | Out-Null
-                $fs.WriteByte(0x22) | Out-Null
-            }
-            finally {
-                $fs.Dispose() | Out-Null
-            }
-        }
-    }
-
     $desktop=[Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)
     $startup=[Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)
     @(
@@ -518,16 +503,10 @@ function create-shortcuts ($prefix) {
 
 
 $(if ($target=$(gcm negativescreen.exe -ErrorAction SilentlyContinue).path) {
-        @($target, "$startup\NegativeScreen.lnk", $NULL, $NULL, $NULL, $false)
-} else { $NULL }),
-$(if ($target=$(gcm negativescreen.exe -ErrorAction SilentlyContinue).path) {
         @($target, "$desktop\NegativeScreen.lnk", $NULL, $NULL, $NULL, $true)
 } else { $NULL }),
 
 
-$($cmd="$prefix\VcXsrv\xlaunch.exe"; if (Test-Path $cmd -PathType Leaf -ErrorAction SilentlyContinue) {
-        @($cmd, "$startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch", $NULL, $NULL, $false)
-} else { $NULL }),
 $($cmd="$prefix\VcXsrv\xlaunch.exe"; if (Test-Path $cmd -PathType Leaf -ErrorAction SilentlyContinue) {
         @($cmd, "$desktop\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch", $NULL, $NULL, $true)
 } else { $NULL }),
@@ -547,10 +526,6 @@ $(if (($ec=(gcm "emacsclientw.exe" -ErrorAction SilentlyContinue).path) -and ($r
         @($ec, "$desktop\Emacs.lnk", "-c -a `"$re`"")
 } else { $NULL }),
 
-$(if ($re=(gcm "runemacs.exe" -ErrorAction SilentlyContinue).path) {
-        @($re, "$startup\EmacsServer.lnk", "--eval `"(server-start)`"")
-} else { $NULL }),
-
 
 $(if ($target=(gcm gvim.exe -ErrorAction SilentlyContinue).path) {
         @($target, "$desktop\GVim.lnk")
@@ -562,14 +537,6 @@ $(if ($target=(gcm Rw.exe -ErrorAction SilentlyContinue).path) {
 } else { $NULL }),
 
 
-$(if ($target=$(gcm PAGEANT.exe -ErrorAction SilentlyContinue).path) {
-        @($target, "$startup\PAGEANT.lnk")
-} else { $NULL }),
-
-
-$(if ($target=$(gcm procexp64.exe -ErrorAction SilentlyContinue).path) {
-        @($target, "$desktop\procexp64.lnk", $NULL, $NULL, $NULL, $false)
-} else { $NULL }),
 $(if ($target=$(gcm procexp64.exe -ErrorAction SilentlyContinue).path) {
         @($target, "$desktop\procexp64.lnk", $NULL, $NULL, $NULL, $true)
 } else { $NULL }),
@@ -582,9 +549,6 @@ $($cmd="$prefix\zVirtualDesktop\zVirtualDesktop.exe"; if ((Test-Path $cmd -PathT
 
 
 $($cmd="$prefix\bin\wm.exe"; if ((test-path $cmd -PathType Leaf -ErrorAction SilentlyContinue)) {
-        @($cmd, "$startup\wm.lnk", $NULL, $NULL, $NULL, $false)
-} else { $NULL }),
-$($cmd="$prefix\bin\wm.exe"; if ((test-path $cmd -PathType Leaf -ErrorAction SilentlyContinue)) {
         @($cmd, "$desktop\wm.lnk", $NULL, $NULL, $NULL, $true)
 } else { $NULL }),
 
@@ -592,15 +556,10 @@ $($cmd="$prefix\bin\wm.exe"; if ((test-path $cmd -PathType Leaf -ErrorAction Sil
 $(if ($target=$(gcm bginfo.exe -ErrorAction SilentlyContinue).path) {
         & { copy-item "$PSScriptRoot\helper\black_text.bgi" "$prefix" -Force -ErrorAction SilentlyContinue | Out-Null }
         if (Test-Path "$prefix\black_text.bgi" -PathType Leaf -ErrorAction SilentlyContinue) {
-            @($target, "$startup\bginfo.lnk", "`"$prefix\black_text.bgi`" /timer:0", $NULL, $NULL, $false)
-        } else { $NULL }
-} else { $NULL }),
-$(if ($target=$(gcm bginfo.exe -ErrorAction SilentlyContinue).path) {
-        & { copy-item "$PSScriptRoot\helper\black_text.bgi" "$prefix" -Force -ErrorAction SilentlyContinue | Out-Null }
-        if (Test-Path "$prefix\black_text.bgi" -PathType Leaf -ErrorAction SilentlyContinue) {
             @($target, "$desktop\bginfo.lnk", "`"$prefix\black_text.bgi`" /timer:0", $NULL, $NULL, $false)
         } else { $NULL }
 } else { $NULL }),
+
 
     $NULL
 
@@ -612,6 +571,82 @@ $(if ($target=$(gcm bginfo.exe -ErrorAction SilentlyContinue).path) {
               create-shortcuts-internal -src $src -shortcut $shortcut -argument $argument `
                     -hotkey $hotkey -workdir $workdir -admin $admin
             }
+        }
+    }
+}
+
+function create-startupshortcuts ($prefix) {
+    $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
+
+    $desktop=[Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)
+    $startup=[Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)
+    @(
+
+$(if ($target=$(gcm negativescreen.exe -ErrorAction SilentlyContinue).path) {
+        @($target, "$startup\NegativeScreen.lnk", $NULL, $NULL, $NULL, $false)
+} else { $NULL }),
+
+
+$($cmd="$prefix\VcXsrv\xlaunch.exe"; if (Test-Path $cmd -PathType Leaf -ErrorAction SilentlyContinue) {
+        @($cmd, "$startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch", $NULL, $NULL, $false)
+} else { $NULL }),
+
+
+$(if ($re=(gcm "runemacs.exe" -ErrorAction SilentlyContinue).path) {
+        @($re, "$startup\EmacsServer.lnk", "--eval `"(server-start)`"")
+} else { $NULL }),
+
+
+$(if ($target=$(gcm PAGEANT.exe -ErrorAction SilentlyContinue).path) {
+        @($target, "$startup\PAGEANT.lnk")
+} else { $NULL }),
+
+
+$(if ($target=$(gcm bginfo.exe -ErrorAction SilentlyContinue).path) {
+        & { copy-item "$PSScriptRoot\helper\black_text.bgi" "$prefix" -Force -ErrorAction SilentlyContinue | Out-Null }
+        if (Test-Path "$prefix\black_text.bgi" -PathType Leaf -ErrorAction SilentlyContinue) {
+            @($target, "$startup\bginfo.lnk", "`"$prefix\black_text.bgi`" /timer:0", $NULL, $NULL, $false)
+        } else { $NULL }
+} else { $NULL }),
+
+
+    $NULL
+
+    ) | % {
+        if ($_) {
+            $src, $shortcut, $argument, $hotkey, $workdir, $admin = $_
+          if (Test-Path "$src") {
+              Write-Host "Shortcut: $src Arguments:`"$args`" Hotkey:`"$hotkey`" => $shortcut"
+              create-shortcuts-internal -src $src -shortcut $shortcut -argument $argument `
+                    -hotkey $hotkey -workdir $workdir -admin $admin
+            }
+        }
+    }
+}
+
+function create-shortcuts-internal ([String]$src, [String]$shortcut, [String]$argument, [String]$hotkey, [String]$workdir, $admin) {
+    # http://stackoverflow.com/a/9701907
+    $sh = New-Object -ComObject WScript.Shell
+    $s = $sh.CreateShortcut($shortcut)
+    $s.TargetPath = $src
+    if (![String]::IsNullOrEmpty($argument)) {
+        $s.Arguments = $argument
+    }
+    if (![String]::IsNullOrEmpty($hotkey)) {
+        $s.HotKey = $hotkey
+    }
+    $s.WorkingDirectory = $(if (![String]::IsNullOrEmpty($workdir)) { $workdir } else { $prefix })
+    $s.Save()
+
+    if ($admin) {
+        # hack: https://blogs.msdn.microsoft.com/abhinaba/2013/04/02/c-code-for-creating-shortcuts-with-admin-privilege/
+        $fs=New-Object IO.FileStream -ArgumentList $shortcut, ([IO.FileMode]::Open), ([IO.FileAccess]::ReadWrite)
+        try {
+            $fs.Seek(21, [IO.SeekOrigin]::Begin) | Out-Null
+            $fs.WriteByte(0x22) | Out-Null
+        }
+        finally {
+            $fs.Dispose() | Out-Null
         }
     }
 }
