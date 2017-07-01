@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20170613
+# Latest update: 20170630
 #
 
 <#
@@ -61,9 +61,8 @@ param(
     )]
     [String[]]
     $PkgList=@(
-        "1pengw",
         #"AutoHotkey",
-        #"bin",
+        "bin",
         "ConEmuPack",
         "config",
         "Documents",
@@ -412,7 +411,6 @@ function update-userenv ($prefix) {
                             "$prefix\nasm",
                             "$prefix\ynp-tools",
                             "$prefix\AutoHotkey\Compiler",
-                            "$prefix\1pengw",
                             $NULL
                             ) | ? { !([String]::IsNullOrWhiteSpace($_)) -and (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue) })))
     $path+="$([IO.Path]::PathSeparator)$env:PWDE_PERSISTENT_PATH"
@@ -583,10 +581,10 @@ $($cmd="$prefix\zVirtualDesktop\zVirtualDesktop.exe"; if ((Test-Path $cmd -PathT
 } else { $NULL }),
 
 
-$($cmd="$prefix\1pengw\wm.exe"; if ((test-path $cmd -PathType Leaf -ErrorAction SilentlyContinue)) {
+$($cmd="$prefix\bin\wm.exe"; if ((test-path $cmd -PathType Leaf -ErrorAction SilentlyContinue)) {
         @($cmd, "$startup\wm.lnk", $NULL, $NULL, $NULL, $false)
 } else { $NULL }),
-$($cmd="$prefix\1pengw\wm.exe"; if ((test-path $cmd -PathType Leaf -ErrorAction SilentlyContinue)) {
+$($cmd="$prefix\bin\wm.exe"; if ((test-path $cmd -PathType Leaf -ErrorAction SilentlyContinue)) {
         @($cmd, "$desktop\wm.lnk", $NULL, $NULL, $NULL, $true)
 } else { $NULL }),
 
@@ -708,7 +706,7 @@ function create-services ($prefix) {
 
     @(
         <# # example # https://nssm.cc/commands
-        @("PWDE_wm", "$prefix\1pengw\wm.exe", $NULL, @(
+        @("PWDE_wm", "$prefix\bin\wm.exe", $NULL, @(
             @("reset", "ObjectName"),
             @("set", "Type SERVICE_INTERACTIVE_PROCESS"),
             $NULL
