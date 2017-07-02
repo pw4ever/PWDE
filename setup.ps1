@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20170701
+# Latest update: 20170702
 #
 
 <#
@@ -169,10 +169,12 @@ param(
         "audacity",
         "autohotkey",
         "beyondcompare",
+        "calibre",
         "conemu",
         "ctags",
         "dependencywalker",
         "evince",
+        "fbreader",
         "ffmpeg",
         "firefox",
         "gimp",
