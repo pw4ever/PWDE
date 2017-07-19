@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20170704
+# Latest update: 20170719
 #
 
 <#
@@ -90,8 +90,7 @@ param(
         "vim",
         "VirtuaWin",
         "WinKit",
-        "ynp-tools",
-        "zVirtualDesktop"
+        "ynp-tools"
         ),
 
     [Parameter(
@@ -543,12 +542,6 @@ $(if ($target=(gcm Rw.exe -ErrorAction SilentlyContinue).path) {
 
 $(if ($target=$(gcm procexp64.exe -ErrorAction SilentlyContinue).path) {
         @($target, "$desktop\procexp64.lnk", $NULL, $NULL, $NULL, $true)
-} else { $NULL }),
-
-
-$($cmd="$prefix\zVirtualDesktop\zVirtualDesktop.exe"; if ((Test-Path $cmd -PathType Leaf -ErrorAction SilentlyContinue) -and ([System.Environment]::OSVersion.Version.Major -ge 10)) {
-        # zVirtualDesktop only for Window 10 or greater.
-        @($cmd, "$desktop\zVirtualDesktop.lnk", $NULL, $NULL, $NULL, $true)
 } else { $NULL }),
 
 
