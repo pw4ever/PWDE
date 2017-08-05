@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20170719
+# Latest update: 20170804
 #
 
 <#
@@ -223,6 +223,7 @@ param(
         "winpcap",
         "wireshark",
         "youtube-dl",
+        "zeal.install",
         $NULL
         ),
 
