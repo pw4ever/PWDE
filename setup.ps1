@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20170804
+# Latest update: 20170911
 #
 
 <#
@@ -164,6 +164,7 @@ param(
     ]
     $ChocoPkgs=@(
         "7zip",
+        "ag",
         "aria2",
         "audacity",
         "autohotkey",
