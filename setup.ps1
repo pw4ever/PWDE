@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20170911
+# Latest update: 20171020
 #
 
 <#
@@ -65,6 +65,7 @@ param(
     $PkgList=@(
         #"AutoHotkey",
         "bin",
+        "calibre",
         "ConEmuPack",
         "config",
         "Documents",
@@ -271,7 +272,7 @@ function main
     }
 
     if ([string]::IsNullOrWhiteSpace($Destination)) {
-        if (!$InstallChocolatey) {
+        if (!$InstallChocolatey -and !$InstallChocoPkgs) {
             Write-Error "Need -Destination if not -DownloadOnly."
         }
         return
@@ -581,10 +582,11 @@ function create-startupshortcuts ($prefix) {
     $startup=[Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)
     @(
 
+<#
 $(if ($target=$(gcm negativescreen.exe -ErrorAction SilentlyContinue).path) {
         @($target, "$startup\NegativeScreen.lnk", $NULL, $NULL, $NULL, $false)
 } else { $NULL }),
-
+#>
 
 $($cmd="$prefix\VcXsrv\xlaunch.exe"; if (Test-Path $cmd -PathType Leaf -ErrorAction SilentlyContinue) {
         @($cmd, "$startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch", $NULL, $NULL, $false)
@@ -600,14 +602,14 @@ $(if ($target=$(gcm PAGEANT.exe -ErrorAction SilentlyContinue).path) {
         @($target, "$startup\PAGEANT.lnk")
 } else { $NULL }),
 
-
+<#
 $(if ($target=$(gcm bginfo.exe -ErrorAction SilentlyContinue).path) {
         & { copy-item "$PSScriptRoot\helper\black_text.bgi" "$prefix" -Force -ErrorAction SilentlyContinue | Out-Null }
         if (Test-Path "$prefix\black_text.bgi" -PathType Leaf -ErrorAction SilentlyContinue) {
             @($target, "$startup\bginfo.lnk", "`"$prefix\black_text.bgi`" /timer:0", $NULL, $NULL, $false)
         } else { $NULL }
 } else { $NULL }),
-
+#>
 
     $NULL
 
