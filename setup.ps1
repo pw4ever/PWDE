@@ -113,56 +113,47 @@ param(
     $ZipSource=$PSScriptRoot,
 
     [Parameter(
-    )
-    ]
+    )]
     [switch]
     $SkipUnzipping,
 
     [Parameter(
-    )
-    ]
+    )]
     [switch]
     $UpdateUserEnvironment,
 
     [Parameter(
-    )
-    ]
+    )]
     [switch]
     $CreateShortcuts,
 
     [Parameter(
-    )
-    ]
+    )]
     [switch]
     $CreateStartupShortcuts,
 
     [Parameter(
-    )
-    ]
+    )]
     [switch]
     $CreateContextMenuEntries,
 
     [Parameter(
-    )
-    ]
+    )]
     [switch]
     $CreateServices,
 
     [Parameter(
-    )
-    ]
+    )]
     [switch]
     $InstallChocolatey,
 
     [Parameter(
-    )
-    ]
+    )]
     [switch]
     $InstallChocoPkgs,
 
     [Parameter(
-    )
-    ]
+    )]
     $ChocoPkgs=@(
         "7zip",
         "ag",
@@ -243,10 +234,8 @@ param(
         $NULL
         ),
 
-
     [Parameter(
-    )
-    ]
+    )]
     [switch]
     $ForceInstallChocoPkgs
 
