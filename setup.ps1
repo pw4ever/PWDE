@@ -237,7 +237,12 @@ param(
     [Parameter(
     )]
     [switch]
-    $ForceInstallChocoPkgs
+    $ForceInstallChocoPkgs,
+
+    [Parameter(
+    )]
+    [switch]
+    $NoConfigure
 
 )
 
@@ -260,9 +265,37 @@ function main
     if ($InstallChocoPkgs -and $choco) {
         $ChocoPkgs | ? { -not [String]::IsNullOrWhiteSpace($_) } | % {
             $pkg=$_
-            try { invoke-expression -Command "& ""$choco"" install $pkg -y$(if($ForceInstallChocoPkgs) { "f" })" } catch {}
+            try { invoke-expression -Command "& ""$choco"" install $pkg -y$(if($ForceInstallChooPkgs) { "f" })" } catch {}
         }
         try { refreshenv } catch {}
+    }
+
+    if (! $NoConfigure) {
+        if ($(try {code --help | Select-String '(?i)visual\s*studio\s*code'} catch {$False})) {
+            foreach ($ext in @("bierner.markdown-preview-github-styles",
+                    "clptn.code-paredit",
+                    "codezombiech.gitignore",
+                    "DavidAnson.vscode-markdownlint",
+                    "dbaeumer.vscode-eslint",
+                    "EditorConfig.EditorConfig",
+                    "eg2.tslint",
+                    "hashhar.gitattributes",
+                    "jakob101.RelativePath",
+                    "jchannon.csharpextensions",
+                    "KnisterPeter.vscode-github",
+                    "mattn.OpenVim",
+                    "ms-vscode.csharp",
+                    "ms-vscode.PowerShell",
+                    "ms-vsts.team",
+                    "PeterJausovec.vscode-docker",
+                    "robertohuertasm.vscode-icons",
+                    "sandcastle.whitespace",
+                    "vscodevim.vim")) {
+                        code --install-extension "$ext"
+            }
+
+        }
+
     }
 
     if ($DownloadFromUpstream) {
