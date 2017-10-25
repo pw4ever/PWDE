@@ -295,7 +295,7 @@ function main
     }
 
     if ([string]::IsNullOrWhiteSpace($Destination)) {
-        if (!$InstallChocolatey -and !$InstallChocoPkgs) {
+        if (!$InstallChocolatey -and !$InstallChocoPkgs -and $NoConfigure) {
             Write-Error "Need -Destination if not -DownloadOnly."
         }
         return
