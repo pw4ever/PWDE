@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20171020
+# Latest update: 20171025
 #
 
 <#
@@ -219,6 +219,20 @@ param(
         "vim",
         "vcxsrv",
         "VisualStudio2017Community",
+        "VisualStudioCode",
+        "vscode-autofilename",
+        "vscode-csharp",
+        "vscode-csharpextensions",
+        "vscode-docker",
+        "vscode-editorconfig",
+        "vscode-eslint",
+        "vscode-gitignore",
+        "vscode-gitattributes",
+        "vscode-icons",
+        "vscode-jslint",
+        "vscode-markdownlint",
+        "vscode-powershell",
+        "vscode-tslint",
         "virtuawin",
         "vlc",
         "wget",
