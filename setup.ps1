@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20171025
+# Latest update: 20171027
 #
 
 <#
@@ -196,6 +196,7 @@ param(
         "python2",
         "python3",
         "putty",
+        "radare",
         "r.project",
         "r.studio",
         "ruby",
