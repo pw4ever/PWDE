@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20171027
+# Latest update: 20171117
 #
 
 <#
@@ -253,7 +253,7 @@ function main
     if ($InstallChocoPkgs -and $choco) {
         $ChocoPkgs | ? { -not [String]::IsNullOrWhiteSpace($_) } | % {
             $pkg=$_
-            try { invoke-expression -Command "& ""$choco"" install $pkg -y$(if($ForceInstallChooPkgs) { "f" })" } catch {}
+            try { invoke-expression -Command "& ""$choco"" install $pkg -y$(if($ForceInstallChocoPkgs) { "f" })" } catch {}
         }
         try { refreshenv } catch {}
     }
