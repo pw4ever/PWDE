@@ -160,6 +160,7 @@ param(
         "aria2",
         "audacity",
         "autohotkey",
+        "azure-cli",
         "beyondcompare",
         "calibre",
         "cmder",
