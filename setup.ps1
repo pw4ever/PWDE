@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20171117
+# Latest update: 20171207
 #
 
 <#
@@ -181,6 +181,7 @@ param(
         "intellijidea-community",
         "ilmerge",
         "jdk8",
+        "jq",
         "launchy",
         "maven",
         "mremoteng",
