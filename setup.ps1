@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20171207
+# Latest update: 20171209
 #
 
 <#
@@ -168,6 +168,7 @@ param(
         "ctags",
         "dependencywalker",
         "dropbox",
+        "ethminer",
         "evince",
         "fbreader",
         "ffmpeg",
@@ -211,6 +212,7 @@ param(
         "tigervnc",
         "tigervnc-viewer",
         "vim",
+        "vcredist-all",
         "vcxsrv",
         "VisualStudio2017Community",
         "VisualStudioCode",
