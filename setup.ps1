@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20171209
+# Latest update: 20180116
 #
 
 <#
@@ -168,6 +168,7 @@ param(
         "ctags",
         "dependencywalker",
         "dropbox",
+        "emacs64",
         "ethminer",
         "evince",
         "fbreader",
