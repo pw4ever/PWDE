@@ -65,33 +65,34 @@ param(
     $PkgList=@(
         #"AutoHotkey",
         "bin",
-        "calibre",
-        "ConEmuPack",
-        "config",
+        #"calibre",
+        #"ConEmuPack",
+        #"config",
         "Documents",
         "emacs",
-        "evince",
-        "gcmw",
-        "Git",
-        "global",
-        "go",
-        "iasl",
+        #"evince",
+        #"gcmw",
+        #"Git",
+        #"global",
+        #"go",
+        #"iasl",
         "jdk",
-        "jpdfbookmarks",
+        #"jpdfbookmarks",
         "leiningen",
         "m2",
-        "msys64",
-        "nasm",
-        "PEBrowse64",
-        "PEBrowsePro",
-        "putty",
-        "radare2",
-        "RWEverything",
-        "SysinternalsSuite",
+        #"msys64",
+        #"nasm",
+        #"PEBrowse64",
+        #"PEBrowsePro",
+        #"putty",
+        #"radare2",
+        #"RWEverything",
+        #"SysinternalsSuite",
         "vim",
-        "VirtuaWin",
+        #"VirtuaWin",
         "WinKit",
-        "ynp-tools"
+        #"ynp-tools",
+        $NULL
         ),
 
     [Parameter(
@@ -243,7 +244,7 @@ if ($ExcludePkg) {
     $ExcludePkg=$($ExcludePkg | % { $_.ToUpper() })
 }
 
-$PkgList=$($PkgList | ? { ! $($_.ToUpper() -in $ExcludePkg) })
+$PkgList=$($PkgList | ? { !([String]::IsNullOrWhiteSpace($_)) -and !$($_.ToUpper() -in $ExcludePkg) })
 
 function main
 {
