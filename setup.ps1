@@ -236,7 +236,12 @@ param(
     [Parameter(
     )]
     [switch]
-    $NoConfigure
+    $NoConfigure,
+
+    [Parameter(
+    )]
+    [switch]
+    $NoFixAttrib
 
 )
 
@@ -337,7 +342,7 @@ function main
     }
 
     # finalization
-    & {
+    try {
         if ($PkgList -contains "global") {
             $path="$PSScriptRoot\scripts\global.ps1"
             Write-Verbose "Finalization: $path."
@@ -354,6 +359,18 @@ function main
             & $path -Destination $Destination -PkgList $PkgList
         }
     }
+    catch {}
+
+    try {
+        if (!$NoFixAttrib) {
+            Write-Verbose "Fixing up attrib: $Destination."
+            # attrib: -Readonly, -Hidden
+            $name=$Destination -replace "\\$", ""
+            attrib.exe -R -H "$name" /S /D /L
+        }
+    }
+    catch {}
+
 }
 
 function download-upstream ($srcprefix, $destprefix, $pkgs) {
