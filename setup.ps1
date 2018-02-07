@@ -238,11 +238,11 @@ param(
     [Parameter(
     )]
     [switch]
-    $NoFixAttrib
+    $FixAttrib
 
 )
 
-$script:version = "20180207-1"
+$script:version = "20180207-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -364,7 +364,7 @@ function main
     catch {}
 
     try {
-        if (!$NoFixAttrib) {
+        if ($FixAttrib) {
             Write-Verbose "Fixing up attrib: $Destination."
             # attrib: -Readonly, -Hidden
             $name=$Destination -replace "\\$", ""
