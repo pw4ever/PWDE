@@ -646,9 +646,14 @@ $(if ($re=(gcm "runemacs.exe" -ErrorAction SilentlyContinue).path) {
         @($re, "$startup\EmacsServer.lnk", "--eval `"(server-start)`"")
 } else { $NULL }),
 
-
+<#
 $(if ($target=$(gcm PAGEANT.exe -ErrorAction SilentlyContinue).path) {
         @($target, "$startup\PAGEANT.lnk")
+} else { $NULL }),
+#>
+
+$(if ($target=$(gcm KAGEANT.exe -ErrorAction SilentlyContinue).path) {
+        @($target, "$startup\KAGEANT.lnk")
 } else { $NULL }),
 
 <#
