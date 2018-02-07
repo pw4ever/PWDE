@@ -15,8 +15,8 @@
     Destination path.
 .PARAMETER ZipSource
     Zip source path (default to `$PSScriptRoot).
-.PARAMETER SkipUnzipping
-    Skip the time-consuming unzipping.
+.PARAMETER UnzipPkgs
+    Unzip packages.
 .PARAMETER UpdateUserEnvironment
     Make settings persistent in user environment.
 .PARAMETER CreateShortcuts
@@ -42,9 +42,9 @@
 #>
 
 [CmdletBinding(
-SupportsShouldProcess=$True,
-# named argument required to prevent accidental unzipping
-PositionalBinding=$False
+    SupportsShouldProcess = $True,
+    # named argument required to prevent accidental unzipping
+    PositionalBinding = $False
 )]
 param(
     [Parameter(
@@ -55,13 +55,13 @@ param(
     [Parameter(
     )]
     [String]
-    $UpstreamURLPrefix="https://github.com/pw4ever/PWDE/releases/download/latest",
+    $UpstreamURLPrefix = "https://github.com/pw4ever/PWDE/releases/download/latest",
 
     # ls *.zip | % { write-host "`"$(basename $_ .zip)`","}
     [Parameter(
     )]
     [String[]]
-    $PkgList=@(
+    $PkgList = @(
         #"AutoHotkey",
         "bin",
         #"calibre",
@@ -92,7 +92,7 @@ param(
         "WinKit",
         #"ynp-tools",
         $NULL
-        ),
+    ),
 
     [Parameter(
     )]
@@ -110,12 +110,12 @@ param(
 
     [Parameter(
     )]
-    $ZipSource=$PSScriptRoot,
+    $ZipSource = $PSScriptRoot,
 
     [Parameter(
     )]
     [switch]
-    $SkipUnzipping,
+    $UnzipPkgs,
 
     [Parameter(
     )]
@@ -154,7 +154,7 @@ param(
 
     [Parameter(
     )]
-    $ChocoPkgs=@(
+    $ChocoPkgs = @(
         "7zip",
         "ag",
         "aria2",
@@ -227,7 +227,7 @@ param(
         "youtube-dl",
         "zeal.install",
         $NULL
-        ),
+    ),
 
     [Parameter(
     )]
@@ -246,19 +246,18 @@ param(
 
 )
 
-$script:version = "20180207-4"
+$script:version = "20180207-5"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
 
 if ($ExcludePkg) {
-    $ExcludePkg=$($ExcludePkg | % { $_.ToUpper() })
+    $ExcludePkg = $($ExcludePkg | % { $_.ToUpper() })
 }
 
-$PkgList=$($PkgList | ? { !([String]::IsNullOrWhiteSpace($_)) -and !$($_.ToUpper() -in $ExcludePkg) })
+$PkgList = $($PkgList | ? { !([String]::IsNullOrWhiteSpace($_)) -and !$($_.ToUpper() -in $ExcludePkg) })
 
-function main
-{
+function main {
     if ($InstallChocolatey) {
         # https://chocolatey.org/install
         [System.Net.WebRequest]::DefaultWebProxy.Credentials = [System.Net.CredentialCache]::DefaultCredential
@@ -266,10 +265,10 @@ function main
         [Environment]::SetEnvironmentVariable("PATH", "$ALLUSERSPROFILE\chocolatey\bin;$env:PATH", [EnvironmentVariableTarget]::Process)
     }
 
-    $choco=(gcm choco.exe -ErrorAction SilentlyContinue).Path
+    $choco = (gcm choco.exe -ErrorAction SilentlyContinue).Path
     if ($InstallChocoPkgs -and $choco) {
         $ChocoPkgs | ? { -not [String]::IsNullOrWhiteSpace($_) } | % {
-            $pkg=$_
+            $pkg = $_
             try { invoke-expression -Command "& ""$choco"" install $pkg -y$(if($ForceInstallChocoPkgs) { "f" })" } catch {}
         }
         try { refreshenv } catch {}
@@ -296,7 +295,7 @@ function main
                     "robertohuertasm.vscode-icons",
                     "sandcastle.whitespace",
                     "vscodevim.vim")) {
-                        code --install-extension "$ext"
+                code --install-extension "$ext"
             }
 
         }
@@ -316,7 +315,7 @@ function main
         ensure-dir $Destination
         $Destination = $(Resolve-Path $Destination).ProviderPath.TrimEnd("\")
 
-        if (!$SkipUnzipping) {
+        if ($UnzipPkgs) {
             $ZipSource = $(Resolve-Path $ZipSource).ProviderPath.TrimEnd("\")
             unzip-files $ZipSource $Destination $PkgList
         }
