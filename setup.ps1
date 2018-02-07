@@ -1,40 +1,44 @@
 <#
 .SYNOPSIS
-  Setup the Portable Windows Development Environment (PWDE) on the target machine.
+    Setup the Portable Windows Development Environment (PWDE) on the target machine.
 .PARAMETER DownloadFromUpstream
-  Download setup from the upstream repository. Useful when no local download exists.
+    Download setup from the upstream repository. Useful when no local download exists.
 .PARAMETER UpstreamURLPrefix
-  Upstream URL Prefix (default: https://github.com/pw4ever/PWDE/releases/download/latest).
+    Upstream URL Prefix (default: https://github.com/pw4ever/PWDE/releases/download/latest).
 .PARAMETER PkgList
-  List of packages to downloading/extraction. No need to specify unless to select a subset.
+    List of packages to downloading/extraction. No need to specify unless to select a subset.
 .PARAMETER ExcludePkg
-  List of packages to be excluded from downloading/extraction.
+    List of packages to be excluded from downloading/extraction.
 .PARAMETER DownloadOnly
-  Stop after downloading.
+    Stop after downloading.
 .PARAMETER Destination
-  Destination path.
+    Destination path.
 .PARAMETER ZipSource
-  Zip source path (default to `$PSScriptRoot).
+    Zip source path (default to `$PSScriptRoot).
 .PARAMETER SkipUnzipping
-  Skip the time-consuming unzipping.
+    Skip the time-consuming unzipping.
 .PARAMETER UpdateUserEnvironment
-  Make settings persistent in user environment.
+    Make settings persistent in user environment.
 .PARAMETER CreateShortcuts
-  Create Desktop shortcuts.
+    Create Desktop shortcuts.
 .PARAMETER CreateStartupShortcuts
-  Create startup shortcuts.
+    Create startup shortcuts.
 .PARAMETER CreateContextMenuEntries
-  Create context menu entries (requires Admin privilege).
+    Create context menu entries (requires Admin privilege).
 .PARAMETER CreateServices
-  Create services (requires Admin privilege).
+    Create services (requires Admin privilege).
 .PARAMETER InstallChocolatey
-  Install Chocolatey (https://chocolatey.org/).
+    Install Chocolatey (https://chocolatey.org/).
 .PARAMETER InstallChocoPkgs
-  Install Chocolatey packages.
+    Install Chocolatey packages.
 .PARAMETER ChocoPkgs
-  Array of Chocolatey packages to be installed.
+    Array of Chocolatey packages to be installed.
 .PARAMETER ForceInstallChocoPkgs
-  Array of Chocolatey packages to be installed.
+    Array of Chocolatey packages to be installed.
+.PARAMETER Configure
+    Do additional catch-all configuration.
+.PARAMETER FixAttrib
+    Fix up file attrib at Destination.
 #>
 
 [CmdletBinding(
@@ -242,7 +246,7 @@ param(
 
 )
 
-$script:version = "20180207-2"
+$script:version = "20180207-3"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
