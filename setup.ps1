@@ -7,7 +7,7 @@
     Upstream URL Prefix (default: https://github.com/pw4ever/PWDE/releases/download/latest).
 .PARAMETER PkgList
     List of packages to downloading/extraction. No need to specify unless to select a subset.
-.PARAMETER ExcludePkg
+.PARAMETER ExcludePkgList
     List of packages to be excluded from downloading/extraction.
 .PARAMETER DownloadOnly
     Stop after downloading.
@@ -97,7 +97,7 @@ param(
     [Parameter(
     )]
     [String[]]
-    $ExcludePkg,
+    $ExcludePkgList,
 
     [Parameter(
     )]
@@ -246,16 +246,16 @@ param(
 
 )
 
-$script:version = "20180207-5"
+$script:version = "20180207-6"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
 
-if ($ExcludePkg) {
-    $ExcludePkg = $($ExcludePkg | % { $_.ToUpper() })
+if ($ExcludePkgList) {
+    $ExcludePkgList = $($ExcludePkgList | % { $_.ToUpper() })
 }
 
-$PkgList = $($PkgList | ? { !([String]::IsNullOrWhiteSpace($_)) -and !$($_.ToUpper() -in $ExcludePkg) })
+$PkgList = $($PkgList | ? { !([String]::IsNullOrWhiteSpace($_)) -and !$($_.ToUpper() -in $ExcludePkgList) })
 
 function main {
     if ($InstallChocolatey) {
