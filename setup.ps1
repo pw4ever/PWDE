@@ -246,7 +246,7 @@ param(
 
 )
 
-$script:version = "20180207-3"
+$script:version = "20180207-4"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -312,19 +312,14 @@ function main
         return
     }
 
-    if ([string]::IsNullOrWhiteSpace($Destination)) {
-        if (!$InstallChocolatey -and !$InstallChocoPkgs -and !$Configure) {
-            Write-Error "Need -Destination if not -DownloadOnly."
+    if (![string]::IsNullOrWhiteSpace($Destination)) {
+        ensure-dir $Destination
+        $Destination = $(Resolve-Path $Destination).ProviderPath.TrimEnd("\")
+
+        if (!$SkipUnzipping) {
+            $ZipSource = $(Resolve-Path $ZipSource).ProviderPath.TrimEnd("\")
+            unzip-files $ZipSource $Destination $PkgList
         }
-        return
-    }
-
-    ensure-dir $Destination
-    $Destination=$(Resolve-Path $Destination)
-
-    if (!$SkipUnzipping) {
-        $ZipSource=$(Resolve-Path $ZipSource)
-        unzip-files "$ZipSource" "$Destination" $PkgList
     }
 
     if ($UpdateUserEnvironment) {
@@ -350,17 +345,17 @@ function main
     # finalization
     try {
         if ($PkgList -contains "global") {
-            $path="$PSScriptRoot\scripts\global.ps1"
+            $path = "$PSScriptRoot\scripts\global.ps1"
             Write-Verbose "Finalization: $path."
             & $path -Destination $Destination -PkgList $PkgList
         }
         if ($PkgList -contains "gcmw") {
-            $path="$PSScriptRoot\scripts\gcmw.ps1"
+            $path = "$PSScriptRoot\scripts\gcmw.ps1"
             Write-Verbose "Finalization: $path."
             & $path -Destination $Destination -PkgList $PkgList
         }
         if ($PkgList -contains "Git") {
-            $path="$PSScriptRoot\scripts\Git.ps1"
+            $path = "$PSScriptRoot\scripts\Git.ps1"
             Write-Verbose "Finalization: $path."
             & $path -Destination $Destination -PkgList $PkgList
         }
@@ -371,7 +366,7 @@ function main
         if ($FixAttrib) {
             Write-Verbose "Fixing up attrib: $Destination."
             # attrib: -Readonly, -Hidden
-            $name=$Destination -replace "\\$", ""
+            $name = $Destination -replace "\\$", ""
             attrib.exe -R -H "$name" /S /D /L
         }
     }
@@ -386,8 +381,8 @@ function download-upstream ($srcprefix, $destprefix, $pkgs) {
     $list = @("7za.exe") + @($pkgs | % {"$_.zip"})
 
     foreach ($item in $list) {
-        $src="$srcprefix/$item"
-        $dest="$destprefix/$item"
+        $src = "$srcprefix/$item"
+        $dest = "$destprefix/$item"
 
         $wc.DownloadFile($src, $dest)
         Write-Host "$src downloaded to $dest."
@@ -402,28 +397,28 @@ function ensure-dir ($dir) {
 }
 
 function unzip-files ($src, $dest, $pkglist) {
-    $jobs=@()
+    $jobs = @()
     $pkglist = $pkglist | % { "$_.zip" }
     ls "$src/*.zip" | % {
         # Unzip $_ only if it is in $pkglist
         if ($pkglist -like $_.Name) {
-            $name=$_.FullName
+            $name = $_.FullName
             Write-Host "Unzipping $name."
             # Start background jobs for unzipping
-            $jobs+=$(Start-Job -ScriptBlock {
-                        param($name, $dest, $src)
+            $jobs += $(Start-Job -ScriptBlock {
+                    param($name, $dest, $src)
 
-                        function unzip ($zipfile, $dest, $src) {
-                            #ensure-dir $dest
-                            #[IO.Compression.ZipFile]::ExtractToDirectory($zipfle, $dest)
-                            Invoke-Expression "$src\7za.exe x -o`"$dest`" -y -- `"$zipfile`"" # > $NULL
-                        }
+                    function unzip ($zipfile, $dest, $src) {
+                        #ensure-dir $dest
+                        #[IO.Compression.ZipFile]::ExtractToDirectory($zipfle, $dest)
+                        Invoke-Expression "$src\7za.exe x -o`"$dest`" -y -- `"$zipfile`"" # > $NULL
+                    }
 
-                        unzip "$name" "$dest" "$src"
-                        Write-Host "$name unzipped."
-                        } `
-                        -ArgumentList "$name", "$dest", "$src"
-                        )
+                    unzip "$name" "$dest" "$src"
+                    Write-Host "$name unzipped."
+                } `
+                    -ArgumentList "$name", "$dest", "$src"
+            )
         }
     }
     if ($jobs) {
@@ -432,116 +427,127 @@ function unzip-files ($src, $dest, $pkglist) {
 }
 
 function update-userenv ($prefix) {
-    $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
 
-    $path=([String]::Join([IO.Path]::PathSeparator, `
-                            (@(
-                            "$prefix",
-                            "$prefix\bin",
-                            "$prefix\jdk\bin",
-                            "$prefix\gradle\bin",
-                            "$prefix\.lein\bin",
-                            "$prefix\ClojureCLR",
-                            "$prefix\nodejs",
-                            "$prefix\go\bin",
-                            "$prefix\gopath\bin",
-                            [IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "bin"),
-                            "$prefix\Git",
-                            "$prefix\Git\cmd",
-                            "$prefix\global\bin",
-                            "$prefix\emacs\bin",
-                            "$prefix\vim",
-                            "$prefix\nmap",
-                            "$prefix\SysinternalsSuite",
-                            "$prefix\WinKit\bin",
-                            "$prefix\WinKit\dbg",
-                            "$prefix\WinKit\tools",
-                            "$prefix\WinKit\wpt"
-                            "$prefix\ConEmuPack",
-                            "$prefix\VirtuaWin",
-                            "$prefix\Audacity",
-                            "$prefix\evince\bin",
-                            "$prefix\apache-maven\bin",
-                            "$prefix\vlc",
-                            "$prefix\ffmpeg\bin",
-                            "$prefix\R\bin\x64",
-                            "$prefix\GIMP\bin",
-                            "$prefix\VcXsrv\bin",
-                            "$prefix\RWEverything",
-                            "$prefix\radare2",
-                            "$prefix\iasl",
-                            "$prefix\msys64\usr\bin",
-                            "$prefix\msys64\mingw64\bin",
-                            "$prefix\msys64\opt\bin",
-                            "$prefix\msys64",
-                            "$prefix\mRemoteNG",
-                            "$prefix\PEBrowse64",
-                            "$prefix\PEBrowsePro",
-                            "$prefix\putty",
-                            "$prefix\jpdfbookmarks",
-                            "$prefix\nasm",
-                            "$prefix\ynp-tools",
-                            "$prefix\AutoHotkey\Compiler",
-                            $NULL
-                            ) | ? { !([String]::IsNullOrWhiteSpace($_)) -and (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue) })))
-    $path+="$([IO.Path]::PathSeparator)$env:PWDE_PERSISTENT_PATH"
+    $path = ([String]::Join([IO.Path]::PathSeparator, `
+            (@(
+                    "$prefix",
+                    "$prefix\bin",
+                    "$prefix\jdk\bin",
+                    "$prefix\gradle\bin",
+                    "$prefix\.lein\bin",
+                    "$prefix\ClojureCLR",
+                    "$prefix\nodejs",
+                    "$prefix\go\bin",
+                    "$prefix\gopath\bin",
+                    [IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "bin"),
+                    "$prefix\Git",
+                    "$prefix\Git\cmd",
+                    "$prefix\global\bin",
+                    "$prefix\emacs\bin",
+                    "$prefix\vim",
+                    "$prefix\nmap",
+                    "$prefix\SysinternalsSuite",
+                    "$prefix\WinKit\bin",
+                    "$prefix\WinKit\dbg",
+                    "$prefix\WinKit\tools",
+                    "$prefix\WinKit\wpt"
+                    "$prefix\ConEmuPack",
+                    "$prefix\VirtuaWin",
+                    "$prefix\Audacity",
+                    "$prefix\evince\bin",
+                    "$prefix\apache-maven\bin",
+                    "$prefix\vlc",
+                    "$prefix\ffmpeg\bin",
+                    "$prefix\R\bin\x64",
+                    "$prefix\GIMP\bin",
+                    "$prefix\VcXsrv\bin",
+                    "$prefix\RWEverything",
+                    "$prefix\radare2",
+                    "$prefix\iasl",
+                    "$prefix\msys64\usr\bin",
+                    "$prefix\msys64\mingw64\bin",
+                    "$prefix\msys64\opt\bin",
+                    "$prefix\msys64",
+                    "$prefix\mRemoteNG",
+                    "$prefix\PEBrowse64",
+                    "$prefix\PEBrowsePro",
+                    "$prefix\putty",
+                    "$prefix\jpdfbookmarks",
+                    "$prefix\nasm",
+                    "$prefix\ynp-tools",
+                    "$prefix\AutoHotkey\Compiler",
+                    $NULL
+                ) | ? { !([String]::IsNullOrWhiteSpace($_)) -and (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue) })))
+    $path += "$([IO.Path]::PathSeparator)$env:PWDE_PERSISTENT_PATH"
 
     @(
         @("PATH_BAK", $env:PATH),
         @("PATH", ([String]::Join([IO.Path]::PathSeparator, @(
-            [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::Machine),
-            $path
-        )))),
+                        [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::Machine),
+                        $path
+                    )))),
         $NULL
     ) | ? { ! ([String]::IsNullOrWhiteSpace($_)) } | % {
-            $var, $val, $tar = $_
-            Write-Host "Setting environment variable: |$var|=|$val|"
-            Set-Content Env:\"$var" "$val"
-            [Environment]::SetEnvironmentVariable($var, $val, [System.EnvironmentVariableTarget]::Process)
-            [Environment]::SetEnvironmentVariable($var, $val, $(if ($tar) {$tar} else {[EnvironmentVariableTarget]::User}))
+        $var, $val, $tar = $_
+        Write-Host "Setting environment variable: |$var|=|$val|"
+        Set-Content Env:\"$var" "$val"
+        [Environment]::SetEnvironmentVariable($var, $val, [System.EnvironmentVariableTarget]::Process)
+        [Environment]::SetEnvironmentVariable($var, $val, $(if ($tar) {$tar} else {[EnvironmentVariableTarget]::User}))
     }
 
     @(
         @("HOME", $("$prefix".Replace("\", "/"))),
         @("PWDE_HOME", $prefix.Replace("\", "/")),
 
-$(if ($target=(gcm gvim.exe -ErrorAction SilentlyContinue).path) {
-        @("EDITOR", $target.Replace("\", "/"))
-} else { $NULL }),
+        $(if ($target = (gcm gvim.exe -ErrorAction SilentlyContinue).path) {
+                @("EDITOR", $target.Replace("\", "/"))
+            }
+            else { $NULL }),
 
-$(if ($target=(gcm runemacs.exe -ErrorAction SilentlyContinue).path) {
-        @("ALTERNATE_EDITOR", $target.Replace("\", "/"))
-} else { $NULL }),
-$(if ($target=(gcm less.exe -ErrorAction SilentlyContinue).path) {
-        @("PAGER", $target.Replace("\", "/"))
-} else { $NULL }),
-$(if (Test-Path ([IO.Path]::Combine("$prefix", "jdk", "bin", "javac.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
-        @("JAVA_HOME", "$prefix\jdk".Replace("\", "/"))
-} else { $NULL }),
-$(if (Test-Path ([IO.Path]::Combine("$prefix", "jdk", "bin", "javac.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
-        @("_JAVA_OPTIONS", "-Duser.home=`"$prefix`" $env:PWDE_JAVA_OPTIONS")
-} else { $NULL }),
-$(if (Test-Path ([IO.Path]::Combine("$prefix", ".lein", "bin", "lein.bat")) -PathType Leaf -ErrorAction SilentlyContinue) {
-        @("LEIN_HOME", "$prefix\.lein".Replace("\", "/"))
-} else { $NULL }),
-$(if (Test-Path ([IO.Path]::Combine("$prefix", "jdk", "bin", "java.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
-        @("LEIN_JAVA_CMD", "$prefix\jdk\bin\java.exe".Replace("\", "/"))
-} else { $NULL }),
-$(if (Test-Path ([IO.Path]::Combine("$prefix", "go", "bin", "go.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
-        @("GOROOT", "$prefix\go".Replace("\", "/"))
-} else { $NULL }),
-$(if ((gcm go.exe -ErrorAction SilentlyContinue).path) {
-        @("GOPATH", ([System.Environment]::GetFolderPath("MyDocuments")).Replace("\", "/"))
-} else { $NULL }),
-$(if (Test-Path ([IO.Path]::Combine("$prefix", "apache-maven", "bin", "mvn")) -PathType Leaf -ErrorAction SilentlyContinue) {
-        @("M2_HOME", "$prefix\apache-maven".Replace("\", "/"))
-} else { $NULL }),
-$(if (Test-Path ([IO.Path]::Combine("$prefix", "gradle", "bin", "gradle")) -PathType Leaf -ErrorAction SilentlyContinue) {
-        @("GRADLE_HOME", "$prefix\gradle".Replace("\", "/"))
-} else { $NULL }),
-$(if (Test-Path ([IO.Path]::Combine("$prefix", "R", "bin", "x64", "R.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
-        @("R_HOME", "$prefix\R".Replace("\", "/"))
-} else { $NULL }),
+        $(if ($target = (gcm runemacs.exe -ErrorAction SilentlyContinue).path) {
+                @("ALTERNATE_EDITOR", $target.Replace("\", "/"))
+            }
+            else { $NULL }),
+        $(if ($target = (gcm less.exe -ErrorAction SilentlyContinue).path) {
+                @("PAGER", $target.Replace("\", "/"))
+            }
+            else { $NULL }),
+        $(if (Test-Path ([IO.Path]::Combine("$prefix", "jdk", "bin", "javac.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
+                @("JAVA_HOME", "$prefix\jdk".Replace("\", "/"))
+            }
+            else { $NULL }),
+        $(if (Test-Path ([IO.Path]::Combine("$prefix", "jdk", "bin", "javac.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
+                @("_JAVA_OPTIONS", "-Duser.home=`"$prefix`" $env:PWDE_JAVA_OPTIONS")
+            }
+            else { $NULL }),
+        $(if (Test-Path ([IO.Path]::Combine("$prefix", ".lein", "bin", "lein.bat")) -PathType Leaf -ErrorAction SilentlyContinue) {
+                @("LEIN_HOME", "$prefix\.lein".Replace("\", "/"))
+            }
+            else { $NULL }),
+        $(if (Test-Path ([IO.Path]::Combine("$prefix", "jdk", "bin", "java.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
+                @("LEIN_JAVA_CMD", "$prefix\jdk\bin\java.exe".Replace("\", "/"))
+            }
+            else { $NULL }),
+        $(if (Test-Path ([IO.Path]::Combine("$prefix", "go", "bin", "go.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
+                @("GOROOT", "$prefix\go".Replace("\", "/"))
+            }
+            else { $NULL }),
+        $(if ((gcm go.exe -ErrorAction SilentlyContinue).path) {
+                @("GOPATH", ([System.Environment]::GetFolderPath("MyDocuments")).Replace("\", "/"))
+            }
+            else { $NULL }),
+        $(if (Test-Path ([IO.Path]::Combine("$prefix", "apache-maven", "bin", "mvn")) -PathType Leaf -ErrorAction SilentlyContinue) {
+                @("M2_HOME", "$prefix\apache-maven".Replace("\", "/"))
+            }
+            else { $NULL }),
+        $(if (Test-Path ([IO.Path]::Combine("$prefix", "gradle", "bin", "gradle")) -PathType Leaf -ErrorAction SilentlyContinue) {
+                @("GRADLE_HOME", "$prefix\gradle".Replace("\", "/"))
+            }
+            else { $NULL }),
+        $(if (Test-Path ([IO.Path]::Combine("$prefix", "R", "bin", "x64", "R.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
+                @("R_HOME", "$prefix\R".Replace("\", "/"))
+            }
+            else { $NULL }),
         $NULL
     ) | ? { !([String]::IsNullOrWhiteSpace($_)) } | % {
         $var, $val, $tar = $_
@@ -553,75 +559,84 @@ $(if (Test-Path ([IO.Path]::Combine("$prefix", "R", "bin", "x64", "R.exe")) -Pat
 }
 
 function create-shortcuts ($prefix) {
-    $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
-
-    $desktop=[Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)
-    $startup=[Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)
+    $desktop = [Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)
+    $startup = [Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)
     @(
         @("$prefix", "$desktop\PWDE.lnk"),
 
 
-$(if ($target=$(gcm negativescreen.exe -ErrorAction SilentlyContinue).path) {
-        @($target, "$desktop\NegativeScreen.lnk", $NULL, $NULL, $NULL, $true)
-} else { $NULL }),
+        $(if ($target = $(gcm negativescreen.exe -ErrorAction SilentlyContinue).path) {
+                @($target, "$desktop\NegativeScreen.lnk", $NULL, $NULL, $NULL, $true)
+            }
+            else { $NULL }),
 
 
-$($cmd="$prefix\VcXsrv\xlaunch.exe"; if (Test-Path $cmd -PathType Leaf -ErrorAction SilentlyContinue) {
-        @($cmd, "$desktop\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch", $NULL, $NULL, $true)
-} else { $NULL }),
+        $($cmd = "$prefix\VcXsrv\xlaunch.exe"; if (Test-Path $cmd -PathType Leaf -ErrorAction SilentlyContinue) {
+                @($cmd, "$desktop\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch", $NULL, $NULL, $true)
+            }
+            else { $NULL }),
 
 
-$(if ($target=$(gcm conemu64.exe -ErrorAction SilentlyContinue).path) {
-        @($target, "$desktop\ConEmu64.lnk", $NULL, "CTRL+ALT+q")
-} else { $NULL }),
+        $(if ($target = $(gcm conemu64.exe -ErrorAction SilentlyContinue).path) {
+                @($target, "$desktop\ConEmu64.lnk", $NULL, "CTRL+ALT+q")
+            }
+            else { $NULL }),
 
 
-$(if ($target=(gcm "VirtuaWin" -ErrorAction SilentlyContinue).path) {
-        @($target, "$desktop\VirtuaWin.lnk")
-} else { $NULL }),
+        $(if ($target = (gcm "VirtuaWin" -ErrorAction SilentlyContinue).path) {
+                @($target, "$desktop\VirtuaWin.lnk")
+            }
+            else { $NULL }),
 
 
-$(if (($ec=(gcm "emacsclientw.exe" -ErrorAction SilentlyContinue).path) -and ($re=(gcm "runemacs.exe" -ErrorAction SilentlyContinue).path)) {
-        @($ec, "$desktop\Emacs.lnk", "-c -a `"$re`"")
-} else { $NULL }),
+        $(if (($ec = (gcm "emacsclientw.exe" -ErrorAction SilentlyContinue).path) -and ($re = (gcm "runemacs.exe" -ErrorAction SilentlyContinue).path)) {
+                @($ec, "$desktop\Emacs.lnk", "-c -a `"$re`"")
+            }
+            else { $NULL }),
 
 
-$(if ($target=(gcm gvim.exe -ErrorAction SilentlyContinue).path) {
-        @($target, "$desktop\GVim.lnk")
-} else { $NULL }),
+        $(if ($target = (gcm gvim.exe -ErrorAction SilentlyContinue).path) {
+                @($target, "$desktop\GVim.lnk")
+            }
+            else { $NULL }),
 
 
-$(if ($target=(gcm Rw.exe -ErrorAction SilentlyContinue).path) {
-        @($target, "$desktop\RWEverything.lnk", $NULL, $NULL, $NULL, $true)
-} else { $NULL }),
+        $(if ($target = (gcm Rw.exe -ErrorAction SilentlyContinue).path) {
+                @($target, "$desktop\RWEverything.lnk", $NULL, $NULL, $NULL, $true)
+            }
+            else { $NULL }),
 
 
-$(if ($target=$(gcm procexp64.exe -ErrorAction SilentlyContinue).path) {
-        @($target, "$desktop\procexp64.lnk", $NULL, $NULL, $NULL, $true)
-} else { $NULL }),
+        $(if ($target = $(gcm procexp64.exe -ErrorAction SilentlyContinue).path) {
+                @($target, "$desktop\procexp64.lnk", $NULL, $NULL, $NULL, $true)
+            }
+            else { $NULL }),
 
 
-$($cmd="$prefix\bin\wm.exe"; if ((test-path $cmd -PathType Leaf -ErrorAction SilentlyContinue)) {
-        @($cmd, "$desktop\wm.lnk", $NULL, $NULL, $NULL, $true)
-} else { $NULL }),
+        $($cmd = "$prefix\bin\wm.exe"; if ((test-path $cmd -PathType Leaf -ErrorAction SilentlyContinue)) {
+                @($cmd, "$desktop\wm.lnk", $NULL, $NULL, $NULL, $true)
+            }
+            else { $NULL }),
 
 
-$(if ($target=$(gcm bginfo.exe -ErrorAction SilentlyContinue).path) {
-        & { copy-item "$PSScriptRoot\helper\black_text.bgi" "$prefix" -Force -ErrorAction SilentlyContinue | Out-Null }
-        if (Test-Path "$prefix\black_text.bgi" -PathType Leaf -ErrorAction SilentlyContinue) {
-            @($target, "$desktop\bginfo.lnk", "`"$prefix\black_text.bgi`" /timer:0", $NULL, $NULL, $false)
-        } else { $NULL }
-} else { $NULL }),
+        $(if ($target = $(gcm bginfo.exe -ErrorAction SilentlyContinue).path) {
+                & { copy-item "$PSScriptRoot\helper\black_text.bgi" "$prefix" -Force -ErrorAction SilentlyContinue | Out-Null }
+                if (Test-Path "$prefix\black_text.bgi" -PathType Leaf -ErrorAction SilentlyContinue) {
+                    @($target, "$desktop\bginfo.lnk", "`"$prefix\black_text.bgi`" /timer:0", $NULL, $NULL, $false)
+                }
+                else { $NULL }
+            }
+            else { $NULL }),
 
 
-    $NULL
+        $NULL
 
     ) | % {
         if ($_) {
             $src, $shortcut, $argument, $hotkey, $workdir, $admin = $_
-          if (Test-Path "$src") {
-              Write-Host "Shortcut: $src Arguments:`"$args`" Hotkey:`"$hotkey`" => $shortcut"
-              create-shortcuts-internal -src $src -shortcut $shortcut -argument $argument `
+            if (Test-Path "$src") {
+                Write-Host "Shortcut: $src Arguments:`"$args`" Hotkey:`"$hotkey`" => $shortcut"
+                create-shortcuts-internal -src $src -shortcut $shortcut -argument $argument `
                     -hotkey $hotkey -workdir $workdir -admin $admin
             }
         }
@@ -629,38 +644,39 @@ $(if ($target=$(gcm bginfo.exe -ErrorAction SilentlyContinue).path) {
 }
 
 function create-startupshortcuts ($prefix) {
-    $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
-
-    $desktop=[Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)
-    $startup=[Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)
+    $desktop = [Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)
+    $startup = [Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)
     @(
 
-<#
+        <#
 $(if ($target=$(gcm negativescreen.exe -ErrorAction SilentlyContinue).path) {
         @($target, "$startup\NegativeScreen.lnk", $NULL, $NULL, $NULL, $false)
 } else { $NULL }),
 #>
 
-$($cmd="$prefix\VcXsrv\xlaunch.exe"; if (Test-Path $cmd -PathType Leaf -ErrorAction SilentlyContinue) {
-        @($cmd, "$startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch", $NULL, $NULL, $false)
-} else { $NULL }),
+        $($cmd = "$prefix\VcXsrv\xlaunch.exe"; if (Test-Path $cmd -PathType Leaf -ErrorAction SilentlyContinue) {
+                @($cmd, "$startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch", $NULL, $NULL, $false)
+            }
+            else { $NULL }),
 
 
-$(if ($re=(gcm "runemacs.exe" -ErrorAction SilentlyContinue).path) {
-        @($re, "$startup\EmacsServer.lnk", "--eval `"(server-start)`"")
-} else { $NULL }),
+        $(if ($re = (gcm "runemacs.exe" -ErrorAction SilentlyContinue).path) {
+                @($re, "$startup\EmacsServer.lnk", "--eval `"(server-start)`"")
+            }
+            else { $NULL }),
 
-<#
+        <#
 $(if ($target=$(gcm PAGEANT.exe -ErrorAction SilentlyContinue).path) {
         @($target, "$startup\PAGEANT.lnk")
 } else { $NULL }),
 #>
 
-$(if ($target=$(gcm KAGEANT.exe -ErrorAction SilentlyContinue).path) {
-        @($target, "$startup\KAGEANT.lnk")
-} else { $NULL }),
+        $(if ($target = $(gcm KAGEANT.exe -ErrorAction SilentlyContinue).path) {
+                @($target, "$startup\KAGEANT.lnk")
+            }
+            else { $NULL }),
 
-<#
+        <#
 $(if ($target=$(gcm bginfo.exe -ErrorAction SilentlyContinue).path) {
         & { copy-item "$PSScriptRoot\helper\black_text.bgi" "$prefix" -Force -ErrorAction SilentlyContinue | Out-Null }
         if (Test-Path "$prefix\black_text.bgi" -PathType Leaf -ErrorAction SilentlyContinue) {
@@ -669,14 +685,14 @@ $(if ($target=$(gcm bginfo.exe -ErrorAction SilentlyContinue).path) {
 } else { $NULL }),
 #>
 
-    $NULL
+        $NULL
 
     ) | % {
         if ($_) {
             $src, $shortcut, $argument, $hotkey, $workdir, $admin = $_
-          if (Test-Path "$src") {
-              Write-Host "Shortcut: $src Arguments:`"$args`" Hotkey:`"$hotkey`" => $shortcut"
-              create-shortcuts-internal -src $src -shortcut $shortcut -argument $argument `
+            if (Test-Path "$src") {
+                Write-Host "Shortcut: $src Arguments:`"$args`" Hotkey:`"$hotkey`" => $shortcut"
+                create-shortcuts-internal -src $src -shortcut $shortcut -argument $argument `
                     -hotkey $hotkey -workdir $workdir -admin $admin
             }
         }
@@ -699,7 +715,7 @@ function create-shortcuts-internal ([String]$src, [String]$shortcut, [String]$ar
 
     if ($admin) {
         # hack: https://blogs.msdn.microsoft.com/abhinaba/2013/04/02/c-code-for-creating-shortcuts-with-admin-privilege/
-        $fs=New-Object IO.FileStream -ArgumentList $shortcut, ([IO.FileMode]::Open), ([IO.FileAccess]::ReadWrite)
+        $fs = New-Object IO.FileStream -ArgumentList $shortcut, ([IO.FileMode]::Open), ([IO.FileAccess]::ReadWrite)
         try {
             $fs.Seek(21, [IO.SeekOrigin]::Begin) | Out-Null
             $fs.WriteByte(0x22) | Out-Null
@@ -711,8 +727,6 @@ function create-shortcuts-internal ([String]$src, [String]$shortcut, [String]$ar
 }
 
 function create-contextmenuentries ($prefix) {
-    $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
-
     # https://gallery.technet.microsoft.com/scriptcenter/Script-to-add-an-item-to-f523f1f3
     # http://www.howtogeek.com/107965/how-to-add-any-application-shortcut-to-windows-explorers-context-menu/
 
@@ -720,24 +734,30 @@ function create-contextmenuentries ($prefix) {
 
     # Directory Context Menu
     @(
-$(if ($target=(gcm "ConEmu64.exe" -ErrorAction SilentlyContinue).path) {
-        @("Open with ConEmu", "`"$target`" /cmd {PowerShell}", $target)
-} else { $NULL }),
-$(if ($target=(gcm "ConEmu64.exe" -ErrorAction SilentlyContinue).path) {
-        @("Open with ConEmu (Admin)", "`"$target`" /cmd {PowerShell (Admin)}", $target)
-} else { $NULL }),
-$(if (($ec=(gcm "emacsclientw.exe" -ErrorAction SilentlyContinue).path) -and ($re=(gcm "runemacs.exe" -ErrorAction SilentlyContinue).path)) {
-        @("Open with Emacs", "`"$ec`" -c -a `"$re`"", "$ec")
-} else { $NULL }),
-$(if ($re=(gcm "runemacs.exe" -ErrorAction SilentlyContinue).path) {
-        @("Open with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$re`"", "$re")
-} else { $NULL }),
-$(if ($target=(gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
-        @("Open with Vim", "`"$target`"", "$target")
-} else { $NULL }),
-$(if ($target=(gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
-        @("Open with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$target`"", "$target")
-} else { $NULL }),
+        $(if ($target = (gcm "ConEmu64.exe" -ErrorAction SilentlyContinue).path) {
+                @("Open with ConEmu", "`"$target`" /cmd {PowerShell}", $target)
+            }
+            else { $NULL }),
+        $(if ($target = (gcm "ConEmu64.exe" -ErrorAction SilentlyContinue).path) {
+                @("Open with ConEmu (Admin)", "`"$target`" /cmd {PowerShell (Admin)}", $target)
+            }
+            else { $NULL }),
+        $(if (($ec = (gcm "emacsclientw.exe" -ErrorAction SilentlyContinue).path) -and ($re = (gcm "runemacs.exe" -ErrorAction SilentlyContinue).path)) {
+                @("Open with Emacs", "`"$ec`" -c -a `"$re`"", "$ec")
+            }
+            else { $NULL }),
+        $(if ($re = (gcm "runemacs.exe" -ErrorAction SilentlyContinue).path) {
+                @("Open with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$re`"", "$re")
+            }
+            else { $NULL }),
+        $(if ($target = (gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
+                @("Open with Vim", "`"$target`"", "$target")
+            }
+            else { $NULL }),
+        $(if ($target = (gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
+                @("Open with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$target`"", "$target")
+            }
+            else { $NULL }),
         $NULL
     ) | % {
         if ($_) {
@@ -756,21 +776,26 @@ $(if ($target=(gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
     # All File Type Context Menu
     pushd -LiteralPath "HKCR:\*\shell"
     @(
-$(if (($ec=(gcm "emacsclientw.exe" -ErrorAction SilentlyContinue).path) -and ($re=(gcm "runemacs.exe" -ErrorAction SilentlyContinue).path)) {
-        @("Edit with Emacs", "`"$ec`" -c -a `"$re`" `"%1`"", "$re")
-} else { $NULL }),
-$(if ($re=(gcm "runemacs.exe" -ErrorAction SilentlyContinue).path) {
-        @("Edit with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$re`" `"%1`"", "$re")
-} else { $NULL }),
-$(if ($target=(gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
-        @("Edit with Vim", "`"$target`" `"%1`"", "$target")
-} else { $NULL }),
-$(if ($target=(gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
-        @("View with Vim", "`"$target`" -R `"%1`"", "$target")
-} else { $NULL }),
-$(if ($target=(gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
-        @("Edit with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$target`" `"%1`"", "$target")
-} else { $NULL }),
+        $(if (($ec = (gcm "emacsclientw.exe" -ErrorAction SilentlyContinue).path) -and ($re = (gcm "runemacs.exe" -ErrorAction SilentlyContinue).path)) {
+                @("Edit with Emacs", "`"$ec`" -c -a `"$re`" `"%1`"", "$re")
+            }
+            else { $NULL }),
+        $(if ($re = (gcm "runemacs.exe" -ErrorAction SilentlyContinue).path) {
+                @("Edit with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$re`" `"%1`"", "$re")
+            }
+            else { $NULL }),
+        $(if ($target = (gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
+                @("Edit with Vim", "`"$target`" `"%1`"", "$target")
+            }
+            else { $NULL }),
+        $(if ($target = (gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
+                @("View with Vim", "`"$target`" -R `"%1`"", "$target")
+            }
+            else { $NULL }),
+        $(if ($target = (gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
+                @("Edit with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$target`" `"%1`"", "$target")
+            }
+            else { $NULL }),
         $NULL
     ) | % {
         if ($_) {
@@ -790,12 +815,10 @@ $(if ($target=(gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
 }
 
 function create-services ($prefix) {
-    $prefix=$(Resolve-Path "$prefix").Path.TrimEnd("\")
-
     # https://gallery.technet.microsoft.com/scriptcenter/Script-to-add-an-item-to-f523f1f3
     # http://www.howtogeek.com/107965/how-to-add-any-application-shortcut-to-windows-explorers-context-menu/
 
-    $nssm=[IO.Path]::Combine($PSScriptRoot, "helper", "nssm.exe")
+    $nssm = [IO.Path]::Combine($PSScriptRoot, "helper", "nssm.exe")
     if (!(Test-Path $nssm -PathType Leaf)) { return } # proceed only if nssm is available
 
     @(
