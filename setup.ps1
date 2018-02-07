@@ -1,6 +1,6 @@
 #
 # Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20180131
+# Latest update: 20180206
 #
 
 <#
@@ -186,6 +186,7 @@ param(
         "ilmerge",
         "jdk8",
         "jq",
+        "kitty",
         "launchy",
         "maven",
         "mremoteng",
@@ -213,6 +214,7 @@ param(
         "sysinternals",
         "tigervnc",
         "tigervnc-viewer",
+        "tunnelier",
         "vim",
         "vcredist-all",
         "vcxsrv",
