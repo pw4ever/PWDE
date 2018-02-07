@@ -233,7 +233,7 @@ param(
     [Parameter(
     )]
     [switch]
-    $NoConfigure,
+    $Configure,
 
     [Parameter(
     )]
@@ -242,7 +242,7 @@ param(
 
 )
 
-$script:version = "20180206-1"
+$script:version = "20180207-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -271,7 +271,7 @@ function main
         try { refreshenv } catch {}
     }
 
-    if (! $NoConfigure) {
+    if ($Configure) {
         if ($(try {code --help | Select-String '(?i)visual\s*studio\s*code'} catch {$False})) {
             foreach ($ext in @("bierner.markdown-preview-github-styles",
                     "clptn.code-paredit",
@@ -309,7 +309,7 @@ function main
     }
 
     if ([string]::IsNullOrWhiteSpace($Destination)) {
-        if (!$InstallChocolatey -and !$InstallChocoPkgs -and $NoConfigure) {
+        if (!$InstallChocolatey -and !$InstallChocoPkgs -and !$Configure) {
             Write-Error "Need -Destination if not -DownloadOnly."
         }
         return
