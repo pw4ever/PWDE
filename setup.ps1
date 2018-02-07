@@ -1,8 +1,3 @@
-#
-# Maintainer: Wei Peng <wei.peng@intel.com>
-# Latest update: 20180206
-#
-
 <#
 .SYNOPSIS
   Setup the Portable Windows Development Environment (PWDE) on the target machine.
@@ -246,6 +241,11 @@ param(
     $NoFixAttrib
 
 )
+
+$script:version = "20180206-1"
+"Version: $script:version"
+$script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
+"Contact: $script:contact"
 
 if ($ExcludePkg) {
     $ExcludePkg=$($ExcludePkg | % { $_.ToUpper() })
