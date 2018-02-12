@@ -275,7 +275,7 @@ param(
 
 )
 
-$script:version = "20180212-1"
+$script:version = "20180212-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -856,4 +856,9 @@ function create-services ($prefix) {
 
 }
 
-main
+try {
+    pushd $env:SystemRoot
+    main
+} finally {
+    popd
+}
