@@ -275,7 +275,7 @@ param(
 
 )
 
-$script:version = "20180212-2"
+$script:version = "20180212-3"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -304,12 +304,24 @@ function main {
     }
 
     if ($InstallVSCodePkgs) {
-        if ($(try {code --help | Select-String '(?i)visual\s*studio\s*code'} catch {$False})) {
-            foreach ($ext in @(
-                    $VSCodePkgs | ? { ![String]::IsNullOrWhiteSpace($_) }
-                )) {
-                code --install-extension "$ext"
+        $local:tmp = $env:PATH
+        try {
+            if (!($env:PATH -match "Microsoft VS Code")) {
+                $path = [IO.Path]::Combine($env:ProgramFiles, "Microsoft VS Code", "bin")
+                if (Test-Path -Path $path -PathType Container) {
+                    $env:PATH += ";$path"
+                }
             }
+            if ($(try {code --help | Select-String '(?i)visual\s*studio\s*code'} catch {$False})) {
+                foreach ($ext in @(
+                        $VSCodePkgs | ? { ![String]::IsNullOrWhiteSpace($_) }
+                    )) {
+                    code --install-extension "$ext"
+                }
+            }
+        }
+        finally {
+            $env:PATH=$local:tmp
         }
     }
 
