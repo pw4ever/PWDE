@@ -34,9 +34,11 @@
 .PARAMETER ChocoPkgs
     Array of Chocolatey packages to be installed.
 .PARAMETER ForceInstallChocoPkgs
-    Array of Chocolatey packages to be installed.
-.PARAMETER Configure
-    Do additional catch-all configuration.
+    Forcibly install ("--force") Chocolatey packages.
+.PARAMETER InstallVSCodePkgs
+    Install Visual Studio Code packages.
+.PARAMETER VSCodePkgs
+    Array of Visual Studio Code packages to be installed.
 .PARAMETER FixAttrib
     Fix up file attrib at Destination.
 #>
@@ -238,7 +240,33 @@ param(
     [Parameter(
     )]
     [switch]
-    $Configure,
+    $InstallVSCodePkgs,
+
+    [Parameter(
+    )]
+    $VSCodePkgs = @(
+        "bierner.markdown-preview-github-styles",
+        "clptn.code-paredit",
+        "codezombiech.gitignore",
+        "DavidAnson.vscode-markdownlint",
+        "dbaeumer.vscode-eslint",
+        "EditorConfig.EditorConfig",
+        "eg2.tslint",
+        "hashhar.gitattributes",
+        "jakob101.RelativePath",
+        "jchannon.csharpextensions",
+        "KnisterPeter.vscode-github",
+        "mattn.OpenVim",
+        "ms-vscode.csharp",
+        "ms-vscode.PowerShell",
+        "ms-vsts.team",
+        "PeterJausovec.vscode-docker",
+        "robertohuertasm.vscode-icons",
+        "sandcastle.whitespace",
+        "UCL.haskelly",
+        "vscodevim.vim",
+        $NULL
+        ),
 
     [Parameter(
     )]
@@ -247,7 +275,7 @@ param(
 
 )
 
-$script:version = "20180208-1"
+$script:version = "20180212-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -275,32 +303,14 @@ function main {
         try { refreshenv } catch {}
     }
 
-    if ($Configure) {
+    if ($InstallVSCodePkgs) {
         if ($(try {code --help | Select-String '(?i)visual\s*studio\s*code'} catch {$False})) {
-            foreach ($ext in @("bierner.markdown-preview-github-styles",
-                    "clptn.code-paredit",
-                    "codezombiech.gitignore",
-                    "DavidAnson.vscode-markdownlint",
-                    "dbaeumer.vscode-eslint",
-                    "EditorConfig.EditorConfig",
-                    "eg2.tslint",
-                    "hashhar.gitattributes",
-                    "jakob101.RelativePath",
-                    "jchannon.csharpextensions",
-                    "KnisterPeter.vscode-github",
-                    "mattn.OpenVim",
-                    "ms-vscode.csharp",
-                    "ms-vscode.PowerShell",
-                    "ms-vsts.team",
-                    "PeterJausovec.vscode-docker",
-                    "robertohuertasm.vscode-icons",
-                    "sandcastle.whitespace",
-                    "vscodevim.vim")) {
+            foreach ($ext in @(
+                    $VSCodePkgs | ? { ![String]::IsNullOrWhiteSpace($_) }
+                )) {
                 code --install-extension "$ext"
             }
-
         }
-
     }
 
     if ($DownloadFromUpstream) {
