@@ -275,7 +275,7 @@ param(
 
 )
 
-$script:version = "20180222-2"
+$script:version = "20180222-3"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -533,10 +533,12 @@ function update-userenv ($prefix) {
         @("HOME", $("$prefix".Replace("\", "/"))),
         @("PWDE_HOME", $prefix.Replace("\", "/")),
 
+        <#
         $(if ($target = (gcm gvim.exe -ErrorAction SilentlyContinue).path) {
                 @("EDITOR", $target.Replace("\", "/"))
             }
             else { $NULL }),
+            #>
 
         $(if ($target = (gcm runemacs.exe -ErrorAction SilentlyContinue).path) {
                 @("ALTERNATE_EDITOR", $target.Replace("\", "/"))
