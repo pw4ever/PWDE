@@ -275,7 +275,7 @@ param(
 
 )
 
-$script:version = "20180222-1"
+$script:version = "20180222-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -449,12 +449,13 @@ function unzip-files ($src, $dest, $pkglist) {
 }
 
 function update-userenv ($prefix) {
-    $local:gopath = [IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "go", "bin")
+    $local:gopath = [IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "go")
+    $local:gopathbin = [IO.Path]::Combine($local:gopath, "bin")
 
     # Ensure these folders exist.
     try {
         @(
-            $local:gopath,
+            $local:gopathbin,
             $NULL
         ) | ? { ![String]::IsNullOrWhiteSpace($_) } | % {
             New-Item -Path $local:gopath -ItemType Directory -Force | Out-Null
@@ -472,7 +473,7 @@ function update-userenv ($prefix) {
                     "$prefix\nodejs",
                     "$prefix\go\bin",
                     "$prefix\gopath\bin",
-                    $local:gopath,
+                    $local:gopathbin,
                     "$prefix\Git",
                     "$prefix\Git\cmd",
                     "$prefix\global\bin",
