@@ -275,7 +275,7 @@ param(
 
 )
 
-$script:version = "20180212-3"
+$script:version = "20180222-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -449,6 +449,17 @@ function unzip-files ($src, $dest, $pkglist) {
 }
 
 function update-userenv ($prefix) {
+    $local:gopath = [IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "go", "bin")
+
+    # Ensure these folders exist.
+    try {
+        @(
+            $local:gopath,
+            $NULL
+        ) | ? { ![String]::IsNullOrWhiteSpace($_) } | % {
+            New-Item -Path $local:gopath -ItemType Directory -Force | Out-Null
+        }
+    } catch {}
 
     $path = ([String]::Join([IO.Path]::PathSeparator, `
             (@(
@@ -461,7 +472,7 @@ function update-userenv ($prefix) {
                     "$prefix\nodejs",
                     "$prefix\go\bin",
                     "$prefix\gopath\bin",
-                    [IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "bin"),
+                    $local:gopath,
                     "$prefix\Git",
                     "$prefix\Git\cmd",
                     "$prefix\global\bin",
@@ -555,7 +566,7 @@ function update-userenv ($prefix) {
             }
             else { $NULL }),
         $(if ((gcm go.exe -ErrorAction SilentlyContinue).path) {
-                @("GOPATH", ([System.Environment]::GetFolderPath("MyDocuments")).Replace("\", "/"))
+                @("GOPATH", $local:gopath.Replace("\", "/"))
             }
             else { $NULL }),
         $(if (Test-Path ([IO.Path]::Combine("$prefix", "apache-maven", "bin", "mvn")) -PathType Leaf -ErrorAction SilentlyContinue) {
