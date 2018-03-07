@@ -275,7 +275,7 @@ param(
 
 )
 
-$script:version = "20180222-3"
+$script:version = "20180306-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -452,19 +452,68 @@ function update-userenv ($prefix) {
     $local:gopath = [IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "go")
     $local:gopathbin = [IO.Path]::Combine($local:gopath, "bin")
 
+    $local:link_vim = "$env:HOMEDRIVE\tools\Vim"
+    $local:target_vim = $(
+        Get-ChildItem -Path "${env:ProgramFiles(x86)}\vim\vim*" | `
+            Select-Object -First 1 | `
+            % {$_.FullName}
+            )
+
+    $local:link_bcomp = "$env:HOMEDRIVE\tools\BComp"
+    $local:target_bcomp = $(
+        Get-ChildItem -Path "${env:ProgramFiles}\Beyond Compare*" | `
+            Select-Object -First 1 | `
+            % {$_.FullName}
+            )
+
     # Ensure these folders exist.
     try {
         @(
             $local:gopathbin,
             $NULL
         ) | ? { ![String]::IsNullOrWhiteSpace($_) } | % {
-            New-Item -Path $local:gopath -ItemType Directory -Force | Out-Null
+            $path = $_
+            try {
+                if (!(Test-Path -Path $Path)) {
+                    New-Item -Path $path -ItemType Directory -Force | Out-Null
+                    Write-Verbose "Created directory $path."
+                }
+            } catch {}
+        }
+    } catch {}
+
+    # Create these symlinks if possible.
+    # The purpose of creating symlinks is to rid of paths that confuse *nix path logic in Git,
+    # such as paths with spaces of parentheses.
+    try {
+        @(
+            @($local:link_vim, $local:target_vim),
+            @($local:link_bcomp, $local:target_bcomp),
+            $NULL
+        ) | ? { ![String]::IsNullOrWhiteSpace($_) } | % {
+            $link, $target = $_
+            try {
+                if (!([String]::IsNullOrWhiteSpace($target)) -and `
+                        (Test-Path -Path $target -PathType Container) -and `
+                        !(Test-Path -Path $link))
+                {
+                    $path = Split-Path -Path $link
+                    if (!(Test-Path -Path $path -PathType Container)) {
+                        New-Item -Path $path -ItemType Directory -Force | Out-Null
+                        Write-Verbose "Created directory $path."
+                    }
+                    cmd /c mklink /d "$link" "$target"
+                    Write-Verbose "Created directory link $link to $target."
+                }
+            } catch {}
         }
     } catch {}
 
     $path = ([String]::Join([IO.Path]::PathSeparator, `
             (@(
                     "$prefix",
+                    $local:link_vim,
+                    $local:link_bcomp,
                     "$prefix\bin",
                     "$prefix\jdk\bin",
                     "$prefix\gradle\bin",
@@ -533,12 +582,10 @@ function update-userenv ($prefix) {
         @("HOME", $("$prefix".Replace("\", "/"))),
         @("PWDE_HOME", $prefix.Replace("\", "/")),
 
-        <#
         $(if ($target = (gcm gvim.exe -ErrorAction SilentlyContinue).path) {
                 @("EDITOR", $target.Replace("\", "/"))
             }
             else { $NULL }),
-            #>
 
         $(if ($target = (gcm runemacs.exe -ErrorAction SilentlyContinue).path) {
                 @("ALTERNATE_EDITOR", $target.Replace("\", "/"))
