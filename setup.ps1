@@ -199,6 +199,7 @@ param(
         "nssm",
         "nuget.commandline",
         "obs-studio",
+        "openshot",
         "openssh",
         "pdftk"
         "python2",
@@ -275,7 +276,7 @@ param(
 
 )
 
-$script:version = "20180306-1"
+$script:version = "20180308-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
