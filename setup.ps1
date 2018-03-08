@@ -184,6 +184,7 @@ param(
         "GoogleChrome",
         "gradle",
         "haskell-stack",
+        "inkscape",
         "intellijidea-community",
         "ilmerge",
         "jdk8",
@@ -276,7 +277,7 @@ param(
 
 )
 
-$script:version = "20180308-1"
+$script:version = "20180308-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
