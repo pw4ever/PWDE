@@ -208,6 +208,7 @@ param(
         "putty",
         "radare",
         "r.project",
+        "rsat",
         "r.studio",
         "ruby",
         "rufus",
@@ -277,7 +278,7 @@ param(
 
 )
 
-$script:version = "20180312-1"
+$script:version = "20180312-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
