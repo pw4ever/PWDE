@@ -277,7 +277,7 @@ param(
 
 )
 
-$script:version = "20180308-2"
+$script:version = "20180312-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -399,17 +399,27 @@ function main {
 }
 
 function download-upstream ($srcprefix, $destprefix, $pkgs) {
-    # http://stackoverflow.com/a/28704050
-    $wc = New-Object Net.WebClient
+    $local:sp_old = [System.Net.ServicePointManager]::SecurityProtocol
 
-    $list = @("7za.exe") + @($pkgs | % {"$_.zip"})
+    try {
+        # https://stackoverflow.com/a/28333370
+        [System.Net.ServicePointManager]::SecurityProtocol = `
+            [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12
+        # http://stackoverflow.com/a/28704050
+        $wc = New-Object Net.WebClient
 
-    foreach ($item in $list) {
-        $src = "$srcprefix/$item"
-        $dest = "$destprefix/$item"
+        $list = @("7za.exe") + @($pkgs | % {"$_.zip"})
 
-        $wc.DownloadFile($src, $dest)
-        Write-Host "$src downloaded to $dest."
+        foreach ($item in $list) {
+            $src = "$srcprefix/$item"
+            $dest = "$destprefix/$item"
+
+            $wc.DownloadFile($src, $dest)
+            Write-Host "$src downloaded to $dest."
+        }
+    }
+    finally {
+        [System.Net.ServicePointManager]::SecurityProtocol = $local:sp_old
     }
 }
 
