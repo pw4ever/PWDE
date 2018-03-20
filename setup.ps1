@@ -182,6 +182,7 @@ param(
         "global",
         "golang",
         "GoogleChrome",
+        "gpg4win",
         "gradle",
         "haskell-stack",
         "inkscape",
@@ -277,7 +278,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20180320-2"
+$script:version = "20180320-3"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
