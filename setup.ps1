@@ -277,8 +277,7 @@ param(
     $FixAttrib
 
 )
-
-$script:version = "20180320-1"
+$script:version = "20180320-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -479,6 +478,9 @@ function update-userenv ($prefix) {
             % {$_.FullName}
             )
 
+    $local:link_sumatrapdf = "$env:HOMEDRIVE\tools\SumatraPDF"
+    $local:target_sumatrapdf = "$env:ChocolateyInstall\lib\sumatrapdf.commandline\tools"
+
     # Ensure these folders exist.
     try {
         @(
@@ -502,6 +504,7 @@ function update-userenv ($prefix) {
         @(
             @($local:link_vim, $local:target_vim),
             @($local:link_bcomp, $local:target_bcomp),
+            @($local:link_sumatrapdf, $local:target_sumatrapdf),
             $NULL
         ) | ? { ![String]::IsNullOrWhiteSpace($_) } | % {
             $link, $target = $_
@@ -527,6 +530,7 @@ function update-userenv ($prefix) {
                     "$prefix",
                     $local:link_vim,
                     $local:link_bcomp,
+                    $local:link_sumatrapdf,
                     "$prefix\bin",
                     "$prefix\jdk\bin",
                     "$prefix\gradle\bin",
