@@ -71,7 +71,7 @@ param(
         #"config",
         "Documents",
         "emacs",
-        #"evince",
+        "evince",
         #"gcmw",
         #"Git",
         "global",
@@ -171,8 +171,8 @@ param(
         "dependencywalker",
         "dropbox",
         "emacs64",
-        "ethminer",
-        "evince",
+        #"ethminer",
+        #"evince",
         "fbreader",
         "ffmpeg",
         "firefox",
@@ -278,7 +278,7 @@ param(
 
 )
 
-$script:version = "20180312-2"
+$script:version = "20180320-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
