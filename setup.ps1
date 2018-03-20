@@ -278,7 +278,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20180320-3"
+$script:version = "20180320-4"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -482,6 +482,9 @@ function update-userenv ($prefix) {
     $local:link_sumatrapdf = "$env:HOMEDRIVE\tools\SumatraPDF"
     $local:target_sumatrapdf = "$env:ChocolateyInstall\lib\sumatrapdf.commandline\tools"
 
+    $local:link_emacs64 = "$env:HOMEDRIVE\tools\Emacs64"
+    $local:target_emacs64 = "$env:ChocolateyInstall\lib\emacs64\tools\emacs\bin"
+
     # Ensure these folders exist.
     try {
         @(
@@ -506,6 +509,7 @@ function update-userenv ($prefix) {
             @($local:link_vim, $local:target_vim),
             @($local:link_bcomp, $local:target_bcomp),
             @($local:link_sumatrapdf, $local:target_sumatrapdf),
+            @($local:link_emacs64, $local:target_emacs64),
             $NULL
         ) | ? { ![String]::IsNullOrWhiteSpace($_) } | % {
             $link, $target = $_
@@ -529,6 +533,7 @@ function update-userenv ($prefix) {
     $path = ([String]::Join([IO.Path]::PathSeparator, `
             (@(
                     "$prefix",
+                    $local:link_emacs64,
                     $local:link_vim,
                     $local:link_bcomp,
                     $local:link_sumatrapdf,
