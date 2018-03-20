@@ -278,7 +278,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20180320-4"
+$script:version = "20180320-5"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -587,18 +587,35 @@ function update-userenv ($prefix) {
     $path += "$([IO.Path]::PathSeparator)$env:PWDE_PERSISTENT_PATH"
 
     @(
-        @("PATH_BAK", $env:PATH),
-        @("PATH", ([String]::Join([IO.Path]::PathSeparator, @(
-                        [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::Machine),
+        @("PATH_BAK",
+            $env:PATH,
+            @(
+                [System.EnvironmentVariableTarget]::Process,
+                [System.EnvironmentVariableTarget]::User
+            )),
+        @("PATH",
+            $([String]::Join([IO.Path]::PathSeparator, @(
+                        $path,
+                        [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::Machine)
+                    ))),
+            @(
+                [System.EnvironmentVariableTarget]::Process
+            )),
+        @("PATH",
+            $([String]::Join([IO.Path]::PathSeparator, @(
                         $path
-                    )))),
+                    ))),
+            @(
+                [System.EnvironmentVariableTarget]::User
+            )),
         $NULL
     ) | ? { ! ([String]::IsNullOrWhiteSpace($_)) } | % {
-        $var, $val, $tar = $_
-        Write-Host "Setting environment variable: |$var|=|$val|"
-        Set-Content Env:\"$var" "$val"
-        [Environment]::SetEnvironmentVariable($var, $val, [System.EnvironmentVariableTarget]::Process)
-        [Environment]::SetEnvironmentVariable($var, $val, $(if ($tar) {$tar} else {[EnvironmentVariableTarget]::User}))
+        $var, $val, $targets = $_
+
+        foreach ($target in $targets) {
+            Write-Host "Setting environment variable: |$var|=|$val| as $target."
+            [Environment]::SetEnvironmentVariable($var, $val, $target)
+        }
     }
 
     @(
