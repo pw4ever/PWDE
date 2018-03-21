@@ -278,7 +278,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20180320-5"
+$script:version = "20180320-6"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -483,7 +483,8 @@ function update-userenv ($prefix) {
     $local:target_sumatrapdf = "$env:ChocolateyInstall\lib\sumatrapdf.commandline\tools"
 
     $local:link_emacs64 = "$env:HOMEDRIVE\tools\Emacs64"
-    $local:target_emacs64 = "$env:ChocolateyInstall\lib\emacs64\tools\emacs\bin"
+    $local:link_emacs64bin = "$local:link_emacs64\bin"
+    $local:target_emacs64 = "$env:ChocolateyInstall\lib\emacs64\tools\emacs"
 
     # Ensure these folders exist.
     try {
@@ -516,7 +517,16 @@ function update-userenv ($prefix) {
             try {
                 if (!([String]::IsNullOrWhiteSpace($target)) -and `
                         (Test-Path -Path $target -PathType Container) -and `
-                        !(Test-Path -Path $link))
+                        (
+                            !(Test-Path -Path $link) -or
+                            (
+                                ((Get-Item -Path $link).Attributes -match "ReparsePoint") -and
+                                # unfortunately, powershell *-item is agnostic to symlink.
+                                # https://kristofmattei.be/2012/12/15/powershell-remove-item-and-symbolic-links/
+                                $(cmd /c rmdir $link | Out-Null; $True)
+                            )
+                            ) # either not exist, or to overwrite an existing symlink.
+                        )
                 {
                     $path = Split-Path -Path $link
                     if (!(Test-Path -Path $path -PathType Container)) {
@@ -533,7 +543,7 @@ function update-userenv ($prefix) {
     $path = ([String]::Join([IO.Path]::PathSeparator, `
             (@(
                     "$prefix",
-                    $local:link_emacs64,
+                    $local:link_emacs64bin,
                     $local:link_vim,
                     $local:link_bcomp,
                     $local:link_sumatrapdf,
