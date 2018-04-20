@@ -279,7 +279,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20180321-2"
+$script:version = "20180419-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -487,6 +487,9 @@ function update-userenv ($prefix) {
     $local:link_emacs64bin = "$local:link_emacs64\bin"
     $local:target_emacs64 = "$env:ChocolateyInstall\lib\emacs64\tools\emacs"
 
+    $local:link_firefox = "$env:HOMEDRIVE\tools\firefox"
+    $local:target_firefox = "$env:ProgramFiles\Mozilla Firefox"
+
     # Ensure these folders exist.
     try {
         @(
@@ -512,6 +515,7 @@ function update-userenv ($prefix) {
             @($local:link_bcomp, $local:target_bcomp),
             @($local:link_sumatrapdf, $local:target_sumatrapdf),
             @($local:link_emacs64, $local:target_emacs64),
+            @($local:link_firefox, $local:target_firefox),
             $NULL
         ) | ? { ![String]::IsNullOrWhiteSpace($_) } | % {
             $link, $target = $_
@@ -548,6 +552,7 @@ function update-userenv ($prefix) {
                     $local:link_vim,
                     $local:link_bcomp,
                     $local:link_sumatrapdf,
+                    $local:link_firefox,
                     "$prefix\bin",
                     "$prefix\jdk\bin",
                     "$prefix\gradle\bin",
