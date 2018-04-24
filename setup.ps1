@@ -208,6 +208,7 @@ param(
         "python3",
         "putty",
         "radare",
+        "rainmeter",
         "r.project",
         "rsat",
         "r.studio",
@@ -279,7 +280,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20180419-1"
+$script:version = "20180424-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
