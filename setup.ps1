@@ -172,8 +172,6 @@ param(
         "doxygen.install",
         "dropbox",
         "emacs64",
-        #"ethminer",
-        #"evince",
         "fbreader",
         "ffmpeg",
         "firefox",
@@ -205,7 +203,7 @@ param(
         "obs-studio",
         "openshot",
         "openssh",
-        "pdftk"
+        "pdftk",
         "python2",
         "python3",
         "putty",
@@ -282,7 +280,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20180504-1"
+$script:version = "20180504-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
