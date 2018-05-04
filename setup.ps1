@@ -193,6 +193,7 @@ param(
         "kitty",
         "launchy",
         "maven",
+        "miktex",
         "mremoteng",
         "nasm",
         "negativescreen",
@@ -203,6 +204,7 @@ param(
         "obs-studio",
         "openshot",
         "openssh",
+        "pandoc",
         "pdftk",
         "python2",
         "python3",
@@ -280,7 +282,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20180504-2"
+$script:version = "20180504-3"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
