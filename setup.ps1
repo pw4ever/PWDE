@@ -169,6 +169,7 @@ param(
         "conemu",
         "ctags",
         "dependencywalker",
+        "doxygen.install",
         "dropbox",
         "emacs64",
         #"ethminer",
@@ -190,6 +191,7 @@ param(
         "ilmerge",
         "jdk8",
         "jq",
+        "kindle",
         "kitty",
         "launchy",
         "maven",
@@ -280,7 +282,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20180424-1"
+$script:version = "20180504-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
