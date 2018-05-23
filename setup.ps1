@@ -195,9 +195,11 @@ param(
         "lyx",
         "maven",
         "miktex",
+        "microsoft-message-analyzer",
         "mremoteng",
         "nasm",
         "negativescreen",
+        "networkmonitor",
         "nmap",
         "nodejs",
         "nssm",
@@ -283,7 +285,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20180504-4"
+$script:version = "20180523-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
