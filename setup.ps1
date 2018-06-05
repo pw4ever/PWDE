@@ -285,7 +285,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20180523-1"
+$script:version = "20180605-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -496,6 +496,9 @@ function update-userenv ($prefix) {
     $local:link_firefox = "$env:HOMEDRIVE\tools\firefox"
     $local:target_firefox = "$env:ProgramFiles\Mozilla Firefox"
 
+    $local:link_chrome = "$env:HOMEDRIVE\tools\GoogleChrome"
+    $local:target_chrome = "${env:ProgramFiles(x86)}\Google\Chrome\Application"
+
     # Ensure these folders exist.
     try {
         @(
@@ -522,6 +525,7 @@ function update-userenv ($prefix) {
             @($local:link_sumatrapdf, $local:target_sumatrapdf),
             @($local:link_emacs64, $local:target_emacs64),
             @($local:link_firefox, $local:target_firefox),
+            @($local:link_chrome, $local:target_chrome),
             $NULL
         ) | ? { ![String]::IsNullOrWhiteSpace($_) } | % {
             $link, $target = $_
@@ -559,6 +563,7 @@ function update-userenv ($prefix) {
                     $local:link_bcomp,
                     $local:link_sumatrapdf,
                     $local:link_firefox,
+                    $local:link_chrome,
                     "$prefix\bin",
                     "$prefix\jdk\bin",
                     "$prefix\gradle\bin",
