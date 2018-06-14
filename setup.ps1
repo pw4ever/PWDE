@@ -237,6 +237,7 @@ param(
         "wget",
         "winpcap",
         "wireshark",
+        "wmiexplorer",
         "xpdf-utils",
         "youtube-dl",
         "zeal.install",
@@ -285,7 +286,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20180605-1"
+$script:version = "20180614-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
