@@ -175,6 +175,7 @@ param(
         "fbreader",
         "ffmpeg",
         "firefox",
+        "firezilla",
         "gimp",
         "git",
         "Git-Credential-Manager-for-Windows",
@@ -185,7 +186,7 @@ param(
         "gradle",
         "haskell-stack",
         "inkscape",
-        "intellijidea-community",
+        #"intellijidea-community",
         "ilmerge",
         "jdk8",
         "jq",
@@ -214,6 +215,7 @@ param(
         "putty",
         "radare",
         "rainmeter",
+        "rclone",
         "r.project",
         "rsat",
         "r.studio",
@@ -236,6 +238,7 @@ param(
         "vlc",
         "wget",
         "winpcap",
+        "winscp",
         "wireshark",
         "wmiexplorer",
         "xpdf-utils",
@@ -286,7 +289,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20180614-1"
+$script:version = "20180823-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
