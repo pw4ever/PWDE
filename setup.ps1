@@ -171,7 +171,7 @@ param(
         "dependencywalker",
         "doxygen.install",
         "dropbox",
-        "emacs64",
+        "emacs",
         "fbreader",
         "ffmpeg",
         "firefox",
@@ -290,7 +290,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20181102-2"
+$script:version = "20181102-3"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -494,9 +494,9 @@ function update-userenv ($prefix) {
     $local:link_sumatrapdf = "$env:HOMEDRIVE\tools\SumatraPDF"
     $local:target_sumatrapdf = "$env:ChocolateyInstall\lib\sumatrapdf.commandline\tools"
 
-    $local:link_emacs64 = "$env:HOMEDRIVE\tools\Emacs64"
-    $local:link_emacs64bin = "$local:link_emacs64\bin"
-    $local:target_emacs64 = "$env:ChocolateyInstall\lib\emacs64\tools\emacs"
+    $local:link_emacs = "$env:HOMEDRIVE\tools\Emacs"
+    $local:link_emacsbin = "$local:link_emacs\bin"
+    $local:target_emacs = "$env:ChocolateyInstall\lib\emacs\tools\emacs"
 
     $local:link_firefox = "$env:HOMEDRIVE\tools\firefox"
     $local:target_firefox = "$env:ProgramFiles\Mozilla Firefox"
@@ -528,7 +528,7 @@ function update-userenv ($prefix) {
             @($local:link_vim, $local:target_vim),
             @($local:link_bcomp, $local:target_bcomp),
             @($local:link_sumatrapdf, $local:target_sumatrapdf),
-            @($local:link_emacs64, $local:target_emacs64),
+            @($local:link_emacs, $local:target_emacs),
             @($local:link_firefox, $local:target_firefox),
             @($local:link_chrome, $local:target_chrome),
             $NULL
@@ -563,7 +563,7 @@ function update-userenv ($prefix) {
     $path = ([String]::Join([IO.Path]::PathSeparator, `
             (@(
                     "$prefix",
-                    $local:link_emacs64bin,
+                    $local:link_emacsbin,
                     $local:link_vim,
                     $local:link_bcomp,
                     $local:link_sumatrapdf,
