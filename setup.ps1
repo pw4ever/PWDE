@@ -91,7 +91,7 @@ param(
         #"SysinternalsSuite",
         "vim",
         #"VirtuaWin",
-        "WinKit",
+        "Windows Kits",
         #"ynp-tools",
         $NULL
     ),
@@ -289,7 +289,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20180823-1"
+$script:version = "20181102-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -584,10 +584,8 @@ function update-userenv ($prefix) {
                     "$prefix\vim",
                     "$prefix\nmap",
                     "$prefix\SysinternalsSuite",
-                    "$prefix\WinKit\bin",
-                    "$prefix\WinKit\dbg",
-                    "$prefix\WinKit\tools",
-                    "$prefix\WinKit\wpt"
+                    "$prefix\Windows Kits\10\Debuggers\x64",
+                    "$prefix\Windows Kits\10\Windows Performance Toolkit",
                     "$prefix\ConEmuPack",
                     "$prefix\VirtuaWin",
                     "$prefix\Audacity",
