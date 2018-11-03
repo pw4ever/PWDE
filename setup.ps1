@@ -189,6 +189,7 @@ param(
         #"intellijidea-community",
         "ilmerge",
         "jdk8",
+        "jdk11",
         "jq",
         "kindle",
         "kitty",
@@ -214,7 +215,7 @@ param(
         "python3",
         "putty",
         "radare",
-        "rainmeter",
+        #"rainmeter",
         "rclone",
         "r.project",
         "rsat",
@@ -243,7 +244,7 @@ param(
         "wmiexplorer",
         "xpdf-utils",
         "youtube-dl",
-        "zeal.install",
+        "zeal",
         $NULL
     ),
 
@@ -289,7 +290,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20181102-1"
+$script:version = "20181102-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
