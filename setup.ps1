@@ -170,6 +170,7 @@ param(
         "conemu",
         "ctags",
         "dependencywalker",
+        "dotnetfx",
         "doxygen.install",
         "dropbox",
         "emacs",
@@ -291,7 +292,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20181106-1"
+$script:version = "20181106-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
