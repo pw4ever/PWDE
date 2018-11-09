@@ -71,6 +71,7 @@ param(
         #"config",
         "Documents",
         "emacs",
+        "etwpackage",
         "evince",
         #"gcmw",
         #"Git",
@@ -292,7 +293,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20181106-2"
+$script:version = "20181108-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -590,6 +591,7 @@ function update-userenv ($prefix) {
                     "$prefix\PAL",
                     "$prefix\Windows Kits\10\Debuggers\x64",
                     "$prefix\Windows Kits\10\Windows Performance Toolkit",
+                    "$prefix\etwpackage\bin",
                     "$prefix\ConEmuPack",
                     "$prefix\VirtuaWin",
                     "$prefix\Audacity",
