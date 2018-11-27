@@ -113,7 +113,7 @@ param(
 
     [Parameter(
     )]
-    $Destination,
+    $Destination="C:\PWDE",
 
     [Parameter(
     )]
@@ -304,7 +304,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20181127-4"
+$script:version = "20181127-5"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
