@@ -182,7 +182,7 @@ param(
         "firezilla",
         "gimp",
         "git",
-        "Git-Credential-Manager-for-Windows",
+        #"Git-Credential-Manager-for-Windows",
         "global",
         "golang",
         "GoogleChrome",
@@ -295,7 +295,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20181119-2"
+$script:version = "20181127-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
