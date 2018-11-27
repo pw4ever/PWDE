@@ -84,6 +84,7 @@ param(
         "jpdfbookmarks",
         "leiningen",
         "m2",
+        "mupdf",
         #"msys64",
         #"nasm",
         "PAL",
@@ -303,7 +304,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20181127-3"
+$script:version = "20181127-4"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -631,6 +632,7 @@ function update-userenv ($prefix) {
                     "$prefix\nasm",
                     "$prefix\ynp-tools",
                     "$prefix\AutoHotkey\Compiler",
+                    "$prefix\mupdf",
                     $NULL
                 ) | ? { !([String]::IsNullOrWhiteSpace($_)) -and (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue) })))
     $path += "$([IO.Path]::PathSeparator)$env:PWDE_PERSISTENT_PATH"
