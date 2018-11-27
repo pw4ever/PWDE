@@ -204,6 +204,7 @@ param(
         "microsoft-message-analyzer",
         "mremoteng",
         "msys2",
+        "mupdf",
         "nasm",
         "negativescreen",
         "networkmonitor",
@@ -295,7 +296,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20181127-1"
+$script:version = "20181127-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
