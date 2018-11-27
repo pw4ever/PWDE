@@ -16,9 +16,11 @@
 .PARAMETER ZipSource
     Zip source path (default to `$PSScriptRoot).
 .PARAMETER UnzipPkgs
-    Unzip packages.
+    Unzip packages
 .PARAMETER UpdateUserEnvironment
     Make settings persistent in user environment.
+.PARAMETER UpdateSystemPreference
+    Update system preference, such as file association.
 .PARAMETER CreateShortcuts
     Create Desktop shortcuts.
 .PARAMETER CreateStartupShortcuts
@@ -125,6 +127,11 @@ param(
     )]
     [switch]
     $UpdateUserEnvironment,
+
+    [Parameter(
+    )]
+    [switch]
+    $UpdateSystemPreference,
 
     [Parameter(
     )]
@@ -296,7 +303,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20181127-2"
+$script:version = "20181127-3"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -367,6 +374,10 @@ function main {
 
     if ($UpdateUserEnvironment) {
         update-userenv $Destination
+    }
+
+    if ($UpdateSystemPreference) {
+        update-syspref $Destination
     }
 
     if ($CreateShortcuts) {
@@ -716,6 +727,37 @@ function update-userenv ($prefix) {
         Set-Content Env:\"$var" "$val"
         [Environment]::SetEnvironmentVariable($var, $val, [System.EnvironmentVariableTarget]::Process)
         [Environment]::SetEnvironmentVariable($var, $val, $(if ($tar) {$tar} else {[EnvironmentVariableTarget]::User}))
+    }
+}
+
+function update-syspref ($prefix) {
+    # Update file type association
+    @(
+        @(
+            @(".pdf", ".epub", ".cbz", ".xps", ".oxps"), "MuPDF", $(
+                $exe="mupdf-gl.exe"
+                $path=(Get-Command -Name $exe -ErrorAction SilentlyContinue).path
+                if ($path) { $path } else {
+                    $path=[IO.Path]::Combine($prefix, "mupdf", $exe)
+                    if (Test-Path -Path $path -PathType Leaf -ErrorAction SilentlyContinue) { $path }
+                }),
+            "`"%1`""
+        ),
+        $NULL
+    ) | ? { ![String]::IsNullOrWhiteSpace($_) } | % {
+        $exts, $filetype, $exe, $param = $_
+        if ((![String]::IsNullOrWhiteSpace($exe)) -and `
+            (Test-Path -Path $exe -PathType Leaf -ErrorAction SilentlyContinue))
+        {
+            foreach ($ext in $exts) {
+                # https://stackoverflow.com/a/46839692
+                # https://ss64.com/ps/stop-parsing.html
+                invoke-Expression @"
+cmd /c --% assoc $ext=$filetype
+cmd /c --% ftype $filetype="$exe" $param
+"@
+            }
+        }
     }
 }
 
