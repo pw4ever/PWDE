@@ -75,7 +75,7 @@ param(
         "emacs",
         "etwpackage",
         "evince",
-        "EvincePortable",
+        #"EvincePortable",
         #"gcmw",
         #"Git",
         "global",
@@ -305,7 +305,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20181127-6"
+$script:version = "20181128-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -612,7 +612,7 @@ function update-userenv ($prefix) {
                     "$prefix\VirtuaWin",
                     "$prefix\Audacity",
                     "$prefix\evince\bin",
-                    "$prefix\EvincePortable",
+                    #"$prefix\EvincePortable",
                     "$prefix\apache-maven\bin",
                     "$prefix\vlc",
                     "$prefix\ffmpeg\bin",
