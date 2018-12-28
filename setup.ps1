@@ -176,6 +176,7 @@ param(
         "azure-cli",
         "beyondcompare",
         "calibre",
+        "cmake",
         "cmder",
         "conemu",
         "ctags",
@@ -207,6 +208,7 @@ param(
         "kindle",
         "kitty",
         "launchy",
+        "llvm",
         "lyx",
         "maven",
         "miktex",
@@ -305,7 +307,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20181128-1"
+$script:version = "20181227-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -523,6 +525,12 @@ function update-userenv ($prefix) {
     $local:link_chrome = "$env:HOMEDRIVE\tools\GoogleChrome"
     $local:target_chrome = "${env:ProgramFiles(x86)}\Google\Chrome\Application"
 
+    $local:link_llvm = "$env:HOMEDRIVE\tools\LLVM"
+    $local:target_llvm = "${env:ProgramFiles}\LLVM"
+
+    $local:link_cmake = "$env:HOMEDRIVE\tools\CMake"
+    $local:target_cmake = "${env:ProgramFiles}\CMake"
+
     # Ensure these folders exist.
     try {
         @(
@@ -550,6 +558,8 @@ function update-userenv ($prefix) {
             @($local:link_emacs, $local:target_emacs),
             @($local:link_firefox, $local:target_firefox),
             @($local:link_chrome, $local:target_chrome),
+            @($local:link_llvm, $local:target_llvm),
+            @($local:link_cmake, $local:target_cmake),
             $NULL
         ) | ? { ![String]::IsNullOrWhiteSpace($_) } | % {
             $link, $target = $_
@@ -588,6 +598,8 @@ function update-userenv ($prefix) {
                     $local:link_sumatrapdf,
                     $local:link_firefox,
                     $local:link_chrome,
+                    "$local:link_llvm\bin",
+                    "$local:link_cmake\bin",
                     "$prefix\bin",
                     "$prefix\jdk\bin",
                     "$prefix\gradle\bin",
