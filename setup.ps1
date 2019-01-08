@@ -224,6 +224,7 @@ param(
         "nssm",
         "nuget.commandline",
         "obs-studio",
+        "openjdk",
         "openshot",
         "openssh",
         "pandoc",
@@ -307,7 +308,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20181227-1"
+$script:version = "20190108-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
