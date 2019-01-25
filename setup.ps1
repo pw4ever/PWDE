@@ -309,7 +309,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190125-1"
+$script:version = "20190125-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -602,6 +602,7 @@ function update-userenv ($prefix) {
                     $local:link_chrome,
                     "$local:link_llvm\bin",
                     "$local:link_cmake\bin",
+                    "$env:HOMEDRIVE\tools\neovim\Neovim\bin",
                     "$prefix\bin",
                     "$prefix\jdk\bin",
                     "$prefix\gradle\bin",
@@ -689,7 +690,7 @@ function update-userenv ($prefix) {
         @("HOME", $("$prefix".Replace("\", "/"))),
         @("PWDE_HOME", $prefix.Replace("\", "/")),
 
-        $(if ($target = (gcm gvim.exe -ErrorAction SilentlyContinue).path) {
+        $(if ($target = (gcm nvim-qt.exe -ErrorAction SilentlyContinue).path) {
                 @("EDITOR", $target.Replace("\", "/"))
             }
             else { $NULL }),
@@ -816,8 +817,8 @@ function create-shortcuts ($prefix) {
             else { $NULL }),
 
 
-        $(if ($target = (gcm gvim.exe -ErrorAction SilentlyContinue).path) {
-                @($target, "$desktop\GVim.lnk")
+        $(if ($target = (gcm nvim-qt.exe -ErrorAction SilentlyContinue).path) {
+                @($target, "$desktop\NeoVim.lnk")
             }
             else { $NULL }),
 
@@ -971,11 +972,11 @@ function create-contextmenuentries ($prefix) {
                 @("Open with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$re`"", "$re")
             }
             else { $NULL }),
-        $(if ($target = (gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
+        $(if ($target = (gcm "nvim-qt.exe" -ErrorAction SilentlyContinue).path) {
                 @("Open with Vim", "`"$target`"", "$target")
             }
             else { $NULL }),
-        $(if ($target = (gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
+        $(if ($target = (gcm "nvim-qt.exe" -ErrorAction SilentlyContinue).path) {
                 @("Open with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$target`"", "$target")
             }
             else { $NULL }),
@@ -1005,7 +1006,7 @@ function create-contextmenuentries ($prefix) {
                 @("Edit with Emacs (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$re`" `"%1`"", "$re")
             }
             else { $NULL }),
-        $(if ($target = (gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
+        $(if ($target = (gcm "nvim-qt.exe" -ErrorAction SilentlyContinue).path) {
                 @("Edit with Vim", "`"$target`" `"%1`"", "$target")
             }
             else { $NULL }),
@@ -1013,7 +1014,7 @@ function create-contextmenuentries ($prefix) {
                 @("View with Vim", "`"$target`" -R `"%1`"", "$target")
             }
             else { $NULL }),
-        $(if ($target = (gcm "gvim.exe" -ErrorAction SilentlyContinue).path) {
+        $(if ($target = (gcm "nvim-qt.exe" -ErrorAction SilentlyContinue).path) {
                 @("Edit with Vim (Admin)", "`"powershell.exe`" -windowstyle hidden -noninteractive -noprofile -nologo -command start-process -verb runas -wait `"$target`" `"%1`"", "$target")
             }
             else { $NULL }),
