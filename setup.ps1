@@ -218,6 +218,7 @@ param(
         "mupdf",
         "nasm",
         "negativescreen",
+        "neovim",
         "networkmonitor",
         "nmap",
         "nodejs",
@@ -308,7 +309,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190108-1"
+$script:version = "20190125-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
