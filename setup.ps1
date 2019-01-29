@@ -213,6 +213,7 @@ param(
         "maven",
         "miktex",
         "microsoft-message-analyzer",
+        "mpv",
         "mremoteng",
         "msys2",
         "mupdf",
@@ -309,7 +310,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190125-2"
+$script:version = "20190129-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
