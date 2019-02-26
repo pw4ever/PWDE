@@ -242,6 +242,7 @@ param(
         "r.studio",
         "ruby",
         "rufus",
+        "sbt",
         "scriptcs",
         "sharpkeys",
         "strawberryperl",
@@ -310,7 +311,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190129-1"
+$script:version = "20190226-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
