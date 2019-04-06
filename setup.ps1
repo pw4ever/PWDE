@@ -172,6 +172,7 @@ param(
         "ag",
         "aria2",
         "audacity",
+        "audacity-lame",
         "autohotkey",
         "azure-cli",
         "beyondcompare",
@@ -207,6 +208,7 @@ param(
         "jq",
         "kindle",
         "kitty",
+        "lame",
         "launchy",
         "llvm",
         "lyx",
@@ -311,7 +313,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190226-1"
+$script:version = "20190405-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
