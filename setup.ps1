@@ -114,6 +114,11 @@ param(
 
     [Parameter(
     )]
+    [switch]
+    $ForceDownloadFromThirdParty,
+
+    [Parameter(
+    )]
     [System.Collections.Hashtable]
     $ThirdPartyPackages = @{
         "scala-2.12.8.msi" = "https://downloads.lightbend.com/scala/2.12.8/scala-2.12.8.msi";
@@ -331,7 +336,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190509-2"
+$script:version = "20190509-3"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -392,8 +397,12 @@ function main {
             $ThirdPartyPackages.Keys | % {
                 $dst = [IO.Path]::Combine($ZipSource, $_)
                 $src = $ThirdPartyPackages[$_]
-                Write-Verbose "$dst => $src"
-                Start-BitsTransfer -Source "$src" -Destination "$dst"
+                Write-Verbose "$src => $dst"
+                if (!(Test-Path -PathType Leaf -Path $dst) -or $ForceDownloadFromThirdParty) {
+                    Start-BitsTransfer -Source "$src" -Destination "$dst"
+                } else {
+                    Write-Verbose "$dst already exists; skip."
+                }
             }
 
         } catch {
