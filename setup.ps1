@@ -110,6 +110,23 @@ param(
     [Parameter(
     )]
     [switch]
+    $DownloadFromThirdParty,
+
+    [Parameter(
+    )]
+    [System.Collections.Hashtable]
+    $ThirdPartyPackages = @{
+        "scala-2.12.8.msi" = "https://downloads.lightbend.com/scala/2.12.8/scala-2.12.8.msi";
+    },
+
+    [Parameter(
+    )]
+    [switch]
+    $InstallThirdPartyPackages,
+
+    [Parameter(
+    )]
+    [switch]
     $DownloadOnly,
 
     [Parameter(
@@ -314,7 +331,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190509-1"
+$script:version = "20190509-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -369,8 +386,41 @@ function main {
         download-upstream $UpstreamURLPrefix $ZipSource $PkgList
     }
 
+    if ($DownloadFromThirdParty) {
+        try {
+            Import-Module BitsTransfer
+            $ThirdPartyPackages.Keys | % {
+                $dst = [IO.Path]::Combine($ZipSource, $_)
+                $src = $ThirdPartyPackages[$_]
+                Write-Verbose "$dst => $src"
+                Start-BitsTransfer -Source "$src" -Destination "$dst"
+            }
+
+        } catch {
+            Write-Error "Cannot import BitsTransfer module"
+        }
+    }
+
     if ($DownloadOnly) {
         return
+    }
+
+    if ($InstallThirdPartyPackages) {
+        $ThirdPartyPackages.Keys | % {
+            $pkg = $_
+            if ($pkg -match "\.msi$") {
+                $pkgpath = [IO.Path]::Combine($ZipSource, $pkg)
+                if (Test-Path -PathType Leaf $pkgpath) {
+                    Write-Verbose "Installing $pkgpath."
+                    Start-Process -FilePath msiexec.exe -Wait -ArgumentList @(
+                        "/i",
+                        "`"$pkgpath`"",
+                        "/qb",
+                        "/norestart"
+                    )
+                }
+            }
+        }
     }
 
     if (![string]::IsNullOrWhiteSpace($Destination)) {
