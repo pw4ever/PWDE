@@ -239,6 +239,7 @@ param(
         "radare",
         #"rainmeter",
         "rclone",
+        "ripgrep",
         "r.project",
         "rsat",
         "r.studio",
@@ -313,7 +314,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190405-1"
+$script:version = "20190509-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
