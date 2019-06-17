@@ -285,7 +285,7 @@ param(
         "vlc",
         "wget",
         "winpcap",
-        "winrar",
+        #"winrar",
         "winscp",
         "wireshark",
         "wmiexplorer",
@@ -339,7 +339,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190617-2"
+$script:version = "20190617-3"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
