@@ -271,7 +271,7 @@ param(
         "sbt",
         "scriptcs",
         "sharpkeys",
-        "strawberryperl",
+        #"strawberryperl",
         "sumatrapdf",
         "sysinternals",
         "tigervnc",
@@ -285,6 +285,7 @@ param(
         "vlc",
         "wget",
         "winpcap",
+        "winrar",
         "winscp",
         "wireshark",
         "wmiexplorer",
@@ -338,7 +339,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190617-1"
+$script:version = "20190617-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
