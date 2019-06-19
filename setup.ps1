@@ -66,39 +66,24 @@ param(
     )]
     [String[]]
     $PkgList = @(
-        #"AutoHotkey",
         "bin",
-        #"calibre",
-        #"ConEmuPack",
-        #"config",
         "Documents",
         "emacs",
         "etwpackage",
         "evince",
-        #"EvincePortable",
-        #"gcmw",
-        #"Git",
         "global",
-        #"go",
         "iasl",
         "jdk",
         "jpdfbookmarks",
         "leiningen",
         "m2",
         "mupdf",
-        #"msys64",
-        #"nasm",
         "PAL",
         "PEBrowse64",
         "PEBrowsePro",
-        #"putty",
-        #"radare2",
         "RWEverything",
-        #"SysinternalsSuite",
         "vim",
-        #"VirtuaWin",
         "Windows Kits",
-        #"ynp-tools",
         $NULL
     ),
 
@@ -339,7 +324,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190617-3"
+$script:version = "20190619-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
