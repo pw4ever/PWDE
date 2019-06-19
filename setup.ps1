@@ -106,7 +106,7 @@ param(
     )]
     [System.Collections.Hashtable]
     $ThirdPartyPackages = @{
-        "scala-2.12.8.msi" = "https://downloads.lightbend.com/scala/2.12.8/scala-2.12.8.msi";
+        "scala-2.13.0.msi" = "https://downloads.lightbend.com/scala/2.13.0/scala-2.13.0.msi";
     },
 
     [Parameter(
@@ -324,7 +324,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190619-1"
+$script:version = "20190619-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
