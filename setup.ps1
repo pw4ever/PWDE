@@ -196,6 +196,7 @@ param(
         "emacs",
         #"fbreader",
         "ffmpeg",
+        "filetypesman",
         "firefox",
         #"firezilla",
         "ghc",
@@ -324,7 +325,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190619-2"
+$script:version = "20190715-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
