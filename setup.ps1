@@ -107,6 +107,7 @@ param(
     [System.Collections.Hashtable]
     $ThirdPartyPackages = @{
         "scala-2.13.0.msi" = "https://downloads.lightbend.com/scala/2.13.0/scala-2.13.0.msi";
+        "evince-2.32.0.145.msi" = "https://github.com/pw4ever/PWDE/releases/download/latest/evince-2.32.0.145.msi";
     },
 
     [Parameter(
@@ -325,7 +326,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190725-1"
+$script:version = "20190726-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
