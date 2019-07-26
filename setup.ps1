@@ -280,6 +280,7 @@ param(
         "youtube-dl",
         "zeal",
         "zulu",
+        "zulu11",
         "zulu8",
         $NULL
     ),
@@ -326,7 +327,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190726-1"
+$script:version = "20190726-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
