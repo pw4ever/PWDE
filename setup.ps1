@@ -205,7 +205,7 @@ param(
         "git",
         #"Git-Credential-Manager-for-Windows",
         "global",
-        #"golang",
+        "golang",
         "GoogleChrome",
         "gpg4win",
         #"gradle",
@@ -237,7 +237,7 @@ param(
         #"nodejs",
         "nssm",
         "nuget.commandline",
-        "obs-studio",
+        #"obs-studio",
         #"openjdk",
         #"openshot",
         #"openssh",
@@ -327,7 +327,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190726-2"
+$script:version = "20190726-3"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
