@@ -333,7 +333,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190730-3"
+$script:version = "20190730-4"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -390,7 +390,6 @@ function main {
 
     if ($DownloadFromThirdParty) {
         try {
-            Import-Module BitsTransfer
             $wc = New-Object System.Net.WebClient
             $ThirdPartyPackages.Keys | % {
                 $dst = [IO.Path]::Combine($ZipSource, $_)
@@ -399,6 +398,7 @@ function main {
                 if (!(Test-Path -PathType Leaf -Path $dst) -or $ForceDownloadFromThirdParty) {
                     # See: https://powershell.org/forums/topic/bits-transfer-with-github/
                     try {
+                        Import-Module BitsTransfer
                         Start-BitsTransfer -Source "$src" -Destination "$dst" -ErrorAction Stop
                     } catch {
                         Write-Verbose "BITS transfer failed; trying alternative download method."
