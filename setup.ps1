@@ -277,7 +277,7 @@ param(
         #"wireshark",
         "wmiexplorer",
         "xpdf-utils",
-        "youtube-dl",
+        #"youtube-dl",
         "zeal",
         "zulu",
         "zulu11",
@@ -327,7 +327,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190726-3"
+$script:version = "20190730-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
