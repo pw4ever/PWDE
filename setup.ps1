@@ -333,7 +333,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190730-5"
+$script:version = "20190730-6"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -343,6 +343,15 @@ if ($ExcludePkgList) {
 }
 
 $PkgList = $($PkgList | ? { !([String]::IsNullOrWhiteSpace($_)) -and !$($_.ToUpper() -in $ExcludePkgList) })
+
+$Wget = $(
+    $tmp = [IO.Path]::Combine($PSScriptRoot, "helper", "wget.exe")
+    if (Test-Path -Path $tmp -PathType Leaf) {
+        $tmp
+    } else {
+        (Get-Command -Name "wget.exe" -ErrorAction SilentlyContinue).Path
+    }
+)
 
 function main {
     if ($InstallChocolatey) {
@@ -389,14 +398,12 @@ function main {
     }
 
     if ($DownloadFromThirdParty) {
-        $wc = New-Object System.Net.WebClient
         $ThirdPartyPackages.Keys | % {
             $dst = [IO.Path]::Combine($ZipSource, $_)
             $src = $ThirdPartyPackages[$_]
-            Write-Verbose "$src => $dst"
             if (!(Test-Path -PathType Leaf -Path $dst) -or $ForceDownloadFromThirdParty) {
                 try {
-                    $wc.DownloadFile("$src", "$dst")
+                    download-pkg -src $src -dst $dst
                 } catch {
                     Write-Error "$src => $dst failed: $_."
                 }
@@ -404,7 +411,6 @@ function main {
                 Write-Verbose "$dst already exists; skip."
             }
         }
-        $wc = $NULL
     }
 
     if ($DownloadOnly) {
@@ -513,6 +519,22 @@ function main {
 
 }
 
+function download-pkg ($src, $dst) {
+    $local:sp_old = [System.Net.ServicePointManager]::SecurityProtocol
+    try {
+        # https://stackoverflow.com/a/28333370
+        [System.Net.ServicePointManager]::SecurityProtocol = `
+            [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12
+        # http://stackoverflow.com/a/28704050
+        $wc = New-Object Net.WebClient
+        Write-Verbose "$src => $dst"
+        $wc.DownloadFile($src, $dst)
+    }
+    finally {
+        [System.Net.ServicePointManager]::SecurityProtocol = $local:sp_old
+    }
+}
+
 function download-upstream ($srcprefix, $destprefix, $pkgs) {
     $local:sp_old = [System.Net.ServicePointManager]::SecurityProtocol
 
@@ -527,10 +549,10 @@ function download-upstream ($srcprefix, $destprefix, $pkgs) {
 
         foreach ($item in $list) {
             $src = "$srcprefix/$item"
-            $dest = "$destprefix/$item"
+            $dst = "$destprefix/$item"
 
-            $wc.DownloadFile($src, $dest)
-            Write-Host "$src downloaded to $dest."
+            $wc.DownloadFile($src, $dst)
+            Write-Host "$src downloaded to $dst."
         }
     }
     finally {
@@ -545,7 +567,7 @@ function ensure-dir ($dir) {
     }
 }
 
-function unzip-files ($src, $dest, $pkglist) {
+function unzip-files ($src, $dst, $pkglist) {
     $jobs = @()
     $pkglist = $pkglist | % { "$_.zip" }
     ls "$src/*.zip" | % {
@@ -555,18 +577,18 @@ function unzip-files ($src, $dest, $pkglist) {
             Write-Host "Unzipping $name."
             # Start background jobs for unzipping
             $jobs += $(Start-Job -ScriptBlock {
-                    param($name, $dest, $src)
+                    param($name, $dst, $src)
 
-                    function unzip ($zipfile, $dest, $src) {
-                        #ensure-dir $dest
-                        #[IO.Compression.ZipFile]::ExtractToDirectory($zipfle, $dest)
-                        Invoke-Expression "$src\7za.exe x -o`"$dest`" -y -- `"$zipfile`"" # > $NULL
+                    function unzip ($zipfile, $dst, $src) {
+                        #ensure-dir $dst
+                        #[IO.Compression.ZipFile]::ExtractToDirectory($zipfle, $dst)
+                        Invoke-Expression "$src\7za.exe x -o`"$dst`" -y -- `"$zipfile`"" # > $NULL
                     }
 
-                    unzip "$name" "$dest" "$src"
+                    unzip "$name" "$dst" "$src"
                     Write-Host "$name unzipped."
                 } `
-                    -ArgumentList "$name", "$dest", "$src"
+                    -ArgumentList "$name", "$dst", "$src"
             )
         }
     }
