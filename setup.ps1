@@ -333,7 +333,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190730-4"
+$script:version = "20190730-5"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -389,29 +389,22 @@ function main {
     }
 
     if ($DownloadFromThirdParty) {
-        try {
-            $wc = New-Object System.Net.WebClient
-            $ThirdPartyPackages.Keys | % {
-                $dst = [IO.Path]::Combine($ZipSource, $_)
-                $src = $ThirdPartyPackages[$_]
-                Write-Verbose "$src => $dst"
-                if (!(Test-Path -PathType Leaf -Path $dst) -or $ForceDownloadFromThirdParty) {
-                    # See: https://powershell.org/forums/topic/bits-transfer-with-github/
-                    try {
-                        Import-Module BitsTransfer
-                        Start-BitsTransfer -Source "$src" -Destination "$dst" -ErrorAction Stop
-                    } catch {
-                        Write-Verbose "BITS transfer failed; trying alternative download method."
-                        $wc.DownloadFile("$src", "$dst")
-                    }
-                } else {
-                    Write-Verbose "$dst already exists; skip."
+        $wc = New-Object System.Net.WebClient
+        $ThirdPartyPackages.Keys | % {
+            $dst = [IO.Path]::Combine($ZipSource, $_)
+            $src = $ThirdPartyPackages[$_]
+            Write-Verbose "$src => $dst"
+            if (!(Test-Path -PathType Leaf -Path $dst) -or $ForceDownloadFromThirdParty) {
+                try {
+                    $wc.DownloadFile("$src", "$dst")
+                } catch {
+                    Write-Error "$src => $dst failed: $_."
                 }
+            } else {
+                Write-Verbose "$dst already exists; skip."
             }
-
-        } catch {
-            Write-Error "Cannot import BitsTransfer module"
         }
+        $wc = $NULL
     }
 
     if ($DownloadOnly) {
