@@ -118,6 +118,11 @@ param(
 
     [Parameter(
     )]
+    [String[]]
+    $InstallThirdPartyPackagesList,
+
+    [Parameter(
+    )]
     [switch]
     $DownloadOnly,
 
@@ -328,7 +333,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190730-2"
+$script:version = "20190730-3"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -414,11 +419,21 @@ function main {
     }
 
     if ($InstallThirdPartyPackages) {
-        $ThirdPartyPackages.Keys | % {
+        if (![String]::IsNullOrWhiteSpace($Destination)) {
+            $dest_bin=[IO.Path]::Combine($Destination, "bin")
+            ensure-dir $dest_bin
+        }
+        $ThirdPartyPackages.Keys | ? {
+            Write-Verbose $_
+            Write-Verbose ($InstallThirdPartyPackagesList -match $_).Count
+            # ($InstallThirdPartyPackagesList.Count -le 0) is excluded
+            ($NULL -eq $InstallThirdPartyPackagesList) -or `
+                ($InstallThirdPartyPackagesList -contains $_)
+         } | % {
             $pkg = $_
             if ($pkg -match "\.msi$") {
                 $pkgpath = [IO.Path]::Combine($ZipSource, $pkg)
-                if (Test-Path -PathType Leaf $pkgpath) {
+                if (Test-Path -Path $pkgpath -PathType Leaf) {
                     Write-Verbose "Installing $pkgpath."
                     Start-Process -FilePath msiexec.exe -Wait -ArgumentList @(
                         "/i",
@@ -427,8 +442,16 @@ function main {
                         "/norestart"
                     )
                 }
+            } elseif ($pkg -match "\.(exe|bat|cmd)$") {
+                $pkgpath = [IO.Path]::Combine($ZipSource, $pkg)
+                if ((Test-Path -Path $pkgpath -PathType Leaf) -and (Test-Path -Path $dest_bin -PathType Container))
+                {
+                    Write-Verbose "Copying $pkgpath to $dest_bin."
+                    Copy-Item -Path $pkgpath -Destination $dest_bin
+                }
             }
         }
+        $dest_bin=$NULL
     }
 
     if (![string]::IsNullOrWhiteSpace($Destination)) {
