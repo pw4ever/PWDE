@@ -108,6 +108,7 @@ param(
     $ThirdPartyPackages = @{
         "scala-2.13.0.msi" = "https://downloads.lightbend.com/scala/2.13.0/scala-2.13.0.msi";
         "evince-2.32.0.145.msi" = "https://github.com/pw4ever/PWDE/releases/download/latest/evince-2.32.0.145.msi";
+        "youtube-dl.exe" = "https://yt-dl.org/latest/youtube-dl.exe";
     },
 
     [Parameter(
@@ -327,7 +328,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190730-1"
+$script:version = "20190730-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -385,12 +386,19 @@ function main {
     if ($DownloadFromThirdParty) {
         try {
             Import-Module BitsTransfer
+            $wc = New-Object System.Net.WebClient
             $ThirdPartyPackages.Keys | % {
                 $dst = [IO.Path]::Combine($ZipSource, $_)
                 $src = $ThirdPartyPackages[$_]
                 Write-Verbose "$src => $dst"
                 if (!(Test-Path -PathType Leaf -Path $dst) -or $ForceDownloadFromThirdParty) {
-                    Start-BitsTransfer -Source "$src" -Destination "$dst"
+                    # See: https://powershell.org/forums/topic/bits-transfer-with-github/
+                    try {
+                        Start-BitsTransfer -Source "$src" -Destination "$dst" -ErrorAction Stop
+                    } catch {
+                        Write-Verbose "BITS transfer failed; trying alternative download method."
+                        $wc.DownloadFile("$src", "$dst")
+                    }
                 } else {
                     Write-Verbose "$dst already exists; skip."
                 }
