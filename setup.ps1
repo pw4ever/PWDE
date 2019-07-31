@@ -334,7 +334,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190731-5"
+$script:version = "20190731-6"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -757,27 +757,34 @@ function update-userenv ($prefix) {
                     $NULL
                 ) | ? {
                     !([String]::IsNullOrWhiteSpace($_)) -and `
+                    (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue) -and `
                     !([Environment]::GetEnvironmentVariable(
                         "PATH", [System.EnvironmentVariableTarget]::User
                         ) -match [Regex]::Escape($_) ) -and `
-                    (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue)
+                    $true
                 }
 
     $path = if (![String]::IsNullOrWhiteSpace($local:tmp)) {
-        [String]::Join([IO.Path]::PathSeparator, $local:tmp)
+        [String]::Join([IO.Path]::PathSeparator,
+        $(
+            @(
+                $local:tmp,
+                $env:PWDE_PERSISTENT_PATH,
+                $NULL
+            ) | ? { ![String]::IsNullOrWhiteSpace($_) }
+        ))
     }
-
-    $path += "$([IO.Path]::PathSeparator)$env:PWDE_PERSISTENT_PATH"
 
     $local:tmp = @(
                 "$prefix\jdk\bin",
                 $NULL
             ) | ? {
                 !([String]::IsNullOrWhiteSpace($_)) -and `
+                (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue) -and `
                 !([Environment]::GetEnvironmentVariable(
                     "PATH", [System.EnvironmentVariableTarget]::Machine
                     ) -match [Regex]::Escape($_) ) -and `
-                (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue)
+                $true
             }
     $syspath = if (![String]::IsNullOrWhiteSpace($local:tmp)) {
         [String]::Join([IO.Path]::PathSeparator, $local:tmp)
@@ -841,8 +848,12 @@ function update-userenv ($prefix) {
         $var, $val, $targets = $_
 
         foreach ($target in $targets) {
-            Write-Verbose "Setting environment variable: |$var|=|$val| as $target."
-            [Environment]::SetEnvironmentVariable($var, $val, $target)
+            if ([System.Environment]::GetEnvironmentVariable($var, $target) -ne $val) {
+                Write-Verbose "Setting environment variable: |$var|=|$val| in $target."
+                [Environment]::SetEnvironmentVariable($var, $val, $target)
+            } else {
+                Write-Verbose "$var has already been set correctly in $target."
+            }
         }
     }
 
@@ -906,10 +917,21 @@ function update-userenv ($prefix) {
         $NULL
     ) | ? { !([String]::IsNullOrWhiteSpace($_)) } | % {
         $var, $val, $tar = $_
-        Write-Verbose "Setting environment variable: |$var|=|$val|"
-        Set-Content Env:\"$var" "$val"
-        [Environment]::SetEnvironmentVariable($var, $val, [System.EnvironmentVariableTarget]::Process)
-        [Environment]::SetEnvironmentVariable($var, $val, $(if ($tar) {$tar} else {[EnvironmentVariableTarget]::User}))
+        @(
+            [System.EnvironmentVariableTarget]::Process,
+            $(if ([String]::IsNullOrWhiteSpace($tar)) {
+                [System.EnvironmentVariableTarget]::User
+            } else { $tar })
+        ) | % {
+            $target = $_
+            if ([System.Environment]::GetEnvironmentVariable($var, $target) -ne $val) {
+                Write-Verbose "Setting environment variable: |$var|=|$val| in $target."
+                [Environment]::SetEnvironmentVariable($var, $val, $target)
+            }
+            else {
+                Write-Verbose "$var has already been set correctly in $target."
+            }
+        }
     }
 }
 
