@@ -334,7 +334,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190731-1"
+$script:version = "20190731-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -793,9 +793,7 @@ function update-userenv ($prefix) {
     }
 
     @(
-        <#
         @("HOME", $("$prefix".Replace("\", "/"))),
-        #>
         @("PWDE_HOME", $prefix.Replace("\", "/")),
 
         $(if ($target = (gcm nvim-qt.exe -ErrorAction SilentlyContinue).path) {
