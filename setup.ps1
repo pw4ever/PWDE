@@ -66,6 +66,7 @@ param(
     )]
     [String[]]
     $PkgList = @(
+        "amazon-corretto-11.0.4.11.1-windows-x64"
         "bin",
         "Documents",
         "emacs",
@@ -73,7 +74,7 @@ param(
         "evince",
         "global",
         "iasl",
-        "jdk",
+        #"jdk",
         "jpdfbookmarks",
         "leiningen",
         "m2",
@@ -333,7 +334,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190730-6"
+$script:version = "20190731-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -601,6 +602,9 @@ function update-userenv ($prefix) {
     $local:gopath = [IO.Path]::Combine([System.Environment]::GetFolderPath("MyDocuments"), "go")
     $local:gopathbin = [IO.Path]::Combine($local:gopath, "bin")
 
+    $local:link_jdk = "$prefix\jdk"
+    $local:target_jdk = "$prefix\jdk11.0.4_10"
+
     $local:link_vim = "$env:HOMEDRIVE\tools\Vim"
     $local:target_vim = $(
         Get-ChildItem -Path "${env:ProgramFiles(x86)}\vim\vim*" | `
@@ -655,6 +659,7 @@ function update-userenv ($prefix) {
     # such as paths with spaces of parentheses.
     try {
         @(
+            @($local:link_jdk, $local:target_jdk),
             @($local:link_vim, $local:target_vim),
             @($local:link_bcomp, $local:target_bcomp),
             @($local:link_sumatrapdf, $local:target_sumatrapdf),
@@ -788,7 +793,9 @@ function update-userenv ($prefix) {
     }
 
     @(
+        <#
         @("HOME", $("$prefix".Replace("\", "/"))),
+        #>
         @("PWDE_HOME", $prefix.Replace("\", "/")),
 
         $(if ($target = (gcm nvim-qt.exe -ErrorAction SilentlyContinue).path) {
@@ -804,6 +811,7 @@ function update-userenv ($prefix) {
                 @("PAGER", $target.Replace("\", "/"))
             }
             else { $NULL }),
+            <#
         $(if (Test-Path ([IO.Path]::Combine("$prefix", "jdk", "bin", "javac.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
                 @("JAVA_HOME", "$prefix\jdk".Replace("\", "/"))
             }
@@ -812,14 +820,17 @@ function update-userenv ($prefix) {
                 @("_JAVA_OPTIONS", "-Duser.home=`"$prefix`" $env:PWDE_JAVA_OPTIONS")
             }
             else { $NULL }),
+            #>
         $(if (Test-Path ([IO.Path]::Combine("$prefix", ".lein", "bin", "lein.bat")) -PathType Leaf -ErrorAction SilentlyContinue) {
                 @("LEIN_HOME", "$prefix\.lein".Replace("\", "/"))
             }
             else { $NULL }),
+            <#
         $(if (Test-Path ([IO.Path]::Combine("$prefix", "jdk", "bin", "java.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
                 @("LEIN_JAVA_CMD", "$prefix\jdk\bin\java.exe".Replace("\", "/"))
             }
             else { $NULL }),
+            #>
         $(if (Test-Path ([IO.Path]::Combine("$prefix", "go", "bin", "go.exe")) -PathType Leaf -ErrorAction SilentlyContinue) {
                 @("GOROOT", "$prefix\go".Replace("\", "/"))
             }
