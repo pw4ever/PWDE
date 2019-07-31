@@ -334,7 +334,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190731-3"
+$script:version = "20190731-4"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -553,7 +553,7 @@ function download-upstream ($srcprefix, $destprefix, $pkgs) {
             $dst = "$destprefix/$item"
 
             $wc.DownloadFile($src, $dst)
-            Write-Host "$src downloaded to $dst."
+            Write-Verbose "$src downloaded to $dst."
         }
     }
     finally {
@@ -564,7 +564,7 @@ function download-upstream ($srcprefix, $destprefix, $pkgs) {
 function ensure-dir ($dir) {
     if (!$(Test-Path $dir)) {
         mkdir $dir -Force > $NULL
-        Write-Host "$dir created."
+        Write-Verbose "$dir created."
     }
 }
 
@@ -575,7 +575,7 @@ function unzip-files ($src, $dst, $pkglist) {
         # Unzip $_ only if it is in $pkglist
         if ($pkglist -like $_.Name) {
             $name = $_.FullName
-            Write-Host "Unzipping $name."
+            Write-Verbose "Unzipping $name."
             # Start background jobs for unzipping
             $jobs += $(Start-Job -ScriptBlock {
                     param($name, $dst, $src)
@@ -587,7 +587,7 @@ function unzip-files ($src, $dst, $pkglist) {
                     }
 
                     unzip "$name" "$dst" "$src"
-                    Write-Host "$name unzipped."
+                    Write-Verbose "$name unzipped."
                 } `
                     -ArgumentList "$name", "$dst", "$src"
             )
@@ -816,7 +816,7 @@ function update-userenv ($prefix) {
         $var, $val, $targets = $_
 
         foreach ($target in $targets) {
-            Write-Host "Setting environment variable: |$var|=|$val| as $target."
+            Write-Verbose "Setting environment variable: |$var|=|$val| as $target."
             [Environment]::SetEnvironmentVariable($var, $val, $target)
         }
     }
@@ -881,7 +881,7 @@ function update-userenv ($prefix) {
         $NULL
     ) | ? { !([String]::IsNullOrWhiteSpace($_)) } | % {
         $var, $val, $tar = $_
-        Write-Host "Setting environment variable: |$var|=|$val|"
+        Write-Verbose "Setting environment variable: |$var|=|$val|"
         Set-Content Env:\"$var" "$val"
         [Environment]::SetEnvironmentVariable($var, $val, [System.EnvironmentVariableTarget]::Process)
         [Environment]::SetEnvironmentVariable($var, $val, $(if ($tar) {$tar} else {[EnvironmentVariableTarget]::User}))
@@ -996,7 +996,7 @@ function create-shortcuts ($prefix) {
         if ($_) {
             $src, $shortcut, $argument, $hotkey, $workdir, $admin = $_
             if (Test-Path "$src") {
-                Write-Host "Shortcut: $src Arguments:`"$args`" Hotkey:`"$hotkey`" => $shortcut"
+                Write-Verbose "Shortcut: $src Arguments:`"$args`" Hotkey:`"$hotkey`" => $shortcut"
                 create-shortcuts-internal -src $src -shortcut $shortcut -argument $argument `
                     -hotkey $hotkey -workdir $workdir -admin $admin
             }
@@ -1052,7 +1052,7 @@ $(if ($target=$(gcm bginfo.exe -ErrorAction SilentlyContinue).path) {
         if ($_) {
             $src, $shortcut, $argument, $hotkey, $workdir, $admin = $_
             if (Test-Path "$src") {
-                Write-Host "Shortcut: $src Arguments:`"$args`" Hotkey:`"$hotkey`" => $shortcut"
+                Write-Verbose "Shortcut: $src Arguments:`"$args`" Hotkey:`"$hotkey`" => $shortcut"
                 create-shortcuts-internal -src $src -shortcut $shortcut -argument $argument `
                     -hotkey $hotkey -workdir $workdir -admin $admin
             }
@@ -1125,7 +1125,7 @@ function create-contextmenuentries ($prefix) {
             $name, $value, $testpath = $_
             # either $testpath is $null, or $testpath must exists.
             if (!$testpath -or $(Test-Path "$testpath")) {
-                Write-Host "Directory Context Menu: $name => $value"
+                Write-Verbose "Directory Context Menu: $name => $value"
                 $regpath = "HKCR:\Directory\Background\shell\$name"
                 New-Item -Path "$regpath\Command" -Force | Out-Null
                 Set-ItemProperty -Path "$regpath" -Name "(Default)" -Value "$name"
@@ -1162,7 +1162,7 @@ function create-contextmenuentries ($prefix) {
         if ($_) {
             $name, $value, $testpath = $_
             if (!$testpath -or $(Test-Path "$testpath")) {
-                Write-Host "All File Type Context Menu: $name => $value"
+                Write-Verbose "All File Type Context Menu: $name => $value"
                 $regpath = "$name"
                 New-Item -Path "$regpath\Command" -Force | Out-Null
                 Set-ItemProperty -Path "$regpath" -Name "(Default)" -Value "$name"
