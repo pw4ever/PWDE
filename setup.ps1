@@ -334,7 +334,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190731-7"
+$script:version = "20190731-8"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -792,6 +792,9 @@ function update-userenv ($prefix) {
 
     @(
         "PATH",
+        "HOME",
+        "EDITOR",
+        "ALTERNATE_EDITOR",
         $NULL
     ) | ? { ![String]::IsNullOrWhiteSpace($_) } | % {
         $name = $_
@@ -802,10 +805,12 @@ function update-userenv ($prefix) {
                 [System.EnvironmentVariableTarget]::User
             ))
         {
+            $local:cur = [System.Environment]::GetEnvironmentVariable($name, $env)
+            $local:curbak = [System.Environment]::GetEnvironmentVariable($bakname, $env)
             if (
-                [System.Environment]::GetEnvironmentVariable($bakname, $env) -ne `
-                [System.Environment]::GetEnvironmentVariable($name, $env)
-            )
+                (![String]::IsNullOrWhiteSpace($local:cur)) -and `
+                ($local:curbak -ne $local:cur)
+                )
             {
                 Write-Verbose "Backing up environment variable $name to $bakname in $env."
                 [Environment]::SetEnvironmentVariable(
