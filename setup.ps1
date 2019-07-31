@@ -334,7 +334,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190731-4"
+$script:version = "20190731-5"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -697,8 +697,7 @@ function update-userenv ($prefix) {
         }
     } catch {}
 
-    $path = ([String]::Join([IO.Path]::PathSeparator, `
-            (@(
+    $local:tmp = @(
                     "$prefix",
                     $local:link_emacsbin,
                     $local:link_vim,
@@ -733,7 +732,6 @@ function update-userenv ($prefix) {
                     "$prefix\VirtuaWin",
                     "$prefix\Audacity",
                     "$prefix\evince\bin",
-                    #"$prefix\EvincePortable",
                     "$prefix\apache-maven\bin",
                     "$prefix\vlc",
                     "$prefix\ffmpeg\bin",
@@ -757,14 +755,33 @@ function update-userenv ($prefix) {
                     "$prefix\AutoHotkey\Compiler",
                     "$prefix\mupdf",
                     $NULL
-                ) | ? { !([String]::IsNullOrWhiteSpace($_)) -and (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue) })))
+                ) | ? {
+                    !([String]::IsNullOrWhiteSpace($_)) -and `
+                    !([Environment]::GetEnvironmentVariable(
+                        "PATH", [System.EnvironmentVariableTarget]::User
+                        ) -match [Regex]::Escape($_) ) -and `
+                    (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue)
+                }
+
+    $path = if (![String]::IsNullOrWhiteSpace($local:tmp)) {
+        [String]::Join([IO.Path]::PathSeparator, $local:tmp)
+    }
+
     $path += "$([IO.Path]::PathSeparator)$env:PWDE_PERSISTENT_PATH"
 
-    $syspath = ([String]::Join([IO.Path]::PathSeparator, `
-            (@(
+    $local:tmp = @(
                 "$prefix\jdk\bin",
                 $NULL
-            ) | ? { !([String]::IsNullOrWhiteSpace($_)) -and (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue) })))
+            ) | ? {
+                !([String]::IsNullOrWhiteSpace($_)) -and `
+                !([Environment]::GetEnvironmentVariable(
+                    "PATH", [System.EnvironmentVariableTarget]::Machine
+                    ) -match [Regex]::Escape($_) ) -and `
+                (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue)
+            }
+    $syspath = if (![String]::IsNullOrWhiteSpace($local:tmp)) {
+        [String]::Join([IO.Path]::PathSeparator, $local:tmp)
+    }
 
     @(
         "PATH",
@@ -789,27 +806,35 @@ function update-userenv ($prefix) {
 
     @(
         @("PATH",
-            $([String]::Join([IO.Path]::PathSeparator, @(
+            $([String]::Join([IO.Path]::PathSeparator, $(@(
                         $syspath,
-                        [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::Machine)
-                    ))),
+                        [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::Machine),
+                        $NULL
+                    ) | ? { ![String]::IsNullOrWhiteSpace($_) })
+                    )),
             @(
                 [System.EnvironmentVariableTarget]::Machine
             )),
         @("PATH",
-            $([String]::Join([IO.Path]::PathSeparator, @(
+            $([String]::Join([IO.Path]::PathSeparator, $(@(
                         $path,
-                        [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::Machine)
-                    ))),
-            @(
-                [System.EnvironmentVariableTarget]::Process
-            )),
-        @("PATH",
-            $([String]::Join([IO.Path]::PathSeparator, @(
-                        $path
-                    ))),
+                        [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::User),
+                        $NULL
+                    ) | ? { ![String]::IsNullOrWhiteSpace($_) })
+                    )),
             @(
                 [System.EnvironmentVariableTarget]::User
+            )),
+        @("PATH",
+            $([String]::Join([IO.Path]::PathSeparator, $(@(
+                        # combine previous 2 settings
+                        [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::User),
+                        [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::Machine),
+                        $NULL
+                    ) | ? { ![String]::IsNullOrWhiteSpace($_) })
+                    )),
+            @(
+                [System.EnvironmentVariableTarget]::Process
             )),
         $NULL
     ) | ? { ! ([String]::IsNullOrWhiteSpace($_)) } | % {
