@@ -66,7 +66,8 @@ param(
     )]
     [String[]]
     $PkgList = @(
-        "amazon-corretto-11.0.4.11.1-windows-x64"
+        "amazon-corretto-11.0.4.11.1-windows-x64",
+        "amazon-corretto-8.222.10.3-windows-x64-jdk",
         "bin",
         "Documents",
         "emacs",
@@ -334,7 +335,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190731-8"
+$script:version = "20190731-9"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
