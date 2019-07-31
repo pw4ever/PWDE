@@ -335,7 +335,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190731-9"
+$script:version = "20190731-10"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -702,6 +702,7 @@ function update-userenv ($prefix) {
                     "$prefix",
                     $local:link_emacsbin,
                     $local:link_vim,
+                    $local:link_jdk,
                     $local:link_bcomp,
                     $local:link_sumatrapdf,
                     $local:link_firefox,
@@ -710,7 +711,6 @@ function update-userenv ($prefix) {
                     "$local:link_cmake\bin",
                     "$env:HOMEDRIVE\tools\neovim\Neovim\bin",
                     "$prefix\bin",
-                    "$prefix\jdk\bin",
                     "$prefix\gradle\bin",
                     "$prefix\.lein\bin",
                     "$prefix\ClojureCLR",
