@@ -334,7 +334,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190731-2"
+$script:version = "20190731-3"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -760,12 +760,41 @@ function update-userenv ($prefix) {
                 ) | ? { !([String]::IsNullOrWhiteSpace($_)) -and (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue) })))
     $path += "$([IO.Path]::PathSeparator)$env:PWDE_PERSISTENT_PATH"
 
+    $syspath = ([String]::Join([IO.Path]::PathSeparator, `
+            (@(
+                "$prefix\jdk\bin",
+                $NULL
+            ) | ? { !([String]::IsNullOrWhiteSpace($_)) -and (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue) })))
+
     @(
-        @("PATH_BAK",
-            $env:PATH,
-            @(
+        "PATH",
+        $NULL
+    ) | ? { ![String]::IsNullOrWhiteSpace($_) } | % {
+        $name = $_
+        $bakname = "${name}_BACKUP"
+        foreach ($env in @(
+                [System.EnvironmentVariableTarget]::Machine,
                 [System.EnvironmentVariableTarget]::Process,
                 [System.EnvironmentVariableTarget]::User
+            ))
+        {
+            Write-Verbose "Backing up environment variable $name to $bakname for $env."
+            [Environment]::SetEnvironmentVariable(
+                $bakname,
+                [Environment]::GetEnvironmentVariable($name, $env),
+                $env
+            )
+        }
+    }
+
+    @(
+        @("PATH",
+            $([String]::Join([IO.Path]::PathSeparator, @(
+                        $syspath,
+                        [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::Machine)
+                    ))),
+            @(
+                [System.EnvironmentVariableTarget]::Machine
             )),
         @("PATH",
             $([String]::Join([IO.Path]::PathSeparator, @(
