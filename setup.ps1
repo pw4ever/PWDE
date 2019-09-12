@@ -335,7 +335,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190912-1"
+$script:version = "20190912-2"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -764,7 +764,6 @@ function update-userenv ($prefix) {
                     $NULL
                     )
                 ) | ? {
-                    Write-Host "$_"
                     !([String]::IsNullOrWhiteSpace($_)) -and `
                     (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue) -and `
                     !([Environment]::GetEnvironmentVariable(
