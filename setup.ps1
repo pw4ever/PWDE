@@ -335,7 +335,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190731-10"
+$script:version = "20190912-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -699,6 +699,7 @@ function update-userenv ($prefix) {
     } catch {}
 
     $local:tmp = @(
+                    @(
                     "$prefix",
                     $local:link_emacsbin,
                     $local:link_vim,
@@ -727,7 +728,12 @@ function update-userenv ($prefix) {
                     "$prefix\SysinternalsSuite",
                     "$prefix\PAL",
                     "$prefix\Windows Kits\10\Debuggers\x64",
+                    "$prefix\Windows Kits\10\Tools\x64",
                     "$prefix\Windows Kits\10\Windows Performance Toolkit",
+                    $NULL) + `
+                    @(
+                        Get-ChildItem "$prefix\Windows Kits\10\bin\*\x64" | % { $_.FullName } | Sort-Object -Descending
+                    ) + @(
                     "$prefix\etwpackage\bin",
                     "$prefix\ConEmuPack",
                     "$prefix\VirtuaWin",
@@ -756,7 +762,9 @@ function update-userenv ($prefix) {
                     "$prefix\AutoHotkey\Compiler",
                     "$prefix\mupdf",
                     $NULL
+                    )
                 ) | ? {
+                    Write-Host "$_"
                     !([String]::IsNullOrWhiteSpace($_)) -and `
                     (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue) -and `
                     !([Environment]::GetEnvironmentVariable(
@@ -764,14 +772,14 @@ function update-userenv ($prefix) {
                         ) -match [Regex]::Escape($_) ) -and `
                     $true
                 }
-
     $path = if (![String]::IsNullOrWhiteSpace($local:tmp)) {
         [String]::Join([IO.Path]::PathSeparator,
         $(
             @(
-                $local:tmp,
+                $local:tmp + ` @(
                 $env:PWDE_PERSISTENT_PATH,
                 $NULL
+                )
             ) | ? { ![String]::IsNullOrWhiteSpace($_) }
         ))
     }
@@ -804,22 +812,24 @@ function update-userenv ($prefix) {
                 [System.EnvironmentVariableTarget]::Machine,
                 [System.EnvironmentVariableTarget]::Process,
                 [System.EnvironmentVariableTarget]::User
-            ))
-        {
+            )) {
             $local:cur = [System.Environment]::GetEnvironmentVariable($name, $env)
             $local:curbak = [System.Environment]::GetEnvironmentVariable($bakname, $env)
             if (
                 (![String]::IsNullOrWhiteSpace($local:cur)) -and `
                 ($local:curbak -ne $local:cur)
-                )
-            {
+            ) {
                 Write-Verbose "Backing up environment variable $name to $bakname in $env."
-                [Environment]::SetEnvironmentVariable(
-                    $bakname,
-                    [Environment]::GetEnvironmentVariable($name, $env),
-                    $env
-                )
-            } else {
+                try {
+                    [Environment]::SetEnvironmentVariable(
+                        $bakname,
+                        [Environment]::GetEnvironmentVariable($name, $env),
+                        $env
+                    )
+                }
+                catch { }
+            }
+            else {
                 Write-Verbose "$name has already been backed up to $bakname in $env."
             }
         }
