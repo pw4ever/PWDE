@@ -81,6 +81,7 @@ param(
         "m2",
         "mupdf",
         "PAL",
+        "pciutils",
         "PEBrowse64",
         "PEBrowsePro",
         "RWEverything",
@@ -335,7 +336,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20190912-2"
+$script:version = "20191011-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -712,6 +713,7 @@ function update-userenv ($prefix) {
                     "$local:link_cmake\bin",
                     "$env:HOMEDRIVE\tools\neovim\Neovim\bin",
                     "$prefix\bin",
+                    "$prefix\pciutils",
                     "$prefix\gradle\bin",
                     "$prefix\.lein\bin",
                     "$prefix\ClojureCLR",
@@ -775,10 +777,9 @@ function update-userenv ($prefix) {
         [String]::Join([IO.Path]::PathSeparator,
         $(
             @(
-                $local:tmp + ` @(
+                $local:tmp,
                 $env:PWDE_PERSISTENT_PATH,
                 $NULL
-                )
             ) | ? { ![String]::IsNullOrWhiteSpace($_) }
         ))
     }
