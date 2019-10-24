@@ -66,8 +66,8 @@ param(
     )]
     [String[]]
     $PkgList = @(
-        "amazon-corretto-11.0.4.11.1-windows-x64",
-        "amazon-corretto-8.222.10.3-windows-x64-jdk",
+        "amazon-corretto-11.0.5.10.1-windows-x64",
+        "amazon-corretto-8.232.09.1-windows-x64-jdk",
         "bin",
         "Documents",
         "emacs",
@@ -109,7 +109,7 @@ param(
     )]
     [System.Collections.Hashtable]
     $ThirdPartyPackages = @{
-        "scala-2.13.0.msi" = "https://downloads.lightbend.com/scala/2.13.0/scala-2.13.0.msi";
+        "scala-2.13.1.msi" = "https://downloads.lightbend.com/scala/2.13.1/scala-2.13.1.msi";
         "evince-2.32.0.145.msi" = "https://github.com/pw4ever/PWDE/releases/download/latest/evince-2.32.0.145.msi";
         "youtube-dl.exe" = "https://yt-dl.org/latest/youtube-dl.exe";
     },
@@ -336,7 +336,7 @@ param(
     $FixAttrib
 
 )
-$script:version = "20191011-1"
+$script:version = "20191024-1"
 "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 "Contact: $script:contact"
@@ -605,7 +605,7 @@ function update-userenv ($prefix) {
     $local:gopathbin = [IO.Path]::Combine($local:gopath, "bin")
 
     $local:link_jdk = "$prefix\jdk"
-    $local:target_jdk = "$prefix\jdk11.0.4_10"
+    $local:target_jdk = "$prefix\jdk11.0.5_10"
 
     $local:link_vim = "$env:HOMEDRIVE\tools\Vim"
     $local:target_vim = $(
