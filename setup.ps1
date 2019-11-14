@@ -196,7 +196,7 @@ param(
         "beyondcompare",
         #"calibre",
         #"cmake",
-        #"cmder",
+        "cmder",
         #"conemu",
         #"ctags",
         #"curl",
@@ -347,7 +347,7 @@ param(
     $FixReg
 
 )
-$script:version = "20191113-1"
+$script:version = "20191113-2"
 Write-Verbose "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 Write-Verbose "Contact: $script:contact"
