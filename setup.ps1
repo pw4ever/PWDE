@@ -348,7 +348,7 @@ param(
 
 )
 
-$script:version = "20191113-5"
+$script:version = "20191113-6"
 Write-Verbose "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 Write-Verbose "Contact: $script:contact"
@@ -807,16 +807,13 @@ function update-userenv ($prefix) {
                         ) -match [Regex]::Escape($_) ) -and `
                     $true
                 }
-    $path = if (![String]::IsNullOrWhiteSpace($local:tmp)) {
-        [String]::Join([IO.Path]::PathSeparator,
-        $(
+    $path = (
             @(
-                $local:tmp,
+                ($local:tmp -join [IO.Path]::PathSeparator),
                 $env:PWDE_PERSISTENT_PATH,
                 $NULL
             ) | ? { ![String]::IsNullOrWhiteSpace($_) }
-        ))
-    }
+        ) -Join [IO.Path]::PathSeparator
 
     $local:tmp = @(
                 "$prefix\jdk\bin",
@@ -829,9 +826,12 @@ function update-userenv ($prefix) {
                     ) -match [Regex]::Escape($_) ) -and `
                 $true
             }
-    $syspath = if (![String]::IsNullOrWhiteSpace($local:tmp)) {
-        [String]::Join([IO.Path]::PathSeparator, $local:tmp)
-    }
+    $syspath = (
+            @(
+                ($local:tmp -join [IO.Path]::PathSeparator),
+                $NULL
+            ) | ? { ![String]::IsNullOrWhiteSpace($_) }
+        ) -Join [IO.Path]::PathSeparator
 
     @(
         "PATH",
