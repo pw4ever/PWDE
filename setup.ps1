@@ -267,7 +267,7 @@ param(
         #"rufus",
         "sbt",
         #"scriptcs",
-        #"sharpkeys",
+        "sharpkeys",
         #"strawberryperl",
         "sumatrapdf",
         "sysinternals",
@@ -348,7 +348,7 @@ param(
 
 )
 
-$script:version = "20191113-4"
+$script:version = "20191113-5"
 Write-Verbose "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 Write-Verbose "Contact: $script:contact"
