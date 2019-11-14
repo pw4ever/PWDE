@@ -334,7 +334,7 @@ param(
     [Parameter(
     )]
     [switch]
-    $FixMiscConfig,
+    $FinalizeConfigs,
 
     [Parameter(
     )]
@@ -347,7 +347,8 @@ param(
     $FixReg
 
 )
-$script:version = "20191113-2"
+
+$script:version = "20191113-3"
 Write-Verbose "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 Write-Verbose "Contact: $script:contact"
@@ -501,23 +502,22 @@ function main {
         create-services $Destination
     }
 
-    # finalization
     try {
-        if ($FixMiscConfig) {
+        if ($FinalizeConfigs) {
             @(
                 "global",
-                "gcmw",
                 "Git",
+                "cmder",
                 $NULL
             ) | ? { ![String]::IsNullOrWhiteSpace($_) } | % {
                 $pkg = $_
-                $path = "$PSScriptRoot\scripts\$pkg.ps1"
-                if (($PkgList -contains $pkg) -and (Test-Path $path -PathType Leaf)) {
-                    Write-Verbose "Running $path."
+                $path = "$PSScriptRoot\finalizers\$pkg.ps1"
+                if (Test-Path $path -PathType Leaf) {
+                    Write-Verbose "Finalizing $pkg."
                     try {
-                        & $path -Destination $Destination -PkgList $PkgList
+                        & $path -Destination $Destination
                     } catch {}
-                    Write-Verbose "Runned $path."
+                    Write-Verbose "Finalized $pkg."
                 }
             }
         }
