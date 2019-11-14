@@ -348,7 +348,7 @@ param(
 
 )
 
-$script:version = "20191113-3"
+$script:version = "20191113-4"
 Write-Verbose "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 Write-Verbose "Contact: $script:contact"
@@ -1043,8 +1043,8 @@ function create-shortcuts ($prefix) {
             else { $NULL }),
 
 
-        $(if ($target = $(gcm conemu64.exe -ErrorAction SilentlyContinue).path) {
-                @($target, "$desktop\ConEmu64.lnk", $NULL, "CTRL+ALT+q")
+        $(if ($target = $(gcm cmder.exe -ErrorAction SilentlyContinue).path) {
+                @($target, "$desktop\Cmder.lnk", "/single", "CTRL+ALT+q")
             }
             else { $NULL }),
 
@@ -1126,21 +1126,23 @@ $(if ($target=$(gcm negativescreen.exe -ErrorAction SilentlyContinue).path) {
             else { $NULL }),
 
 
-        $(if ($re = (gcm "runemacs.exe" -ErrorAction SilentlyContinue).path) {
-                @($re, "$startup\EmacsServer.lnk", "--eval `"(server-start)`"")
+        $(if ($target = (gcm "runemacs.exe" -ErrorAction SilentlyContinue).path) {
+                @($target, "$startup\EmacsServer.lnk", "--eval `"(server-start)`"")
             }
             else { $NULL }),
 
-        <#
-$(if ($target=$(gcm PAGEANT.exe -ErrorAction SilentlyContinue).path) {
-        @($target, "$startup\PAGEANT.lnk")
-} else { $NULL }),
-#>
+
+        $(if ($target = $(gcm cmder.exe -ErrorAction SilentlyContinue).path) {
+                @($target, "$startup\Cmder.lnk", "/single")
+            }
+            else { $NULL }),
+
 
         $(if ($target = $(gcm KAGEANT.exe -ErrorAction SilentlyContinue).path) {
                 @($target, "$startup\KAGEANT.lnk")
             }
             else { $NULL }),
+
 
         <#
 $(if ($target=$(gcm bginfo.exe -ErrorAction SilentlyContinue).path) {
@@ -1200,12 +1202,12 @@ function create-contextmenuentries ($prefix) {
 
     # Directory Context Menu
     @(
-        $(if ($target = (gcm "ConEmu64.exe" -ErrorAction SilentlyContinue).path) {
-                @("Open with ConEmu", "`"$target`" /cmd {PowerShell}", $target)
+        $(if ($target = (gcm "cmder.exe" -ErrorAction SilentlyContinue).path) {
+                @("Open with Cmder", "`"$target`" /single /task `"PowerShell::PowerShell`"", $target)
             }
             else { $NULL }),
-        $(if ($target = (gcm "ConEmu64.exe" -ErrorAction SilentlyContinue).path) {
-                @("Open with ConEmu (Admin)", "`"$target`" /cmd {PowerShell (Admin)}", $target)
+        $(if ($target = (gcm "cmder.exe" -ErrorAction SilentlyContinue).path) {
+                @("Open with Cmder (Admin)", "`"$target`" /single /task `"PowerShell::PowerShell as Admin`"", $target)
             }
             else { $NULL }),
         $(if (($ec = (gcm "emacsclientw.exe" -ErrorAction SilentlyContinue).path) -and ($re = (gcm "runemacs.exe" -ErrorAction SilentlyContinue).path)) {

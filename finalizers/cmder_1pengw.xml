@@ -386,7 +386,7 @@
 			<value name="Update.DownloadPath" type="string" data="%TEMP%\ConEmu"/>
 			<value name="Update.LeavePackages" type="hex" data="00"/>
 			<value name="Update.PostUpdateCmd" type="string" data="echo Last successful update&gt;ConEmuUpdate.info &amp;&amp; date /t&gt;&gt;ConEmuUpdate.info &amp;&amp; time /t&gt;&gt;ConEmuUpdate.info"/>
-			<key name="HotKeys" modified="2019-11-13 16:37:46" build="180626">
+			<key name="HotKeys" modified="2019-11-13 18:14:53" build="180626">
 				<value name="KeyMacroVersion" type="hex" data="02"/>
 				<value name="Multi.Modifier" type="dword" data="00000011"/>
 				<value name="Multi.ArrowsModifier" type="dword" data="0000005b"/>
@@ -406,9 +406,9 @@
 				<value name="Multi.NewWndConfirm" type="dword" data="00000000"/>
 				<value name="Multi.NewConsolePopup" type="dword" data="00000000"/>
 				<value name="Multi.NewConsolePopup2" type="dword" data="00000000"/>
-				<value name="Multi.NewAttach" type="dword" data="00000000"/>
-				<value name="Multi.NewSplitV" type="dword" data="00000000"/>
-				<value name="Multi.NewSplitH" type="dword" data="00000000"/>
+				<value name="Multi.NewAttach" type="dword" data="00a5a341"/>
+				<value name="Multi.NewSplitV" type="dword" data="00a5a356"/>
+				<value name="Multi.NewSplitH" type="dword" data="00a5a348"/>
 				<value name="Multi.SplitMaximize" type="dword" data="00005d0d"/>
 				<value name="Multi.SplitSizeVU" type="dword" data="00105d26"/>
 				<value name="Multi.SplitSizeVD" type="dword" data="00105d28"/>
@@ -602,7 +602,7 @@
 					<value name="Count" type="long" data="1"/>
 					<value name="Cmd1" type="string" data='cmd /k ""%ConEmuDir%\..\init.bat" "'/>
 				</key>
-				<key name="Task3" modified="2019-11-13 17:20:12" build="180626">
+				<key name="Task3" modified="2019-11-13 18:00:44" build="180626">
 					<value name="Name" type="string" data="{PowerShell::PowerShell as Admin}"/>
 					<value name="Flags" type="dword" data="00000000"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
@@ -611,7 +611,7 @@
 					<value name="Count" type="long" data="1"/>
 					<value name="Cmd1" type="string" data='*PowerShell -ExecutionPolicy Bypass -NoLogo -NoProfile -NoExit -Command "Set-PSReadlineOption -EditMode Emacs; Invoke-Expression &apos;Import-Module &apos;&apos;%ConEmuDir%\..\profile.ps1&apos;&apos;&apos;"'/>
 				</key>
-				<key name="Task4" modified="2019-11-13 17:20:12" build="180626">
+				<key name="Task4" modified="2019-11-13 18:00:44" build="180626">
 					<value name="Name" type="string" data="{PowerShell::PowerShell}"/>
 					<value name="Flags" type="dword" data="00000000"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
