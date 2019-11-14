@@ -113,7 +113,15 @@ param(
         "evince-2.32.0.145.msi" = "https://github.com/pw4ever/PWDE/releases/download/latest/evince-2.32.0.145.msi";
         "youtube-dl.exe" = "https://yt-dl.org/latest/youtube-dl.exe";
         "amm.bat" = "https://github.com/lihaoyi/Ammonite/releases/download/1.8.1/2.13-1.8.1";
+        "coursier.zip" = "https://github.com/coursier/coursier/releases/download/v2.0.0-RC5-2/standalone-x86_64-pc-win32.zip";
     },
+
+    [Parameter(
+    )]
+    $ThirdPartyPackagePaths = @(
+            "coursier-2.0.0-RC5-2\bin",
+            $NULL
+    ),
 
     [Parameter(
     )]
@@ -348,7 +356,7 @@ param(
 
 )
 
-$script:version = "20191113-7"
+$script:version = "20191114-1"
 Write-Verbose "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 Write-Verbose "Contact: $script:contact"
@@ -437,6 +445,8 @@ function main {
             $dest_bin=[IO.Path]::Combine($Destination, "bin")
             ensure-dir $dest_bin
         }
+        $local:ziplist = @()
+
         $ThirdPartyPackages.Keys | ? {
             Write-Verbose $_
             Write-Verbose ($InstallThirdPartyPackagesList -match $_).Count
@@ -463,8 +473,18 @@ function main {
                     Write-Verbose "Copying $pkgpath to $dest_bin."
                     Copy-Item -Path $pkgpath -Destination $dest_bin
                 }
+            } elseif ($pkg -match "\.(7z|zip)$") {
+                $pkgpath = [IO.Path]::Combine($ZipSource, $pkg)
+                if ((Test-Path -Path $pkgpath -PathType Leaf))
+                {
+                    $local:ziplist += $pkg
+                }
             }
         }
+
+        unzip-files -src $ZipSource -dst $Destination -pkglist $local:ziplist
+
+        $local:ziplist=$NULL
         $dest_bin=$NULL
     }
 
@@ -606,8 +626,8 @@ function ensure-dir ($dir) {
 
 function unzip-files ($src, $dst, $pkglist) {
     $jobs = @()
-    $pkglist = $pkglist | % { "$_.zip" }
-    ls "$src/*.zip" | % {
+    $pkglist = $pkglist | % { if ($_ -match "\.(7z|zip)$") { "$_" } else { "$_.zip" } }
+    ls -File -Path $src | % {
         # Unzip $_ only if it is in $pkglist
         if ($pkglist -like $_.Name) {
             $name = $_.FullName
@@ -768,7 +788,7 @@ function update-userenv ($prefix) {
                     "$prefix\Windows Kits\10\Windows Performance Toolkit",
                     $NULL) + `
                     @(
-                        Get-ChildItem "$prefix\Windows Kits\10\bin\*\x64" | % { $_.FullName } | Sort-Object -Descending
+                        Get-ChildItem "$prefix\Windows Kits\10\bin\*\x64" -ErrorAction SilentlyContinue | % { $_.FullName } | Sort-Object -Descending
                     ) + @(
                     "$prefix\etwpackage\bin",
                     "$prefix\ConEmuPack",
@@ -798,7 +818,11 @@ function update-userenv ($prefix) {
                     "$prefix\AutoHotkey\Compiler",
                     "$prefix\mupdf",
                     $NULL
-                    )
+                    ) + `
+                    @($ThirdPartyPackagePaths | ? {
+                        ![String]::IsNullOrWhiteSpace($_)
+                    } | % { "$prefix\$_" }) + `
+                    @($env:PWDE_PERSISTENT_PATH -split [IO.Path]::PathSeparator)
                 ) | ? {
                     !([String]::IsNullOrWhiteSpace($_)) -and `
                     (Test-Path $_ -PathType Container -ErrorAction SilentlyContinue) -and `
@@ -807,13 +831,7 @@ function update-userenv ($prefix) {
                         ) -match [Regex]::Escape($_) ) -and `
                     $true
                 }
-    $path = (
-            @(
-                ($local:tmp -join [IO.Path]::PathSeparator),
-                $env:PWDE_PERSISTENT_PATH,
-                $NULL
-            ) | ? { ![String]::IsNullOrWhiteSpace($_) }
-        ) -Join [IO.Path]::PathSeparator
+    $path = $local:tmp -join [IO.Path]::PathSeparator
 
     $local:tmp = @(
                 "$prefix\jdk\bin",
@@ -891,7 +909,7 @@ function update-userenv ($prefix) {
             {
                 param()
                 $([String]::Join(
-                        [IO.Path]::PathSeparator, 
+                        [IO.Path]::PathSeparator,
                         (
                             @(
                                 $path,
@@ -928,7 +946,9 @@ function update-userenv ($prefix) {
         $val = & $vallambda
 
         foreach ($target in $targets) {
-            if ([System.Environment]::GetEnvironmentVariable($var, $target) -ne $val) {
+            $oldval = [System.Environment]::GetEnvironmentVariable($var, $target)
+            if ($oldval -ne $val) {
+                #Write-Verbose "`nov=|$oldval|`n`nnv=|$val|`n" #debug
                 Write-Verbose "Setting environment variable: |$var|=|$val| in $target."
                 [Environment]::SetEnvironmentVariable($var, $val, $target)
             } else {
