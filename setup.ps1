@@ -348,7 +348,7 @@ param(
 
 )
 
-$script:version = "20191113-6"
+$script:version = "20191113-7"
 Write-Verbose "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 Write-Verbose "Contact: $script:contact"
@@ -871,39 +871,61 @@ function update-userenv ($prefix) {
 
     @(
         @("PATH",
-            $([String]::Join([IO.Path]::PathSeparator, $(@(
-                        $syspath,
-                        [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::Machine),
-                        $NULL
-                    ) | ? { ![String]::IsNullOrWhiteSpace($_) })
-                    )),
+            {
+                param()
+                $([String]::Join(
+                        [IO.Path]::PathSeparator,
+                        (
+                            @(
+                                $syspath,
+                                [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::Machine),
+                                $NULL
+                            ) | ? { ![String]::IsNullOrWhiteSpace($_) }
+                        )
+                    ))
+            },
             @(
                 [System.EnvironmentVariableTarget]::Machine
             )),
         @("PATH",
-            $([String]::Join([IO.Path]::PathSeparator, $(@(
-                        $path,
-                        [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::User),
-                        $NULL
-                    ) | ? { ![String]::IsNullOrWhiteSpace($_) })
-                    )),
+            {
+                param()
+                $([String]::Join(
+                        [IO.Path]::PathSeparator, 
+                        (
+                            @(
+                                $path,
+                                [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::User),
+                                $NULL
+                            ) | ? { ![String]::IsNullOrWhiteSpace($_) }
+                        )
+                    ))
+            },
             @(
                 [System.EnvironmentVariableTarget]::User
             )),
         @("PATH",
-            $([String]::Join([IO.Path]::PathSeparator, $(@(
-                        # combine previous 2 settings
-                        [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::User),
-                        [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::Machine),
-                        $NULL
-                    ) | ? { ![String]::IsNullOrWhiteSpace($_) })
-                    )),
+            {
+                param()
+                $([String]::Join(
+                        [IO.Path]::PathSeparator,
+                        (
+                            @(
+                                # combine previous 2 settings
+                                [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::User),
+                                [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::Machine),
+                                $NULL
+                            ) | ? { ![String]::IsNullOrWhiteSpace($_) }
+                        )
+                    ))
+            },
             @(
                 [System.EnvironmentVariableTarget]::Process
             )),
         $NULL
     ) | ? { ! ([String]::IsNullOrWhiteSpace($_)) } | % {
-        $var, $val, $targets = $_
+        $var, $vallambda, $targets = $_
+        $val = & $vallambda
 
         foreach ($target in $targets) {
             if ([System.Environment]::GetEnvironmentVariable($var, $target) -ne $val) {
