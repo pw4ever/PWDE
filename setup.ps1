@@ -356,7 +356,7 @@ param(
 
 )
 
-$script:version = "20191114-1"
+$script:version = "20191114-2"
 Write-Verbose "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 Write-Verbose "Contact: $script:contact"
@@ -602,7 +602,7 @@ function download-upstream ($srcprefix, $destprefix, $pkgs) {
         # http://stackoverflow.com/a/28704050
         $wc = New-Object Net.WebClient
 
-        $list = @("7za.exe") + @($pkgs | % {"$_.zip"})
+        $list = @("7z.exe") + @($pkgs | % { if ($_ -match "\.(7z|zip)") { "$_" } else {"$_.zip"} })
 
         foreach ($item in $list) {
             $src = "$srcprefix/$item"
@@ -639,7 +639,7 @@ function unzip-files ($src, $dst, $pkglist) {
                     function unzip ($zipfile, $dst, $src) {
                         #ensure-dir $dst
                         #[IO.Compression.ZipFile]::ExtractToDirectory($zipfle, $dst)
-                        Invoke-Expression "$src\7za.exe x -o`"$dst`" -y -- `"$zipfile`"" # > $NULL
+                        Invoke-Expression "$src\7z.exe x -o`"$dst`" -y -- `"$zipfile`"" # > $NULL
                     }
 
                     unzip "$name" "$dst" "$src"
