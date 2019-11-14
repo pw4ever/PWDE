@@ -114,12 +114,15 @@ param(
         "youtube-dl.exe" = "https://yt-dl.org/latest/youtube-dl.exe";
         "amm.bat" = "https://github.com/lihaoyi/Ammonite/releases/download/1.8.1/2.13-1.8.1";
         "coursier.zip" = "https://github.com/coursier/coursier/releases/download/v2.0.0-RC5-2/standalone-x86_64-pc-win32.zip";
+        "mccli.7z" = "https://github.com/pw4ever/PWDE/releases/download/latest/mccli.7z";
+        "climt.7z" = "https://github.com/pw4ever/PWDE/releases/download/latest/climt.7z";
     },
 
     [Parameter(
     )]
     $ThirdPartyPackagePaths = @(
             "coursier-2.0.0-RC5-2\bin",
+            "bin",
             $NULL
     ),
 
@@ -356,7 +359,7 @@ param(
 
 )
 
-$script:version = "20191114-2"
+$script:version = "20191114-3"
 Write-Verbose "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 Write-Verbose "Contact: $script:contact"
