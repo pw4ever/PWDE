@@ -112,6 +112,7 @@ param(
         "scala-2.13.1.msi" = "https://downloads.lightbend.com/scala/2.13.1/scala-2.13.1.msi";
         "evince-2.32.0.145.msi" = "https://github.com/pw4ever/PWDE/releases/download/latest/evince-2.32.0.145.msi";
         "youtube-dl.exe" = "https://yt-dl.org/latest/youtube-dl.exe";
+        "amm.bat" = "https://github.com/lihaoyi/Ammonite/releases/download/1.8.1/2.13-1.8.1";
     },
 
     [Parameter(
@@ -333,13 +334,23 @@ param(
     [Parameter(
     )]
     [switch]
-    $FixAttrib
+    $FixMiscConfig,
+
+    [Parameter(
+    )]
+    [switch]
+    $FixAttrib,
+
+    [Parameter(
+    )]
+    [switch]
+    $FixReg
 
 )
-$script:version = "20191024-1"
-"Version: $script:version"
+$script:version = "20191113-1"
+Write-Verbose "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
-"Contact: $script:contact"
+Write-Verbose "Contact: $script:contact"
 
 if ($ExcludePkgList) {
     $ExcludePkgList = $($ExcludePkgList | % { $_.ToUpper() })
@@ -492,20 +503,23 @@ function main {
 
     # finalization
     try {
-        if ($PkgList -contains "global") {
-            $path = "$PSScriptRoot\scripts\global.ps1"
-            Write-Verbose "Finalization: $path."
-            & $path -Destination $Destination -PkgList $PkgList
-        }
-        if ($PkgList -contains "gcmw") {
-            $path = "$PSScriptRoot\scripts\gcmw.ps1"
-            Write-Verbose "Finalization: $path."
-            & $path -Destination $Destination -PkgList $PkgList
-        }
-        if ($PkgList -contains "Git") {
-            $path = "$PSScriptRoot\scripts\Git.ps1"
-            Write-Verbose "Finalization: $path."
-            & $path -Destination $Destination -PkgList $PkgList
+        if ($FixMiscConfig) {
+            @(
+                "global",
+                "gcmw",
+                "Git",
+                $NULL
+            ) | ? { ![String]::IsNullOrWhiteSpace($_) } | % {
+                $pkg = $_
+                $path = "$PSScriptRoot\scripts\$pkg.ps1"
+                if (($PkgList -contains $pkg) -and (Test-Path $path -PathType Leaf)) {
+                    Write-Verbose "Running $path."
+                    try {
+                        & $path -Destination $Destination -PkgList $PkgList
+                    } catch {}
+                    Write-Verbose "Runned $path."
+                }
+            }
         }
     }
     catch {}
@@ -516,6 +530,26 @@ function main {
             # attrib: -Readonly, -Hidden
             $name = $Destination -replace "\\$", ""
             attrib.exe -R -H "$name" /S /D /L
+        }
+    }
+    catch {}
+
+    try {
+        if ($FixReg) {
+            @(
+                @("HKCU\Console", "VirtualTerminalLevel", "REG_DWORD", "1"),
+                $NULL
+            ) | ? { ![String]::IsNullOrWhiteSpace($_) } | % {
+                $hk, $v, $t, $d = $_
+                $cmd = @"
+reg add "$hk" /v "$v" /t "$t" /d "$d" /f
+"@
+                Write-Verbose "$cmd"
+                try {
+                    Invoke-Expression $cmd
+                } catch {}
+
+            }
         }
     }
     catch {}
