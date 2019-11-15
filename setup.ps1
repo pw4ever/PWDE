@@ -74,6 +74,7 @@ param(
         "etwpackage",
         "evince",
         "global",
+        "gpodder.7z",
         "iasl",
         #"jdk",
         "jpdfbookmarks",
@@ -359,7 +360,7 @@ param(
 
 )
 
-$script:version = "20191114-4"
+$script:version = "20191115-1"
 Write-Verbose "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 Write-Verbose "Contact: $script:contact"
@@ -821,6 +822,7 @@ function update-userenv ($prefix) {
                     "$prefix\ynp-tools",
                     "$prefix\AutoHotkey\Compiler",
                     "$prefix\mupdf",
+                    "$prefix\gpodder\data\bin",
                     $NULL
                     ) + `
                     @($ThirdPartyPackagePaths | ? {
@@ -1109,6 +1111,12 @@ function create-shortcuts ($prefix) {
 
         $(if ($target = (gcm nvim-qt.exe -ErrorAction SilentlyContinue).path) {
                 @($target, "$desktop\NeoVim.lnk")
+            }
+            else { $NULL }),
+
+
+        $(if ($target = "$prefix\gpodder\data\bin\gpodder.exe") {
+                @($target, "$desktop\gPodder.lnk")
             }
             else { $NULL }),
 
