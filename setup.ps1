@@ -251,7 +251,7 @@ param(
         #"msys2",
         "mupdf",
         "nasm",
-        #"negativescreen",
+        "negativescreen",
         "neovim",
         #"networkmonitor",
         #"nmap",
@@ -359,7 +359,7 @@ param(
 
 )
 
-$script:version = "20191114-3"
+$script:version = "20191114-4"
 Write-Verbose "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 Write-Verbose "Contact: $script:contact"
@@ -531,6 +531,7 @@ function main {
                 "global",
                 "Git",
                 "cmder",
+                "negativescreen",
                 $NULL
             ) | ? { ![String]::IsNullOrWhiteSpace($_) } | % {
                 $pkg = $_
@@ -1077,7 +1078,7 @@ function create-shortcuts ($prefix) {
 
 
         $(if ($target = $(gcm negativescreen.exe -ErrorAction SilentlyContinue).path) {
-                @($target, "$desktop\NegativeScreen.lnk", $NULL, $NULL, $NULL, $true)
+                @($target, "$desktop\NegativeScreen.lnk", $NULL, "CTRL+ALT+SHIFT+z", $NULL, $true)
             }
             else { $NULL }),
 
@@ -1093,12 +1094,12 @@ function create-shortcuts ($prefix) {
             }
             else { $NULL }),
 
-
+<#
         $(if ($target = (gcm "VirtuaWin" -ErrorAction SilentlyContinue).path) {
                 @($target, "$desktop\VirtuaWin.lnk")
             }
             else { $NULL }),
-
+#>
 
         $(if (($ec = (gcm "emacsclientw.exe" -ErrorAction SilentlyContinue).path) -and ($re = (gcm "runemacs.exe" -ErrorAction SilentlyContinue).path)) {
                 @($ec, "$desktop\Emacs.lnk", "-c -a `"$re`"")
@@ -1129,7 +1130,7 @@ function create-shortcuts ($prefix) {
             }
             else { $NULL }),
 
-
+<#
         $(if ($target = $(gcm bginfo.exe -ErrorAction SilentlyContinue).path) {
                 & { copy-item "$PSScriptRoot\helper\black_text.bgi" "$prefix" -Force -ErrorAction SilentlyContinue | Out-Null }
                 if (Test-Path "$prefix\black_text.bgi" -PathType Leaf -ErrorAction SilentlyContinue) {
@@ -1138,7 +1139,7 @@ function create-shortcuts ($prefix) {
                 else { $NULL }
             }
             else { $NULL }),
-
+#>
 
         $NULL
 
@@ -1159,11 +1160,10 @@ function create-startupshortcuts ($prefix) {
     $startup = [Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)
     @(
 
-        <#
-$(if ($target=$(gcm negativescreen.exe -ErrorAction SilentlyContinue).path) {
-        @($target, "$startup\NegativeScreen.lnk", $NULL, $NULL, $NULL, $false)
-} else { $NULL }),
-#>
+        $(if ($target = $(gcm negativescreen.exe -ErrorAction SilentlyContinue).path) {
+                @($target, "$startup\NegativeScreen.lnk", $NULL, $NULL, $NULL, $false)
+            }
+            else { $NULL }),
 
         $($cmd = "$prefix\VcXsrv\xlaunch.exe"; if (Test-Path $cmd -PathType Leaf -ErrorAction SilentlyContinue) {
                 @($cmd, "$startup\XLaunch.lnk", "-run $prefix\VcXsrv\config.xlaunch", $NULL, $NULL, $false)
