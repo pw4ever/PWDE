@@ -285,6 +285,7 @@ param(
         "sysinternals",
         #"tigervnc",
         "tigervnc-viewer",
+        "universal-ctags",
         "vim",
         "vcredist-all",
         "vcxsrv",
@@ -360,7 +361,7 @@ param(
 
 )
 
-$script:version = "20191115-1"
+$script:version = "20191120-1"
 Write-Verbose "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 Write-Verbose "Contact: $script:contact"
