@@ -113,7 +113,7 @@ param(
         "scala-2.13.1.msi" = "https://downloads.lightbend.com/scala/2.13.1/scala-2.13.1.msi";
         "evince-2.32.0.145.msi" = "https://github.com/pw4ever/PWDE/releases/download/latest/evince-2.32.0.145.msi";
         "youtube-dl.exe" = "https://yt-dl.org/latest/youtube-dl.exe";
-        "amm.bat" = "https://github.com/lihaoyi/Ammonite/releases/download/1.8.1/2.13-1.8.1";
+        "amm.bat" = "https://github.com/lihaoyi/Ammonite/releases/download/1.8.2/2.13-1.8.2";
         "coursier.zip" = "https://github.com/coursier/coursier/releases/download/v2.0.0-RC5-2/standalone-x86_64-pc-win32.zip";
         "mccli.7z" = "https://github.com/pw4ever/PWDE/releases/download/latest/mccli.7z";
         "climt.7z" = "https://github.com/pw4ever/PWDE/releases/download/latest/climt.7z";
@@ -361,7 +361,7 @@ param(
 
 )
 
-$script:version = "20191120-1"
+$script:version = "20191203-1"
 Write-Verbose "Version: $script:version"
 $script:contact = "Wei Peng <4pengw+PWDE@gmail.com>"
 Write-Verbose "Contact: $script:contact"
